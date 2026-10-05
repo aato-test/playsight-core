@@ -9,7 +9,7 @@ interface BrowserSelectorProps {
   showLabels?: boolean;
 }
 
-export const ChromiumIcon: React.FC<{ className?: string }> = ({ className = 'w-4 h-4' }) => (
+export const ChromiumIcon: React.FC<{ className?: string }> = ({ className = 'w-7 h-7' }) => (
   <svg viewBox="0 0 24 24" className={className} fill="none">
     {/* Blue Center Core */}
     <circle cx="12" cy="12" r="4.2" fill="#1A73E8" />
@@ -32,7 +32,7 @@ export const ChromiumIcon: React.FC<{ className?: string }> = ({ className = 'w-
   </svg>
 );
 
-export const FirefoxIcon: React.FC<{ className?: string }> = ({ className = 'w-4 h-4' }) => (
+export const FirefoxIcon: React.FC<{ className?: string }> = ({ className = 'w-7 h-7' }) => (
   <svg viewBox="0 0 24 24" className={className} fill="none">
     {/* Globe base */}
     <circle cx="12" cy="12" r="9" fill="#2B3A8F" />
@@ -53,7 +53,7 @@ export const FirefoxIcon: React.FC<{ className?: string }> = ({ className = 'w-4
   </svg>
 );
 
-export const WebKitIcon: React.FC<{ className?: string }> = ({ className = 'w-4 h-4' }) => (
+export const WebKitIcon: React.FC<{ className?: string }> = ({ className = 'w-7 h-7' }) => (
   <svg viewBox="0 0 24 24" className={className} fill="none">
     {/* Safari / WebKit Blue Dial */}
     <circle cx="12" cy="12" r="10" fill="#0A84FF" />
@@ -74,9 +74,9 @@ export const WebKitIcon: React.FC<{ className?: string }> = ({ className = 'w-4 
 );
 
 const BROWSERS: { id: BrowserEngine; name: string; engine: string; icon: React.FC<{ className?: string }> }[] = [
-  { id: 'chromium', name: 'Chromium', engine: 'Blink / V8', icon: ChromiumIcon },
+  { id: 'chromium', name: 'Chromium', engine: 'Blink', icon: ChromiumIcon },
   { id: 'firefox', name: 'Firefox', engine: 'Gecko', icon: FirefoxIcon },
-  { id: 'webkit', name: 'WebKit', engine: 'Safari WebKit', icon: WebKitIcon },
+  { id: 'webkit', name: 'WebKit', engine: 'Safari', icon: WebKitIcon },
 ];
 
 export const BrowserSelector: React.FC<BrowserSelectorProps> = ({
@@ -87,7 +87,7 @@ export const BrowserSelector: React.FC<BrowserSelectorProps> = ({
 }) => {
   return (
     <div
-      className={`inline-flex items-center p-1 rounded-xl bg-slate-100 border border-slate-200 shadow-2xs ${className}`}
+      className={`inline-flex items-center p-1.5 rounded-2xl bg-slate-100 border border-slate-200/90 shadow-2xs ${className}`}
       role="group"
       aria-label="Browser Engine Selector"
     >
@@ -99,16 +99,16 @@ export const BrowserSelector: React.FC<BrowserSelectorProps> = ({
             key={b.id}
             type="button"
             onClick={() => onBrowserChange(b.id)}
-            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer select-none ${
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer select-none ${
               isSelected
-                ? 'bg-white text-slate-900 shadow-xs border border-slate-200/80 font-semibold scale-[1.02]'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/50'
+                ? 'bg-white text-slate-900 shadow-sm border border-slate-300/80 scale-[1.03] ring-1 ring-slate-900/5'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
             }`}
             title={`Select ${b.name} (${b.engine}) as target execution engine`}
           >
-            <Icon className="w-4 h-4 shrink-0 transition-transform hover:scale-110" />
+            <Icon className="w-6 h-6 shrink-0 transition-transform hover:scale-110 drop-shadow-2xs" />
             {showLabels && (
-              <span className="text-[11px] font-sans tracking-tight">
+              <span className="font-sans tracking-tight text-xs">
                 {b.name}
               </span>
             )}

@@ -55,17 +55,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
   return (
     <aside
       id="app-sidebar"
-      className="w-64 bg-white border-r border-slate-200 flex flex-col justify-between select-none h-screen shrink-0 text-slate-700 z-30 font-sans shadow-2xs"
+      className="w-64 bg-white border-r border-slate-200 flex flex-col justify-between select-none h-screen shrink-0 text-slate-700 z-30 font-sans shadow-xs"
     >
       {/* Top Header & Navigation */}
       <div className="flex flex-col flex-1 overflow-y-auto no-scrollbar">
         {/* PlaySight Core Brand Header */}
-        <div className="h-13 px-4 border-b border-slate-200 flex items-center justify-between shrink-0 bg-white">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-indigo-50 border border-indigo-200 flex items-center justify-center text-indigo-600 shadow-2xs">
+        <div className="h-18 px-5 border-b border-slate-200 flex items-center justify-between shrink-0 bg-white">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-indigo-50 border border-indigo-200 flex items-center justify-center text-indigo-600 shadow-2xs">
               <svg
                 viewBox="0 0 24 24"
-                className="w-4 h-4 stroke-current fill-none stroke-[2.2]"
+                className="w-5 h-5 stroke-current fill-none stroke-[2.2]"
                 strokeLinecap="round"
                 strokeLinejoin="round"
               >
@@ -75,23 +75,20 @@ export const Sidebar: React.FC<SidebarProps> = ({
               </svg>
             </div>
             <div>
-              <div className="font-bold text-xs tracking-tight text-slate-900 flex items-center gap-1.5">
+              <div className="font-bold text-sm tracking-tight text-slate-900 flex items-center gap-1.5">
                 <span>PlaySight</span>
-                <span className="text-indigo-600 font-semibold">Core</span>
+                <span className="text-indigo-600 font-bold">Core</span>
               </div>
-              <div className="text-[10px] text-slate-400 font-mono tracking-wider uppercase">
-                QA Workspace
+              <div className="text-xs text-slate-400 font-sans font-medium">
+                Team Automation Hub
               </div>
             </div>
           </div>
-          <span className="text-[10px] text-slate-500 font-mono bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-full">
-            v2.4
-          </span>
         </div>
 
         {/* Primary Navigation */}
-        <div className="p-2.5 space-y-1">
-          <div className="px-2 pt-2 pb-1 text-[10px] font-mono text-slate-400 uppercase tracking-wider">
+        <div className="p-3 space-y-1">
+          <div className="px-2 pt-2 pb-1.5 text-xs font-semibold text-slate-400 uppercase tracking-wider">
             Test Engineering
           </div>
           {primaryNavItems.map((item) => {
@@ -103,7 +100,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 key={item.id}
                 id={`sidebar-nav-${item.id}`}
                 onClick={() => onSelectTab(item.id)}
-                className={`w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs transition-all cursor-pointer text-left ${
+                className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs transition-all cursor-pointer text-left ${
                   active
                     ? 'bg-indigo-600 text-white shadow-xs font-semibold'
                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80 font-medium'
@@ -119,7 +116,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 </div>
                 {item.id === 'copilot' && (
                   <span
-                    className={`text-[10px] font-mono px-1.5 py-0.5 rounded-md ${
+                    className={`text-[10px] font-sans font-semibold px-1.5 py-0.5 rounded-md ${
                       active
                         ? 'bg-white/20 text-white'
                         : 'bg-indigo-50 text-indigo-700 border border-indigo-200'

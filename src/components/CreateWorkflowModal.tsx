@@ -36,7 +36,7 @@ export const CreateWorkflowModal: React.FC<CreateWorkflowModalProps> = ({
       status: 'passing',
       averageDuration: '0.00s',
       lastRunTime: 'Never',
-      jiraIssue: 'CHK-184',
+      jiraIssue: undefined,
       nodes: [
         {
           id: `node-${Date.now().toString().slice(-4)}`,
@@ -52,7 +52,7 @@ export const CreateWorkflowModal: React.FC<CreateWorkflowModalProps> = ({
           confidence: 100,
           source: 'Route definition',
           lastExecution: 'Ready',
-          jiraIssue: 'CHK-184',
+          jiraIssue: undefined,
         },
       ],
       edges: [],

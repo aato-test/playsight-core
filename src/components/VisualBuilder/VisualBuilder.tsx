@@ -42,6 +42,7 @@ import {
   GitBranch,
   Radio,
   BookmarkCheck,
+  Github,
 } from 'lucide-react';
 
 interface VisualBuilderProps {
@@ -52,6 +53,7 @@ interface VisualBuilderProps {
   onOpenJsonModal: () => void;
   onOpenCopilot: () => void;
   onAutoHealTrigger: (nodeId: string) => void;
+  onOpenUploadGithub?: () => void;
 }
 
 export const VisualBuilder: React.FC<VisualBuilderProps> = ({
@@ -61,6 +63,7 @@ export const VisualBuilder: React.FC<VisualBuilderProps> = ({
   onRunTest,
   onOpenJsonModal,
   onAutoHealTrigger,
+  onOpenUploadGithub,
 }) => {
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(
     suite.nodes.length > 0 ? suite.nodes[0].id : null
@@ -277,7 +280,7 @@ export const VisualBuilder: React.FC<VisualBuilderProps> = ({
       confidence: 98,
       source: 'Manual definition',
       lastExecution: 'Ready',
-      jiraIssue: suite.jiraIssue || 'CHK-184',
+      jiraIssue: suite.jiraIssue || undefined,
     };
 
     const newEdges = [...suite.edges];
@@ -320,7 +323,7 @@ export const VisualBuilder: React.FC<VisualBuilderProps> = ({
       confidence: 99,
       source: `Test Case: ${tc.id}`,
       lastExecution: 'Ready',
-      jiraIssue: tc.jiraIssueKey || suite.jiraIssue || 'CHK-184',
+      jiraIssue: tc.jiraIssueKey || suite.jiraIssue || undefined,
     };
 
     const newEdges = [...suite.edges];
@@ -676,12 +679,24 @@ export const VisualBuilder: React.FC<VisualBuilderProps> = ({
           {/* Save */}
           <button
             onClick={() => onUpdateSuite({ ...suite, updatedAt: 'Just now' })}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 text-xs font-mono transition-colors cursor-pointer shadow-2xs"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 text-xs font-sans font-medium transition-colors cursor-pointer shadow-2xs"
             title="Save Workflow (⌘S)"
           >
             <Save className="w-3.5 h-3.5 text-slate-500" />
             <span>Save</span>
           </button>
+
+          {/* Push to GitHub */}
+          {onOpenUploadGithub && (
+            <button
+              onClick={onOpenUploadGithub}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 text-xs font-sans font-semibold transition-colors cursor-pointer shadow-2xs"
+              title="Push Spec to GitHub Repository"
+            >
+              <Github className="w-3.5 h-3.5 text-slate-800" />
+              <span className="hidden sm:inline">Push to GitHub</span>
+            </button>
+          )}
 
           {/* Duplicate */}
           <button
@@ -689,7 +704,7 @@ export const VisualBuilder: React.FC<VisualBuilderProps> = ({
               if (selectedNode) handleDuplicateNode(selectedNode);
             }}
             disabled={!selectedNode}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 border border-slate-200 text-xs font-mono transition-colors cursor-pointer disabled:opacity-40 shadow-2xs"
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 border border-slate-200 text-xs font-sans transition-colors cursor-pointer disabled:opacity-40 shadow-2xs"
             title="Duplicate Selected Node"
           >
             <Copy className="w-3.5 h-3.5" />

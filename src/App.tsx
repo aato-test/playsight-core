@@ -14,6 +14,7 @@ import { CommandPalette } from './components/CommandPalette';
 import { CreateWorkflowModal } from './components/CreateWorkflowModal';
 import { JsonExportModal } from './components/VisualBuilder/JsonExportModal';
 import { GoogleAuthModal } from './components/GoogleAuthModal';
+import { UploadToGithubModal } from './components/UploadToGithubModal';
 import {
   MOCK_TEST_SUITES,
   MOCK_TEST_RUNS,
@@ -72,6 +73,7 @@ export default function App() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isJsonModalOpen, setIsJsonModalOpen] = useState(false);
   const [isGoogleModalOpen, setIsGoogleModalOpen] = useState(false);
+  const [isUploadGithubOpen, setIsUploadGithubOpen] = useState(false);
   const [isGoogleSignedIn, setIsGoogleSignedIn] = useState(true);
   const [userName, setUserName] = useState('Prakash Sivakumar');
   const [userEmail, setUserEmail] = useState('prakashsivakumar27@gmail.com');
@@ -618,28 +620,44 @@ export default function App() {
           backendMode={backendMode}
           onNavigateToTab={(tab) => setActiveTab(tab)}
           onOpenGoogleAuth={() => setIsGoogleModalOpen(true)}
+          onOpenUploadGithub={() => setIsUploadGithubOpen(true)}
           isGoogleSignedIn={isGoogleSignedIn}
           userEmail={userEmail}
         />
 
-        {/* Global Toast Notification */}
+        {/* Global Prominent Toast Notification */}
         {notification && (
-          <div className="fixed top-14 right-6 z-50">
+          <div className="fixed top-5 left-1/2 -translate-x-1/2 z-50 pointer-events-none transition-all duration-300 ease-out transform animate-in fade-in slide-in-from-top-4">
             <div
-              className={`flex items-center gap-2.5 px-3.5 py-2 rounded-xl border shadow-xl text-xs font-mono ${
+              className={`pointer-events-auto flex items-center gap-3.5 px-5 py-3 rounded-2xl border shadow-2xl backdrop-blur-md ring-1 text-sm font-sans font-medium ${
                 notification.type === 'success'
-                  ? 'bg-white border-emerald-200 text-emerald-800 shadow-emerald-500/10'
+                  ? 'bg-slate-900/95 text-white border-slate-700/80 ring-black/20 shadow-indigo-500/10'
                   : notification.type === 'error'
-                  ? 'bg-white border-rose-200 text-rose-800 shadow-rose-500/10'
-                  : 'bg-white border-amber-200 text-amber-800 shadow-amber-500/10'
+                  ? 'bg-rose-950/95 text-white border-rose-800 ring-rose-500/20 shadow-rose-500/20'
+                  : 'bg-amber-950/95 text-white border-amber-800 ring-amber-500/20 shadow-amber-500/20'
               }`}
             >
-              {notification.type === 'success' ? (
-                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-              ) : (
-                <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
-              )}
-              <span>{notification.message}</span>
+              <div
+                className={`w-7 h-7 rounded-xl flex items-center justify-center shrink-0 ${
+                  notification.type === 'success'
+                    ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                    : notification.type === 'error'
+                    ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30'
+                    : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
+                }`}
+              >
+                {notification.type === 'success' ? (
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                ) : (
+                  <AlertCircle className="w-4 h-4 text-rose-400" />
+                )}
+              </div>
+              <div className="flex flex-col">
+                <span className="text-sm font-semibold tracking-tight text-white">
+                  {notification.message}
+                </span>
+              </div>
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse ml-1" />
             </div>
           </div>
         )}
@@ -678,6 +696,7 @@ export default function App() {
               onAutoHealTrigger={(nodeId) => {
                 setIsCopilotOpen(true);
               }}
+              onOpenUploadGithub={() => setIsUploadGithubOpen(true)}
             />
           ) : activeTab === 'test-runs' || activeTab === 'history' ? (
             <TestRunHistory
@@ -803,6 +822,24 @@ export default function App() {
           setUserEmail(user.email);
         }}
         onImportTargets={handleImportGoogleTargets}
+      />
+
+      {/* GitHub Suite Uploader Modal */}
+      <UploadToGithubModal
+        isOpen={isUploadGithubOpen}
+        onClose={() => setIsUploadGithubOpen(false)}
+        suite={currentSuite}
+        currentRepo={currentRepo}
+        currentBranch={currentBranch}
+        branches={branches}
+        userEmail={userEmail}
+        userName={userName}
+        onSuccess={(details) => {
+          showNotification(
+            `Pushed "${currentSuite.name}" to GitHub ${details.branch} (${details.commitSha})!`,
+            'success'
+          );
+        }}
       />
     </div>
   );

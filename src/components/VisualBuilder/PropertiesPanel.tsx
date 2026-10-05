@@ -71,16 +71,16 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
     return (
       <div
         id="builder-properties-panel"
-        className="w-80 md:w-88 bg-slate-950/95 border-l border-slate-800 flex flex-col h-full shrink-0 select-none text-slate-400 p-6 justify-center items-center text-center font-sans"
+        className="w-80 md:w-88 bg-white border-l border-slate-200 flex flex-col h-full shrink-0 select-none text-slate-500 p-6 justify-center items-center text-center font-sans shadow-xs"
       >
-        <div className="w-10 h-10 rounded-xl bg-slate-900 border border-slate-800 flex items-center justify-center text-indigo-400 mb-3 shadow-inner">
-          <Sliders className="w-4 h-4" />
+        <div className="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-200 flex items-center justify-center text-indigo-600 mb-3 shadow-2xs">
+          <Sliders className="w-5 h-5" />
         </div>
-        <h4 className="text-xs font-semibold text-slate-200 tracking-tight uppercase font-mono">
-          Element Inspector
+        <h4 className="text-sm font-bold text-slate-900 tracking-tight font-sans">
+          Step Inspector
         </h4>
         <p className="text-xs text-slate-500 mt-1 max-w-[220px] leading-relaxed">
-          Select any element on the canvas to configure parameters, CSS/XPath selectors, extraction variables, and execution options.
+          Select any element on the canvas to configure parameters, locators, extraction variables, and execution options.
         </p>
       </div>
     );
@@ -121,24 +121,23 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const confidence = selectedNode.confidence ?? 98;
   const source = selectedNode.source ?? 'Manual config';
   const lastExecution = selectedNode.lastExecution ?? 'Ready';
-  const jiraStory = selectedNode.jiraIssue ?? 'None';
+  const jiraStory = selectedNode.jiraIssue ? selectedNode.jiraIssue : '—';
 
   return (
     <aside
       id="builder-properties-panel"
-      className="w-80 md:w-88 bg-slate-950/95 border-l border-slate-800 flex flex-col h-full shrink-0 select-none text-slate-200 font-sans shadow-xl"
+      className="w-80 md:w-88 bg-white border-l border-slate-200 flex flex-col h-full shrink-0 select-none text-slate-800 font-sans shadow-xs"
     >
       {/* Header */}
-      <div className="h-12 px-4 border-b border-slate-800 flex items-center justify-between shrink-0 bg-slate-950">
-        <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded-lg bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-indigo-400 font-mono text-xs font-semibold">
+      <div className="h-14 px-4 border-b border-slate-200 flex items-center justify-between shrink-0 bg-slate-50/70">
+        <div className="flex items-center gap-2.5">
+          <div className="w-7 h-7 rounded-lg bg-indigo-50 border border-indigo-200 flex items-center justify-center text-indigo-700 font-sans text-xs font-bold">
             0{stepIndex}
           </div>
           <div>
-            <h3 className="text-xs font-bold text-slate-100 tracking-tight uppercase font-mono">
+            <h3 className="text-xs font-bold text-slate-900 tracking-tight uppercase font-sans">
               Step 0{stepIndex} — {selectedNode.type}
             </h3>
           </div>
@@ -147,46 +146,46 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
         <div className="flex items-center gap-1">
           <button
             onClick={() => onDuplicateNode(selectedNode)}
-            className="p-1.5 text-slate-400 hover:text-slate-100 hover:bg-slate-800 rounded-lg transition-colors cursor-pointer"
+            className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
             title="Duplicate Node"
           >
-            <Copy className="w-3.5 h-3.5" />
+            <Copy className="w-4 h-4" />
           </button>
           <button
             onClick={() => onDeleteNode(selectedNode.id)}
-            className="p-1.5 text-slate-400 hover:text-rose-400 hover:bg-slate-800 rounded-lg transition-colors cursor-pointer"
+            className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
             title="Delete Node"
           >
-            <Trash2 className="w-3.5 h-3.5" />
+            <Trash2 className="w-4 h-4" />
           </button>
           <button
             onClick={onClose}
-            className="p-1.5 text-slate-400 hover:text-slate-100 hover:bg-slate-800 rounded-lg transition-colors cursor-pointer"
+            className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
             title="Close Inspector"
           >
-            <X className="w-3.5 h-3.5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
       </div>
 
       {/* Tabs */}
-      <div className="px-4 py-1.5 border-b border-slate-800 bg-slate-900/40 flex items-center gap-2">
+      <div className="px-4 py-2 border-b border-slate-200 bg-slate-50 flex items-center gap-2">
         <button
           onClick={() => setActiveTab('inspector')}
-          className={`px-2.5 py-1 rounded-md text-xs font-medium font-mono transition-colors cursor-pointer ${
+          className={`px-3 py-1.5 rounded-lg text-xs font-semibold font-sans transition-colors cursor-pointer ${
             activeTab === 'inspector'
-              ? 'bg-slate-800 text-indigo-300 border border-slate-700'
-              : 'text-slate-400 hover:text-slate-200'
+              ? 'bg-white text-indigo-700 shadow-2xs border border-slate-200'
+              : 'text-slate-500 hover:text-slate-800'
           }`}
         >
           Properties
         </button>
         <button
           onClick={() => setActiveTab('json')}
-          className={`px-2.5 py-1 rounded-md text-xs font-medium font-mono transition-colors cursor-pointer ${
+          className={`px-3 py-1.5 rounded-lg text-xs font-semibold font-sans transition-colors cursor-pointer ${
             activeTab === 'json'
-              ? 'bg-slate-800 text-indigo-300 border border-slate-700'
-              : 'text-slate-400 hover:text-slate-200'
+              ? 'bg-white text-indigo-700 shadow-2xs border border-slate-200'
+              : 'text-slate-500 hover:text-slate-800'
           }`}
         >
           JSON Schema
@@ -718,49 +717,36 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
               </div>
             )}
 
-            {/* Selector Confidence Meter */}
-            <div className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 space-y-1.5">
+            {/* Element Locator Strategy */}
+            <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
               <div className="flex items-center justify-between text-xs">
-                <span className="text-slate-400 font-mono text-[11px] uppercase tracking-wider">
-                  Selector Confidence
+                <span className="text-slate-500 font-sans font-semibold text-[11px] uppercase tracking-wider">
+                  Locator Engine
                 </span>
-                <span
-                  className={`font-mono font-bold text-xs ${
-                    confidence > 85 ? 'text-emerald-400' : 'text-amber-400'
-                  }`}
-                >
-                  {confidence}%
+                <span className="font-sans font-semibold text-xs text-indigo-700">
+                  Playwright Resilient
                 </span>
               </div>
-              <div className="w-full bg-slate-950 rounded-full h-1.5 overflow-hidden">
-                <div
-                  className={`h-1.5 rounded-full ${
-                    confidence > 85 ? 'bg-emerald-400' : 'bg-amber-400'
-                  }`}
-                  style={{ width: `${confidence}%` }}
-                />
-              </div>
-              <div className="text-[10px] text-slate-500 font-mono flex items-center justify-between">
-                <span>Playwright Selector Engine</span>
-                <span>Match: {confidence > 85 ? 'Resilient' : 'Moderate'}</span>
-              </div>
+              <p className="text-[11px] text-slate-500">
+                Action-resilient auto-waiting locator matching active DOM tree.
+              </p>
             </div>
 
             {/* Last Execution Info */}
-            <div className="grid grid-cols-2 gap-2 p-2.5 rounded-xl bg-slate-900 border border-slate-800">
+            <div className="grid grid-cols-2 gap-2 p-3 rounded-xl bg-slate-50 border border-slate-200">
               <div>
-                <span className="block text-[10px] font-mono text-slate-500 uppercase">
+                <span className="block text-[11px] font-sans font-semibold text-slate-500 uppercase tracking-wider">
                   Last Run
                 </span>
-                <span className="font-mono text-xs text-slate-200">
+                <span className="font-sans text-xs text-slate-800 font-semibold">
                   {lastExecution}
                 </span>
               </div>
               <div>
-                <span className="block text-[10px] font-mono text-slate-500 uppercase">
+                <span className="block text-[11px] font-sans font-semibold text-slate-500 uppercase tracking-wider">
                   Jira Issue
                 </span>
-                <span className="font-mono text-xs text-indigo-400 font-medium">
+                <span className="font-sans text-xs text-slate-700 font-medium">
                   {jiraStory}
                 </span>
               </div>
@@ -769,10 +755,10 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
             {/* Test Selector Feedback */}
             {testResult && (
               <div
-                className={`p-2.5 rounded-xl border text-xs font-mono ${
+                className={`p-3 rounded-xl border text-xs font-sans font-medium ${
                   testResult.status === 'ok'
-                    ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
-                    : 'bg-rose-500/10 border-rose-500/30 text-rose-300'
+                    ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
+                    : 'bg-rose-50 border-rose-200 text-rose-800'
                 }`}
               >
                 {testResult.message}
@@ -780,20 +766,20 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
             )}
 
             {/* Action Buttons */}
-            <div className="pt-2 border-t border-slate-800 space-y-2">
+            <div className="pt-3 border-t border-slate-200 space-y-2">
               <button
                 onClick={handleTestSelector}
                 disabled={testingSelector}
-                className="w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 text-xs font-mono transition-colors cursor-pointer"
+                className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200 text-xs font-semibold font-sans transition-colors cursor-pointer"
               >
                 {testingSelector ? (
                   <>
-                    <RotateCw className="w-3.5 h-3.5 animate-spin" />
+                    <RotateCw className="w-4 h-4 animate-spin text-slate-600" />
                     <span>Evaluating Selector...</span>
                   </>
                 ) : (
                   <>
-                    <Play className="w-3.5 h-3.5 text-indigo-400" />
+                    <Play className="w-4 h-4 text-indigo-600" />
                     <span>Test Selector Live</span>
                   </>
                 )}
@@ -801,17 +787,17 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
 
               <button
                 onClick={() => onAutoHealTrigger(selectedNode.id)}
-                className="w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 text-xs font-mono transition-colors cursor-pointer"
+                className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 text-xs font-semibold font-sans transition-colors cursor-pointer"
               >
-                <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
+                <Sparkles className="w-4 h-4 text-indigo-600" />
                 <span>Auto-Heal Step</span>
               </button>
 
               <button
                 onClick={() => onDeleteNode(selectedNode.id)}
-                className="w-full flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/30 text-xs font-mono transition-colors cursor-pointer"
+                className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-semibold font-sans transition-colors cursor-pointer"
               >
-                <Trash2 className="w-3.5 h-3.5" />
+                <Trash2 className="w-4 h-4 text-rose-600" />
                 <span>Delete Element</span>
               </button>
             </div>

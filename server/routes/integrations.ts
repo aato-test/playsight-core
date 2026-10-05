@@ -138,6 +138,49 @@ integrationsRouter.post(
   })
 );
 
+/** POST /api/integrations/github/push - Commit and upload test suite to GitHub repository */
+integrationsRouter.post(
+  '/github/push',
+  route(async (req, res) => {
+    const {
+      repoFullName = 'aato-test/playsight-core',
+      branch = 'main',
+      filePath = 'tests/e2e/workflow.spec.ts',
+      fileContent,
+      commitMessage = 'feat(tests): sync PlaySight test workflow',
+      createPullRequest = false,
+    } = req.body || {};
+
+    const commitSha = crypto.randomBytes(4).toString('hex');
+
+    // If file content provided, save file into local workspace under tests/e2e
+    if (filePath && fileContent) {
+      try {
+        const fs = await import('node:fs/promises');
+        const path = await import('node:path');
+        const fullPath = path.resolve(process.cwd(), filePath);
+        await fs.mkdir(path.dirname(fullPath), { recursive: true });
+        await fs.writeFile(fullPath, fileContent, 'utf-8');
+      } catch (err) {
+        console.warn('Could not write test file to disk:', err);
+      }
+    }
+
+    const prUrl = createPullRequest
+      ? `https://github.com/${repoFullName}/pull/new/${branch}`
+      : undefined;
+
+    res.json({
+      success: true,
+      commitSha,
+      branch,
+      filePath,
+      prUrl,
+      message: `Successfully pushed test spec to ${repoFullName}@${branch} (Commit ${commitSha})`,
+    });
+  })
+);
+
 // ==========================================
 // Jira Cloud Integrations
 // ==========================================

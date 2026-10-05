@@ -49,17 +49,17 @@ export const DashboardCards: React.FC<DashboardProps> = ({
             Good morning, Prakash
           </h1>
           <div className="flex items-center gap-2 text-xs text-slate-500 mt-1.5 flex-wrap">
-            <span className="flex items-center gap-1 font-medium text-slate-700">
-              <FolderGit2 className="w-3.5 h-3.5 text-indigo-600" />
-              <span className="font-mono text-slate-900 font-semibold">{currentRepo}</span>
+            <span className="flex items-center gap-1.5 font-medium text-slate-700">
+              <FolderGit2 className="w-4 h-4 text-indigo-600" />
+              <span className="font-sans text-slate-900 font-semibold">{currentRepo}</span>
             </span>
             <span>·</span>
-            <span className="flex items-center gap-1 text-slate-600">
-              <GitBranch className="w-3.5 h-3.5 text-indigo-600" />
-              <span className="font-mono text-indigo-700 font-medium">{currentBranch}</span>
+            <span className="flex items-center gap-1.5 text-slate-600">
+              <GitBranch className="w-4 h-4 text-indigo-600" />
+              <span className="font-sans text-indigo-700 font-medium">{currentBranch}</span>
             </span>
             <span>·</span>
-            <span className="inline-flex items-center gap-1 text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full text-[10px] font-mono">
+            <span className="inline-flex items-center gap-1.5 text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full text-xs font-sans font-medium">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
               GitHub App Connected
             </span>
@@ -71,88 +71,88 @@ export const DashboardCards: React.FC<DashboardProps> = ({
           <button
             id="btn-create-new-workflow"
             onClick={onCreateNewWorkflow}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold tracking-tight transition-all shadow-xs cursor-pointer active:scale-98"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold tracking-tight transition-all shadow-xs cursor-pointer active:scale-98"
           >
-            <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
+            <Plus className="w-4 h-4 stroke-[2.5]" />
             <span>Create New Suite</span>
           </button>
         </div>
       </div>
 
-      {/* Telemetry Metrics Grid (Placeholder boxes preserved, fake numbers replaced with placeholders) */}
+      {/* Telemetry Metrics Grid */}
       <div className="rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-xs">
         <div className="grid grid-cols-2 md:grid-cols-5 divide-y md:divide-y-0 md:divide-x divide-slate-200">
           {/* Metric 1: Regression Pass Rate */}
-          <div className="p-4 flex flex-col justify-between">
-            <span className="text-[11px] font-mono text-slate-500 uppercase tracking-wider">
+          <div className="p-5 flex flex-col justify-between">
+            <span className="text-xs font-sans font-semibold text-slate-500 uppercase tracking-wider">
               Pass Rate
             </span>
             <div className="mt-2 flex items-baseline gap-2">
-              <span className="text-2xl md:text-3xl font-bold text-slate-400 font-mono tabular-nums tracking-tight">
+              <span className="text-2xl md:text-3xl font-bold text-slate-400 font-sans tabular-nums tracking-tight">
                 —%
               </span>
             </div>
-            <div className="mt-1 text-[11px] text-slate-400 font-mono">
+            <div className="mt-1 text-xs text-slate-400 font-sans">
               Awaiting test run
             </div>
           </div>
 
           {/* Metric 2: Active Sprint Coverage */}
-          <div className="p-4 flex flex-col justify-between">
-            <span className="text-[11px] font-mono text-slate-500 uppercase tracking-wider">
+          <div className="p-5 flex flex-col justify-between">
+            <span className="text-xs font-sans font-semibold text-slate-500 uppercase tracking-wider">
               Sprint Coverage
             </span>
             <div className="mt-2 flex items-baseline gap-2">
-              <span className="text-2xl md:text-3xl font-bold text-slate-400 font-mono tabular-nums tracking-tight">
+              <span className="text-2xl md:text-3xl font-bold text-slate-400 font-sans tabular-nums tracking-tight">
                 —%
               </span>
             </div>
-            <div className="mt-1 text-[11px] text-slate-400 font-mono">
+            <div className="mt-1 text-xs text-slate-400 font-sans">
               0 stories verified
             </div>
           </div>
 
           {/* Metric 3: Runner Latency */}
-          <div className="p-4 flex flex-col justify-between">
-            <span className="text-[11px] font-mono text-slate-500 uppercase tracking-wider">
+          <div className="p-5 flex flex-col justify-between">
+            <span className="text-xs font-sans font-semibold text-slate-500 uppercase tracking-wider">
               Runner Latency
             </span>
             <div className="mt-2 flex items-baseline gap-2">
-              <span className="text-2xl md:text-3xl font-bold text-slate-400 font-mono tabular-nums tracking-tight">
+              <span className="text-2xl md:text-3xl font-bold text-slate-400 font-sans tabular-nums tracking-tight">
                 — ms
               </span>
             </div>
-            <div className="mt-1 text-[11px] text-slate-400 font-mono">
+            <div className="mt-1 text-xs text-slate-400 font-sans">
               Playwright runner idle
             </div>
           </div>
 
           {/* Metric 4: Active Workflows */}
-          <div className="p-4 flex flex-col justify-between">
-            <span className="text-[11px] font-mono text-slate-500 uppercase tracking-wider">
+          <div className="p-5 flex flex-col justify-between">
+            <span className="text-xs font-sans font-semibold text-slate-500 uppercase tracking-wider">
               Active Suites
             </span>
             <div className="mt-2 flex items-baseline gap-2">
-              <span className="text-2xl md:text-3xl font-bold text-slate-900 font-mono tabular-nums tracking-tight">
+              <span className="text-2xl md:text-3xl font-bold text-slate-900 font-sans tabular-nums tracking-tight">
                 {suites.length}
               </span>
             </div>
-            <div className="mt-1 text-[11px] text-slate-500 font-mono">
+            <div className="mt-1 text-xs text-slate-500 font-sans">
               Configured on branch
             </div>
           </div>
 
           {/* Metric 5: Blockers */}
-          <div className="p-4 flex flex-col justify-between">
-            <span className="text-[11px] font-mono text-slate-500 uppercase tracking-wider">
+          <div className="p-5 flex flex-col justify-between">
+            <span className="text-xs font-sans font-semibold text-slate-500 uppercase tracking-wider">
               Pending Issues
             </span>
             <div className="mt-2 flex items-baseline gap-2">
-              <span className="text-2xl md:text-3xl font-bold text-slate-900 font-mono tabular-nums tracking-tight">
+              <span className="text-2xl md:text-3xl font-bold text-slate-900 font-sans tabular-nums tracking-tight">
                 {jiraIssues.filter((i) => i.status !== 'done').length}
               </span>
             </div>
-            <div className="mt-1 text-[11px] text-slate-500 font-mono">
+            <div className="mt-1 text-xs text-slate-500 font-sans">
               Linked from Jira
             </div>
           </div>
@@ -177,13 +177,13 @@ export const DashboardCards: React.FC<DashboardProps> = ({
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse text-xs">
               <thead>
-                <tr className="border-b border-slate-200 bg-slate-50/80 text-slate-500 font-mono text-[11px] uppercase tracking-wider">
-                  <th className="py-3 px-4 font-medium">Suite Name</th>
-                  <th className="py-3 px-4 font-medium">Steps / Browser</th>
-                  <th className="py-3 px-4 font-medium">Status</th>
-                  <th className="py-3 px-4 font-medium">Last Run</th>
-                  <th className="py-3 px-4 font-medium">Jira Story</th>
-                  <th className="py-3 px-4 font-medium text-right">Actions</th>
+                <tr className="border-b border-slate-200 bg-slate-50/80 text-slate-500 font-sans text-xs font-semibold uppercase tracking-wider">
+                  <th className="py-3.5 px-4 font-semibold">Suite Name</th>
+                  <th className="py-3.5 px-4 font-semibold">Steps / Browser</th>
+                  <th className="py-3.5 px-4 font-semibold">Status</th>
+                  <th className="py-3.5 px-4 font-semibold">Last Run</th>
+                  <th className="py-3.5 px-4 font-semibold">Jira Story</th>
+                  <th className="py-3.5 px-4 font-semibold text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 font-sans">
@@ -196,49 +196,49 @@ export const DashboardCards: React.FC<DashboardProps> = ({
                       onClick={() => onOpenSuiteInBuilder(suite.id)}
                     >
                       {/* Name & Description */}
-                      <td className="py-3 px-4">
-                        <div className="font-semibold text-slate-900 group-hover:text-indigo-600 transition-colors">
+                      <td className="py-3.5 px-4">
+                        <div className="font-semibold text-slate-900 group-hover:text-indigo-600 transition-colors text-sm">
                           {suite.name}
                         </div>
-                        <div className="text-[11px] text-slate-500 truncate max-w-sm mt-0.5">
+                        <div className="text-xs text-slate-500 truncate max-w-sm mt-0.5">
                           {suite.description}
                         </div>
                       </td>
 
                       {/* Steps & Browser Icon */}
-                      <td className="py-3 px-4 font-mono text-xs text-slate-500">
-                        <span className="text-slate-700">{suite.nodes.length} steps</span>
+                      <td className="py-3.5 px-4 font-sans text-xs text-slate-600">
+                        <span className="font-medium text-slate-800">{suite.nodes.length} steps</span>
                         <span className="text-slate-400"> · </span>
                         <span className="capitalize">{suite.targetBrowser}</span>
                       </td>
 
                       {/* Status indicator */}
-                      <td className="py-3 px-4">
+                      <td className="py-3.5 px-4">
                         {isAttention ? (
-                          <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-700 font-mono text-[11px]">
+                          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-700 font-sans text-xs font-medium">
                             <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0" />
-                            <span className="font-medium">Needs attention</span>
+                            <span>Needs attention</span>
                           </div>
                         ) : (
-                          <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 font-mono text-[11px]">
+                          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 font-sans text-xs font-medium">
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
-                            <span className="font-medium">Passing</span>
+                            <span>Passing</span>
                           </div>
                         )}
                       </td>
 
                       {/* Last run timestamp */}
-                      <td className="py-3 px-4 font-mono text-xs text-slate-500 tabular-nums">
+                      <td className="py-3.5 px-4 font-sans text-xs text-slate-500 tabular-nums">
                         {suite.lastRunTime || 'Awaiting run'}
                       </td>
 
                       {/* Jira Story key */}
-                      <td className="py-3 px-4 font-mono text-xs text-indigo-600 font-medium">
+                      <td className="py-3.5 px-4 font-sans text-xs text-indigo-600 font-semibold">
                         {suite.jiraIssue || '—'}
                       </td>
 
                       {/* Actions */}
-                      <td className="py-3 px-4 text-right">
+                      <td className="py-3.5 px-4 text-right">
                         <div
                           className="flex items-center justify-end gap-1.5"
                           onClick={(e) => e.stopPropagation()}
@@ -246,25 +246,25 @@ export const DashboardCards: React.FC<DashboardProps> = ({
                           {isAttention && (
                             <button
                               onClick={onOpenCopilot}
-                              className="px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 text-[11px] font-mono transition-colors flex items-center gap-1 cursor-pointer"
+                              className="px-2.5 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 text-xs font-sans font-medium transition-colors flex items-center gap-1 cursor-pointer"
                               title="Diagnose in QA Copilot"
                             >
-                              <Sparkles className="w-3 h-3 text-indigo-600" />
+                              <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
                               <span>Diagnose</span>
                             </button>
                           )}
                           <button
                             onClick={() => onTriggerQuickRun(suite.id)}
                             disabled={isRunning}
-                            className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200 text-[11px] font-mono transition-colors flex items-center gap-1 cursor-pointer font-medium"
+                            className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200 text-xs font-sans font-semibold transition-colors flex items-center gap-1 cursor-pointer"
                             title="Execute Test Sequence"
                           >
-                            <Play className="w-3 h-3 text-indigo-600 fill-current" />
+                            <Play className="w-3.5 h-3.5 text-indigo-600 fill-current" />
                             <span>Run</span>
                           </button>
                           <button
                             onClick={() => onOpenSuiteInBuilder(suite.id)}
-                            className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 border border-slate-200 text-[11px] font-mono transition-colors cursor-pointer"
+                            className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 border border-slate-200 text-xs font-sans font-medium transition-colors cursor-pointer"
                             title="Open in Visual Builder"
                           >
                             Edit
