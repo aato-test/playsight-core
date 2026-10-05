@@ -1,0 +1,6 @@
+{
+  "name": "PlaySight Core",
+  "description": "AI-powered test automation platform and Collaborative Quality Workspace with Visual Builder, Jira Kanban traceability, and QA Copilot.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
