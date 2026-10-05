@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { X, Globe, Layers, ArrowRight, Play } from 'lucide-react';
+import { X, Layers, ArrowRight } from 'lucide-react';
 import { TestSuite } from '../types';
+import { BrowserSelector, BrowserEngine } from './BrowserSelector';
 
 interface CreateWorkflowModalProps {
   isOpen: boolean;
@@ -14,7 +15,7 @@ export const CreateWorkflowModal: React.FC<CreateWorkflowModalProps> = ({
   onCreateWorkflow,
 }) => {
   const [name, setName] = useState('Checkout Payment Regression');
-  const [browser, setBrowser] = useState<'chromium' | 'firefox' | 'webkit'>('chromium');
+  const [browser, setBrowser] = useState<BrowserEngine>('chromium');
   const [environment, setEnvironment] = useState<'local' | 'staging' | 'production'>('staging');
   const [startingUrl, setStartingUrl] = useState('https://staging.app.example.com/checkout');
 
@@ -65,20 +66,22 @@ export const CreateWorkflowModal: React.FC<CreateWorkflowModalProps> = ({
   return (
     <div
       id="create-workflow-modal-backdrop"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#020617]/85 backdrop-blur-xs font-sans select-none"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs font-sans select-none"
     >
-      <div className="w-full max-w-md bg-[#0F172A] border border-[#1E293B] rounded shadow-2xl p-5 space-y-4 text-xs text-[#F8FAFC]">
-        {/* Header (Section 26) */}
-        <div className="flex items-center justify-between border-b border-[#1E293B] pb-3">
+      <div className="w-full max-w-md bg-white border border-slate-200 rounded-2xl shadow-2xl p-6 space-y-4 text-xs text-slate-800">
+        {/* Header */}
+        <div className="flex items-center justify-between border-b border-slate-200 pb-3">
           <div className="flex items-center gap-2">
-            <Layers className="w-4 h-4 text-teal-400" />
-            <h3 className="font-bold text-sm text-[#F8FAFC] font-mono">
-              Create New Workflow
+            <div className="w-7 h-7 rounded-lg bg-indigo-50 border border-indigo-200 flex items-center justify-center text-indigo-600">
+              <Layers className="w-4 h-4" />
+            </div>
+            <h3 className="font-bold text-sm text-slate-900">
+              Create New Test Suite
             </h3>
           </div>
           <button
             onClick={onClose}
-            className="text-[#64748B] hover:text-[#F8FAFC] cursor-pointer"
+            className="text-slate-400 hover:text-slate-700 p-1 rounded-lg hover:bg-slate-100 cursor-pointer transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
@@ -87,45 +90,37 @@ export const CreateWorkflowModal: React.FC<CreateWorkflowModalProps> = ({
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Workflow Name */}
           <div>
-            <label className="block text-[11px] font-mono text-[#94A3B8] uppercase tracking-wider mb-1">
-              Workflow Name
+            <label className="block text-[11px] font-mono text-slate-500 uppercase tracking-wider mb-1">
+              Suite Name
             </label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g. Checkout Payment Regression"
-              className="w-full bg-[#020617] border border-[#1E293B] rounded px-3 py-2 text-xs text-[#F8FAFC] focus:border-teal-400 focus:outline-none font-medium"
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-900 focus:border-indigo-500 focus:outline-none font-medium"
               required
             />
           </div>
 
-          {/* Browser Selection */}
+          {/* Browser Selection with Logos */}
           <div>
-            <label className="block text-[11px] font-mono text-[#94A3B8] uppercase tracking-wider mb-1">
-              Target Browser
+            <label className="block text-[11px] font-mono text-slate-500 uppercase tracking-wider mb-1.5">
+              Target Browser Engine
             </label>
-            <div className="grid grid-cols-3 gap-2 font-mono">
-              {(['chromium', 'firefox', 'webkit'] as const).map((b) => (
-                <button
-                  type="button"
-                  key={b}
-                  onClick={() => setBrowser(b)}
-                  className={`py-1.5 px-2 rounded border text-xs capitalize transition-colors cursor-pointer ${
-                    browser === b
-                      ? 'bg-teal-500/20 text-teal-300 border-teal-500/50 font-semibold'
-                      : 'bg-[#020617] text-[#94A3B8] border-[#1E293B] hover:border-[#334155]'
-                  }`}
-                >
-                  {b}
-                </button>
-              ))}
+            <div className="flex">
+              <BrowserSelector
+                currentBrowser={browser}
+                onBrowserChange={setBrowser}
+                className="w-full justify-between"
+                showLabels={true}
+              />
             </div>
           </div>
 
           {/* Target Environment */}
           <div>
-            <label className="block text-[11px] font-mono text-[#94A3B8] uppercase tracking-wider mb-1">
+            <label className="block text-[11px] font-mono text-slate-500 uppercase tracking-wider mb-1">
               Environment
             </label>
             <div className="grid grid-cols-3 gap-2 font-mono">
@@ -134,10 +129,10 @@ export const CreateWorkflowModal: React.FC<CreateWorkflowModalProps> = ({
                   type="button"
                   key={env}
                   onClick={() => setEnvironment(env)}
-                  className={`py-1.5 px-2 rounded border text-xs capitalize transition-colors cursor-pointer ${
+                  className={`py-2 px-2 rounded-xl border text-xs capitalize transition-colors cursor-pointer font-medium ${
                     environment === env
-                      ? 'bg-teal-500/20 text-teal-300 border-teal-500/50 font-semibold'
-                      : 'bg-[#020617] text-[#94A3B8] border-[#1E293B] hover:border-[#334155]'
+                      ? 'bg-indigo-50 text-indigo-700 border-indigo-200 font-semibold shadow-2xs'
+                      : 'bg-slate-50 text-slate-600 border-slate-200 hover:border-slate-300'
                   }`}
                 >
                   {env}
@@ -148,7 +143,7 @@ export const CreateWorkflowModal: React.FC<CreateWorkflowModalProps> = ({
 
           {/* Starting URL */}
           <div>
-            <label className="block text-[11px] font-mono text-[#94A3B8] uppercase tracking-wider mb-1">
+            <label className="block text-[11px] font-mono text-slate-500 uppercase tracking-wider mb-1">
               Starting URL Target
             </label>
             <input
@@ -156,23 +151,23 @@ export const CreateWorkflowModal: React.FC<CreateWorkflowModalProps> = ({
               value={startingUrl}
               onChange={(e) => setStartingUrl(e.target.value)}
               placeholder="https://staging.app.example.com/checkout"
-              className="w-full bg-[#020617] border border-[#1E293B] rounded px-3 py-2 text-xs text-cyan-300 font-mono focus:border-teal-400 focus:outline-none"
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-indigo-700 font-mono focus:border-indigo-500 focus:outline-none"
               required
             />
           </div>
 
           {/* Action buttons */}
-          <div className="pt-3 border-t border-[#1E293B] flex items-center justify-end gap-2 font-mono">
+          <div className="pt-3 border-t border-slate-200 flex items-center justify-end gap-2 font-mono">
             <button
               type="button"
               onClick={onClose}
-              className="px-3 py-1.5 rounded bg-[#111827] hover:bg-[#1E293B] text-[#94A3B8] border border-[#1E293B] cursor-pointer"
+              className="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 cursor-pointer transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-3.5 py-1.5 rounded bg-teal-500 hover:bg-teal-400 text-slate-950 font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs"
+              className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs active:scale-98 transition-all"
             >
               <span>Start Building</span>
               <ArrowRight className="w-3.5 h-3.5" />

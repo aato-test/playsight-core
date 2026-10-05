@@ -463,9 +463,9 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
           }
         }
       }}
-      className="flex-1 h-full relative overflow-hidden bg-[#020617] select-none cursor-default"
+      className="flex-1 h-full relative overflow-hidden bg-slate-100/70 select-none cursor-default"
       style={{
-        backgroundImage: `radial-gradient(circle, rgba(148, 163, 184, 0.09) 1px, transparent 1px)`,
+        backgroundImage: `radial-gradient(circle, rgba(100, 116, 139, 0.22) 1px, transparent 1px)`,
         backgroundSize: '20px 20px',
         backgroundPosition: `${pan.x}px ${pan.y}px`,
       }}
@@ -645,15 +645,15 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
                 top: `${node.position.y}px`,
                 width: `${NODE_WIDTH}px`,
               }}
-              className={`absolute pointer-events-auto rounded-xl bg-slate-900 border transition-all cursor-move select-none shadow-md ${
+              className={`absolute pointer-events-auto rounded-xl bg-white border transition-all cursor-move select-none shadow-sm ${
                 isSelected
-                  ? 'border-indigo-500 ring-2 ring-indigo-500/40 shadow-xl shadow-indigo-950/50'
-                  : 'border-slate-800 hover:border-slate-700'
+                  ? 'border-indigo-600 ring-2 ring-indigo-500/25 shadow-md shadow-indigo-600/10'
+                  : 'border-slate-200 hover:border-slate-300'
               } ${
                 node.status === 'running'
-                  ? 'border-indigo-400 ring-2 ring-indigo-400/50 animate-pulse'
+                  ? 'border-indigo-500 ring-2 ring-indigo-400/40 animate-pulse'
                   : node.status === 'success'
-                  ? 'border-emerald-500/50'
+                  ? 'border-emerald-500/60'
                   : node.status === 'failed'
                   ? 'border-rose-500/60'
                   : ''
@@ -663,7 +663,7 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
               <div
                 onMouseUp={(e) => handlePortMouseUp(e, node.id)}
                 title="Input Port (drop connection here)"
-                className="absolute -left-2 top-[38px] w-4 h-4 rounded-full bg-slate-950 border-2 border-slate-600 hover:border-indigo-400 hover:scale-110 flex items-center justify-center transition-all cursor-crosshair z-30"
+                className="absolute -left-2 top-[38px] w-4 h-4 rounded-full bg-white border-2 border-slate-400 hover:border-indigo-600 hover:scale-110 flex items-center justify-center transition-all cursor-crosshair z-30 shadow-2xs"
               >
                 <div className="w-1.5 h-1.5 rounded-full bg-slate-400" />
               </div>
@@ -672,26 +672,26 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
               <div
                 onMouseDown={(e) => handlePortMouseDown(e, node.id)}
                 title="Output Port (drag to next step)"
-                className="absolute -right-2 top-[38px] w-4 h-4 rounded-full bg-slate-950 border-2 border-indigo-500 hover:border-indigo-300 hover:scale-110 flex items-center justify-center transition-all cursor-crosshair z-30"
+                className="absolute -right-2 top-[38px] w-4 h-4 rounded-full bg-white border-2 border-indigo-600 hover:border-indigo-700 hover:scale-110 flex items-center justify-center transition-all cursor-crosshair z-30 shadow-2xs"
               >
-                <div className="w-1.5 h-1.5 rounded-full bg-indigo-400" />
+                <div className="w-1.5 h-1.5 rounded-full bg-indigo-600" />
               </div>
 
               {/* Node Header */}
-              <div className="px-3.5 py-2.5 border-b border-slate-800 rounded-t-xl flex items-center justify-between bg-slate-950/60">
+              <div className="px-3.5 py-2.5 border-b border-slate-200 rounded-t-xl flex items-center justify-between bg-slate-50/80">
                 <div className="flex items-center gap-2 min-w-0">
-                  <div className={`p-1 rounded bg-[#020617] border border-[#1E293B] ${config.color}`}>
+                  <div className={`p-1 rounded-lg bg-white border border-slate-200 ${config.color} shadow-2xs`}>
                     <Icon className="w-3.5 h-3.5" />
                   </div>
                   <div className="min-w-0">
-                    <span className="text-xs font-semibold text-[#F8FAFC] truncate block">
+                    <span className="text-xs font-semibold text-slate-900 truncate block">
                       {node.title}
                     </span>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-1.5 shrink-0">
-                  <span className="text-[10px] font-mono text-[#64748B] bg-[#020617] border border-[#1E293B] px-1 py-0.2 rounded">
+                  <span className="text-[10px] font-mono text-slate-500 bg-white border border-slate-200 px-1.5 py-0.5 rounded font-medium shadow-2xs">
                     STEP 0{index + 1}
                   </span>
                 </div>
@@ -978,9 +978,9 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
             </button>
             <button
               onClick={() => handleQuickAdd('assert')}
-              className="px-2.5 py-1.5 rounded bg-[#111827] hover:bg-[#1E293B] text-[#F8FAFC] hover:text-teal-300 flex items-center gap-1.5 cursor-pointer font-mono"
+              className="px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 flex items-center gap-1.5 cursor-pointer font-mono"
             >
-              <CheckCircle2 className="w-3 h-3 text-teal-400" />
+              <CheckCircle2 className="w-3 h-3 text-emerald-600" />
               <span>Assert</span>
             </button>
           </div>
@@ -989,63 +989,63 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
         <button
           id="btn-canvas-quick-add"
           onClick={() => setIsQuickAddOpen(!isQuickAddOpen)}
-          className={`px-3 py-1.5 rounded bg-[#0F172A] hover:bg-[#1E293B] border border-[#1E293B] text-teal-300 text-xs font-mono flex items-center gap-1.5 shadow-lg cursor-pointer ${
-            isQuickAddOpen ? 'border-teal-500' : ''
+          className={`px-3 py-1.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-xs font-mono flex items-center gap-1.5 shadow-md cursor-pointer ${
+            isQuickAddOpen ? 'border-indigo-500 text-indigo-700' : ''
           }`}
           title="Add Step (Quick Add)"
         >
-          <Plus className="w-3.5 h-3.5 text-teal-400" />
+          <Plus className="w-3.5 h-3.5 text-indigo-600" />
           <span>Add Step</span>
         </button>
       </div>
 
       {/* Floating Canvas Controls (Section 16: Bottom-Right Cluster) */}
-      <div className="absolute bottom-5 right-5 z-20 flex items-center gap-1 bg-[#0F172A] border border-[#1E293B] rounded p-1 text-xs text-[#94A3B8] shadow-lg">
+      <div className="absolute bottom-5 right-5 z-20 flex items-center gap-1 bg-white border border-slate-200 rounded-xl p-1 text-xs text-slate-600 shadow-md">
         {/* Zoom Controls */}
         <button
           onClick={() => handleZoom(-0.1)}
-          className="p-1.5 hover:bg-[#1E293B] hover:text-[#F8FAFC] rounded cursor-pointer"
+          className="p-1.5 hover:bg-slate-100 hover:text-slate-900 rounded-lg cursor-pointer"
           title="Zoom Out (-)"
         >
           <ZoomOut className="w-3.5 h-3.5" />
         </button>
-        <span className="px-1.5 text-xs font-mono text-[#F8FAFC] min-w-[42px] text-center tabular-nums">
+        <span className="px-1.5 text-xs font-mono text-slate-800 min-w-[42px] text-center tabular-nums font-medium">
           {Math.round(scale * 100)}%
         </span>
         <button
           onClick={() => handleZoom(0.1)}
-          className="p-1.5 hover:bg-[#1E293B] hover:text-[#F8FAFC] rounded cursor-pointer"
+          className="p-1.5 hover:bg-slate-100 hover:text-slate-900 rounded-lg cursor-pointer"
           title="Zoom In (+)"
         >
           <ZoomIn className="w-3.5 h-3.5" />
         </button>
 
-        <div className="w-px h-4 bg-[#1E293B] mx-0.5" />
+        <div className="w-px h-4 bg-slate-200 mx-0.5" />
 
         {/* Fit to View */}
         <button
           onClick={handleFitToView}
-          className="flex items-center gap-1 px-2 py-1 hover:bg-[#1E293B] hover:text-[#F8FAFC] rounded cursor-pointer text-xs font-mono"
+          className="flex items-center gap-1 px-2 py-1 hover:bg-slate-100 hover:text-slate-900 rounded-lg cursor-pointer text-xs font-mono"
           title="Fit to View (F)"
         >
-          <Maximize2 className="w-3 h-3 text-teal-400" />
+          <Maximize2 className="w-3 h-3 text-indigo-600" />
           <span>Fit</span>
         </button>
 
         {/* Auto Layout */}
         <button
           onClick={onAutoLayout}
-          className="flex items-center gap-1 px-2 py-1 hover:bg-[#1E293B] hover:text-[#F8FAFC] rounded cursor-pointer text-xs font-mono"
+          className="flex items-center gap-1 px-2 py-1 hover:bg-slate-100 hover:text-slate-900 rounded-lg cursor-pointer text-xs font-mono"
           title="Auto Layout Nodes"
         >
-          <GitCommit className="w-3 h-3 text-cyan-400" />
+          <GitCommit className="w-3 h-3 text-blue-600" />
           <span>Layout</span>
         </button>
 
         {/* Center Canvas */}
         <button
           onClick={handleCenterCanvas}
-          className="p-1.5 hover:bg-[#1E293B] hover:text-[#F8FAFC] rounded cursor-pointer"
+          className="p-1.5 hover:bg-slate-100 hover:text-slate-900 rounded-lg cursor-pointer"
           title="Center Canvas"
         >
           <Compass className="w-3.5 h-3.5" />

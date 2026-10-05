@@ -6,6 +6,8 @@ import {
   Workflow,
   Sparkles,
   ArrowUpRight,
+  FolderGit2,
+  GitBranch,
 } from 'lucide-react';
 import { TestSuite, TestRunResult, JiraIssue } from '../types';
 
@@ -14,6 +16,7 @@ interface DashboardProps {
   testRuns: TestRunResult[];
   jiraIssues: JiraIssue[];
   currentBranch: string;
+  currentRepo?: string;
   onOpenSuiteInBuilder: (suiteId: string) => void;
   onCreateNewWorkflow: () => void;
   onTriggerQuickRun: (suiteId: string) => void;
@@ -26,6 +29,7 @@ export const DashboardCards: React.FC<DashboardProps> = ({
   suites,
   jiraIssues,
   currentBranch,
+  currentRepo = 'aato-test/playsight-core',
   onOpenSuiteInBuilder,
   onCreateNewWorkflow,
   onTriggerQuickRun,
@@ -36,17 +40,30 @@ export const DashboardCards: React.FC<DashboardProps> = ({
   return (
     <div
       id="dashboard-overview-container"
-      className="flex-1 overflow-y-auto p-6 md:p-8 space-y-6 max-w-7xl mx-auto w-full font-sans text-slate-100"
+      className="flex-1 overflow-y-auto p-6 md:p-8 space-y-6 max-w-7xl mx-auto w-full font-sans text-slate-800"
     >
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-5">
+      {/* Header with Project Repo Information */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-5">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-white">
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900">
             Good morning, Prakash
           </h1>
-          <p className="text-xs text-slate-400 mt-1">
-            Automated quality workspace · <span className="text-indigo-400 font-mono font-medium">{currentBranch}</span>
-          </p>
+          <div className="flex items-center gap-2 text-xs text-slate-500 mt-1.5 flex-wrap">
+            <span className="flex items-center gap-1 font-medium text-slate-700">
+              <FolderGit2 className="w-3.5 h-3.5 text-indigo-600" />
+              <span className="font-mono text-slate-900 font-semibold">{currentRepo}</span>
+            </span>
+            <span>·</span>
+            <span className="flex items-center gap-1 text-slate-600">
+              <GitBranch className="w-3.5 h-3.5 text-indigo-600" />
+              <span className="font-mono text-indigo-700 font-medium">{currentBranch}</span>
+            </span>
+            <span>·</span>
+            <span className="inline-flex items-center gap-1 text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full text-[10px] font-mono">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              GitHub App Connected
+            </span>
+          </div>
         </div>
 
         {/* Primary CTA */}
@@ -54,7 +71,7 @@ export const DashboardCards: React.FC<DashboardProps> = ({
           <button
             id="btn-create-new-workflow"
             onClick={onCreateNewWorkflow}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold tracking-tight transition-all shadow-md cursor-pointer active:scale-98"
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold tracking-tight transition-all shadow-xs cursor-pointer active:scale-98"
           >
             <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
             <span>Create New Suite</span>
@@ -62,81 +79,81 @@ export const DashboardCards: React.FC<DashboardProps> = ({
         </div>
       </div>
 
-      {/* Telemetry Metrics Grid */}
-      <div className="rounded-2xl border border-slate-800 bg-slate-900/60 overflow-hidden shadow-md">
-        <div className="grid grid-cols-2 md:grid-cols-5 divide-y md:divide-y-0 md:divide-x divide-slate-800">
+      {/* Telemetry Metrics Grid (Placeholder boxes preserved, fake numbers replaced with placeholders) */}
+      <div className="rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-xs">
+        <div className="grid grid-cols-2 md:grid-cols-5 divide-y md:divide-y-0 md:divide-x divide-slate-200">
           {/* Metric 1: Regression Pass Rate */}
           <div className="p-4 flex flex-col justify-between">
-            <span className="text-[11px] font-mono text-slate-400 uppercase tracking-wider">
+            <span className="text-[11px] font-mono text-slate-500 uppercase tracking-wider">
               Pass Rate
             </span>
             <div className="mt-2 flex items-baseline gap-2">
-              <span className="text-2xl md:text-3xl font-bold text-emerald-400 font-mono tabular-nums tracking-tight">
-                94.8%
+              <span className="text-2xl md:text-3xl font-bold text-slate-400 font-mono tabular-nums tracking-tight">
+                —%
               </span>
             </div>
-            <div className="mt-1 text-[11px] text-slate-500 font-mono">
-              <span className="text-emerald-400">+2.4%</span> vs previous run
+            <div className="mt-1 text-[11px] text-slate-400 font-mono">
+              Awaiting test run
             </div>
           </div>
 
           {/* Metric 2: Active Sprint Coverage */}
           <div className="p-4 flex flex-col justify-between">
-            <span className="text-[11px] font-mono text-slate-400 uppercase tracking-wider">
+            <span className="text-[11px] font-mono text-slate-500 uppercase tracking-wider">
               Sprint Coverage
             </span>
             <div className="mt-2 flex items-baseline gap-2">
-              <span className="text-2xl md:text-3xl font-bold text-white font-mono tabular-nums tracking-tight">
-                82%
+              <span className="text-2xl md:text-3xl font-bold text-slate-400 font-mono tabular-nums tracking-tight">
+                —%
               </span>
             </div>
-            <div className="mt-1 text-[11px] text-slate-500 font-mono">
-              4 of 5 stories verified
+            <div className="mt-1 text-[11px] text-slate-400 font-mono">
+              0 stories verified
             </div>
           </div>
 
           {/* Metric 3: Runner Latency */}
           <div className="p-4 flex flex-col justify-between">
-            <span className="text-[11px] font-mono text-slate-400 uppercase tracking-wider">
+            <span className="text-[11px] font-mono text-slate-500 uppercase tracking-wider">
               Runner Latency
             </span>
             <div className="mt-2 flex items-baseline gap-2">
-              <span className="text-2xl md:text-3xl font-bold text-blue-400 font-mono tabular-nums tracking-tight">
-                1.42s
+              <span className="text-2xl md:text-3xl font-bold text-slate-400 font-mono tabular-nums tracking-tight">
+                — ms
               </span>
             </div>
-            <div className="mt-1 text-[11px] text-slate-500 font-mono">
-              Chromium Playwright worker
+            <div className="mt-1 text-[11px] text-slate-400 font-mono">
+              Playwright runner idle
             </div>
           </div>
 
           {/* Metric 4: Active Workflows */}
           <div className="p-4 flex flex-col justify-between">
-            <span className="text-[11px] font-mono text-slate-400 uppercase tracking-wider">
+            <span className="text-[11px] font-mono text-slate-500 uppercase tracking-wider">
               Active Suites
             </span>
             <div className="mt-2 flex items-baseline gap-2">
-              <span className="text-2xl md:text-3xl font-bold text-white font-mono tabular-nums tracking-tight">
+              <span className="text-2xl md:text-3xl font-bold text-slate-900 font-mono tabular-nums tracking-tight">
                 {suites.length}
               </span>
             </div>
             <div className="mt-1 text-[11px] text-slate-500 font-mono">
-              Synced across repositories
+              Configured on branch
             </div>
           </div>
 
           {/* Metric 5: Blockers */}
           <div className="p-4 flex flex-col justify-between">
-            <span className="text-[11px] font-mono text-slate-400 uppercase tracking-wider">
+            <span className="text-[11px] font-mono text-slate-500 uppercase tracking-wider">
               Pending Issues
             </span>
             <div className="mt-2 flex items-baseline gap-2">
-              <span className="text-2xl md:text-3xl font-bold text-rose-400 font-mono tabular-nums tracking-tight">
+              <span className="text-2xl md:text-3xl font-bold text-slate-900 font-mono tabular-nums tracking-tight">
                 {jiraIssues.filter((i) => i.status !== 'done').length}
               </span>
             </div>
             <div className="mt-1 text-[11px] text-slate-500 font-mono">
-              Linked to Jira Cloud
+              Linked from Jira
             </div>
           </div>
         </div>
@@ -146,21 +163,21 @@ export const DashboardCards: React.FC<DashboardProps> = ({
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Workflow className="w-4 h-4 text-indigo-400" />
-            <h2 className="text-sm font-semibold tracking-tight text-white">
+            <Workflow className="w-4 h-4 text-indigo-600" />
+            <h2 className="text-sm font-semibold tracking-tight text-slate-900">
               Active Test Suites
             </h2>
           </div>
-          <span className="text-xs text-slate-400 font-mono">
+          <span className="text-xs text-slate-500 font-mono">
             {suites.length} suites active on branch
           </span>
         </div>
 
-        <div className="rounded-2xl border border-slate-800 bg-slate-900/60 overflow-hidden shadow-md">
+        <div className="rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-xs">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse text-xs">
               <thead>
-                <tr className="border-b border-slate-800 bg-slate-950/60 text-slate-400 font-mono text-[11px] uppercase tracking-wider">
+                <tr className="border-b border-slate-200 bg-slate-50/80 text-slate-500 font-mono text-[11px] uppercase tracking-wider">
                   <th className="py-3 px-4 font-medium">Suite Name</th>
                   <th className="py-3 px-4 font-medium">Steps / Browser</th>
                   <th className="py-3 px-4 font-medium">Status</th>
@@ -169,55 +186,55 @@ export const DashboardCards: React.FC<DashboardProps> = ({
                   <th className="py-3 px-4 font-medium text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/70 font-sans">
+              <tbody className="divide-y divide-slate-100 font-sans">
                 {suites.map((suite) => {
                   const isAttention = suite.status === 'needs_attention';
                   return (
                     <tr
                       key={suite.id}
-                      className="hover:bg-slate-800/40 transition-colors group cursor-pointer"
+                      className="hover:bg-slate-50/80 transition-colors group cursor-pointer"
                       onClick={() => onOpenSuiteInBuilder(suite.id)}
                     >
                       {/* Name & Description */}
                       <td className="py-3 px-4">
-                        <div className="font-semibold text-white group-hover:text-indigo-300 transition-colors">
+                        <div className="font-semibold text-slate-900 group-hover:text-indigo-600 transition-colors">
                           {suite.name}
                         </div>
-                        <div className="text-[11px] text-slate-400 truncate max-w-sm mt-0.5">
+                        <div className="text-[11px] text-slate-500 truncate max-w-sm mt-0.5">
                           {suite.description}
                         </div>
                       </td>
 
                       {/* Steps & Browser Icon */}
-                      <td className="py-3 px-4 font-mono text-xs text-slate-400">
-                        <span className="text-slate-200">{suite.nodes.length} steps</span>
-                        <span className="text-slate-600"> · </span>
+                      <td className="py-3 px-4 font-mono text-xs text-slate-500">
+                        <span className="text-slate-700">{suite.nodes.length} steps</span>
+                        <span className="text-slate-400"> · </span>
                         <span className="capitalize">{suite.targetBrowser}</span>
                       </td>
 
                       {/* Status indicator */}
                       <td className="py-3 px-4">
                         {isAttention ? (
-                          <div className="inline-flex items-center gap-1.5 text-amber-400 font-mono text-xs">
-                            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0" />
+                          <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-700 font-mono text-[11px]">
+                            <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0" />
                             <span className="font-medium">Needs attention</span>
                           </div>
                         ) : (
-                          <div className="inline-flex items-center gap-1.5 text-emerald-400 font-mono text-xs">
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />
+                          <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 font-mono text-[11px]">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
                             <span className="font-medium">Passing</span>
                           </div>
                         )}
                       </td>
 
                       {/* Last run timestamp */}
-                      <td className="py-3 px-4 font-mono text-xs text-slate-400 tabular-nums">
-                        {suite.lastRunTime || 'Just now'}
+                      <td className="py-3 px-4 font-mono text-xs text-slate-500 tabular-nums">
+                        {suite.lastRunTime || 'Awaiting run'}
                       </td>
 
                       {/* Jira Story key */}
-                      <td className="py-3 px-4 font-mono text-xs text-indigo-300">
-                        {suite.jiraIssue || 'CHK-184'}
+                      <td className="py-3 px-4 font-mono text-xs text-indigo-600 font-medium">
+                        {suite.jiraIssue || '—'}
                       </td>
 
                       {/* Actions */}
@@ -229,25 +246,25 @@ export const DashboardCards: React.FC<DashboardProps> = ({
                           {isAttention && (
                             <button
                               onClick={onOpenCopilot}
-                              className="px-2.5 py-1 rounded-lg bg-indigo-950/50 hover:bg-indigo-900/50 text-indigo-300 border border-indigo-500/30 text-[11px] font-mono transition-colors flex items-center gap-1 cursor-pointer"
+                              className="px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 text-[11px] font-mono transition-colors flex items-center gap-1 cursor-pointer"
                               title="Diagnose in QA Copilot"
                             >
-                              <Sparkles className="w-3 h-3 text-indigo-400" />
+                              <Sparkles className="w-3 h-3 text-indigo-600" />
                               <span>Diagnose</span>
                             </button>
                           )}
                           <button
                             onClick={() => onTriggerQuickRun(suite.id)}
                             disabled={isRunning}
-                            className="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-white text-[11px] font-mono transition-colors flex items-center gap-1 cursor-pointer"
+                            className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200 text-[11px] font-mono transition-colors flex items-center gap-1 cursor-pointer font-medium"
                             title="Execute Test Sequence"
                           >
-                            <Play className="w-3 h-3 text-indigo-400 fill-current" />
+                            <Play className="w-3 h-3 text-indigo-600 fill-current" />
                             <span>Run</span>
                           </button>
                           <button
                             onClick={() => onOpenSuiteInBuilder(suite.id)}
-                            className="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-[11px] font-mono transition-colors cursor-pointer"
+                            className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 border border-slate-200 text-[11px] font-mono transition-colors cursor-pointer"
                             title="Open in Visual Builder"
                           >
                             Edit
@@ -263,61 +280,61 @@ export const DashboardCards: React.FC<DashboardProps> = ({
         </div>
       </div>
 
-      {/* Telemetry Secondary Grid: Recent Diagnostics & Jira Linkage */}
+      {/* Telemetry Secondary Grid: Recent Diagnostics & Jira Linkage (Placeholder Boxes Preserved) */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Diagnostic Alert Box */}
-        <div className="p-4 rounded-2xl border border-slate-800 bg-slate-900/60 flex flex-col justify-between shadow-md">
+        <div className="p-4 rounded-2xl border border-slate-200 bg-white flex flex-col justify-between shadow-xs">
           <div>
-            <div className="flex items-center justify-between text-xs text-slate-400">
+            <div className="flex items-center justify-between text-xs text-slate-500">
               <span className="font-mono uppercase tracking-wider">Active Failure Diagnostic</span>
-              <span className="text-rose-400 font-mono text-[11px]">1 failed step</span>
+              <span className="text-slate-400 font-mono text-[11px]">0 active failures</span>
             </div>
             <div className="mt-3">
-              <div className="text-xs font-semibold text-white">
-                Checkout & Payment Gateway · Step 02 (Click)
+              <div className="text-xs font-semibold text-slate-900">
+                Diagnostics Standby
               </div>
-              <div className="mt-1 text-xs text-slate-300 font-mono bg-slate-950/70 p-2.5 rounded-xl border border-slate-800">
-                Element <span className="text-rose-400">[data-testid="checkout-submit"]</span> not found within 6000ms.
+              <div className="mt-1 text-xs text-slate-600 font-sans bg-slate-50 p-3 rounded-xl border border-slate-200 leading-relaxed">
+                No active failure diagnostics. Run a test suite to inspect Playwright execution traces, console logs, and selector auto-healing diffs.
               </div>
             </div>
           </div>
-          <div className="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between">
-            <span className="text-[11px] text-slate-500 font-mono">
-              Auto-heal available (97% match)
+          <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+            <span className="text-[11px] text-slate-400 font-mono">
+              Diagnostics ready
             </span>
             <button
               onClick={onOpenCopilot}
-              className="text-xs font-mono text-indigo-400 hover:text-indigo-300 flex items-center gap-1 cursor-pointer"
+              className="text-xs font-mono text-indigo-600 hover:text-indigo-800 flex items-center gap-1 cursor-pointer font-medium"
             >
-              <span>Review Diff in Copilot</span>
+              <span>Open QA Copilot</span>
               <ArrowUpRight className="w-3 h-3" />
             </button>
           </div>
         </div>
 
         {/* Traceability Linkage Box */}
-        <div className="p-4 rounded-2xl border border-slate-800 bg-slate-900/60 flex flex-col justify-between shadow-md">
+        <div className="p-4 rounded-2xl border border-slate-200 bg-white flex flex-col justify-between shadow-xs">
           <div>
-            <div className="flex items-center justify-between text-xs text-slate-400">
+            <div className="flex items-center justify-between text-xs text-slate-500">
               <span className="font-mono uppercase tracking-wider">Jira Sprint Traceability</span>
-              <span className="text-indigo-400 font-mono text-[11px]">CHK-184 Linked</span>
+              <span className="text-indigo-600 font-mono text-[11px]">Traceability Ready</span>
             </div>
             <div className="mt-3 space-y-1.5">
-              <div className="text-xs font-semibold text-white">
-                CHK-184: Checkout payment succeeds
+              <div className="text-xs font-semibold text-slate-900">
+                Sprint Requirement Coverage
               </div>
-              <p className="text-[11px] text-slate-400 leading-relaxed">
-                Linked sequence `Checkout & Payment Gateway` has 92% step coverage and 88% assertion coverage.
+              <p className="text-[11px] text-slate-600 leading-relaxed bg-slate-50 p-3 rounded-xl border border-slate-200">
+                Connect PlaySight test suites with Jira user stories in Settings → Integrations or the Traceability view to monitor requirement test coverage.
               </p>
             </div>
           </div>
-          <div className="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between">
-            <span className="text-[11px] text-slate-500 font-mono">
-              Status: In QA · Assigned to Prakash S.
+          <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+            <span className="text-[11px] text-slate-400 font-mono">
+              Awaiting issue link
             </span>
             <button
               onClick={onNavigateToTraceability}
-              className="text-xs font-mono text-indigo-400 hover:text-indigo-300 flex items-center gap-1 cursor-pointer"
+              className="text-xs font-mono text-indigo-600 hover:text-indigo-800 flex items-center gap-1 cursor-pointer font-medium"
             >
               <span>View Traceability Matrix</span>
               <ArrowUpRight className="w-3 h-3" />

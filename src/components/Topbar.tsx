@@ -15,6 +15,7 @@ import {
 import { ActiveTab, TestSuite, BranchInfo, TestRunResult } from '../types';
 import { UserAvatar } from './UserAvatar';
 import { useClickOutside } from '../utils/useClickOutside';
+import { BrowserSelector, BrowserEngine } from './BrowserSelector';
 
 interface TopbarProps {
   activeTab: ActiveTab;
@@ -89,35 +90,35 @@ export const Topbar: React.FC<TopbarProps> = ({
   return (
     <header
       id="app-topbar"
-      className="h-13 bg-slate-950 border-b border-slate-800 px-4 flex items-center justify-between z-20 shrink-0 select-none text-slate-100 font-sans"
+      className="h-13 bg-white border-b border-slate-200 px-4 flex items-center justify-between z-20 shrink-0 select-none text-slate-800 font-sans shadow-2xs"
     >
       {/* Left: Workspace / Repository / Branch Selectors */}
       <div className="flex items-center gap-3">
         {/* Workspace Brand / Breadcrumb */}
         <div className="hidden sm:flex items-center gap-1.5 text-xs">
-          <span className="text-slate-400 font-medium">PlaySight</span>
-          <span className="text-slate-600">/</span>
+          <span className="text-slate-500 font-semibold tracking-tight">PlaySight</span>
+          <span className="text-slate-300">/</span>
         </div>
 
         {/* GitHub Repository Dropdown */}
         <div ref={repoRef} className="relative">
           <button
             onClick={() => setIsRepoMenuOpen(!isRepoMenuOpen)}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-slate-700 text-xs transition-colors cursor-pointer text-slate-200"
-            title="Switch GitHub Repository"
+            className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200/70 border border-slate-200 text-xs transition-colors cursor-pointer text-slate-800 font-medium shadow-2xs"
+            title="Active GitHub Repository"
           >
-            <FolderGit2 className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
-            <span className="font-mono text-xs font-medium text-slate-200 truncate max-w-[140px] md:max-w-[180px]">
+            <FolderGit2 className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+            <span className="font-mono text-xs font-semibold text-slate-800 truncate max-w-[150px] md:max-w-[200px]">
               {currentRepo}
             </span>
-            <ChevronDown className="w-3 h-3 text-slate-500" />
+            <ChevronDown className="w-3 h-3 text-slate-400" />
           </button>
 
           {isRepoMenuOpen && (
-            <div className="absolute left-0 top-full mt-1.5 w-72 bg-slate-900 border border-slate-800 rounded-xl shadow-2xl py-1 z-50 text-xs">
-              <div className="px-3 py-1.5 text-[10px] font-mono text-slate-400 uppercase tracking-wider border-b border-slate-800 flex items-center justify-between">
+            <div className="absolute left-0 top-full mt-1.5 w-76 bg-white border border-slate-200 rounded-xl shadow-xl py-1 z-50 text-xs">
+              <div className="px-3 py-1.5 text-[10px] font-mono text-slate-500 uppercase tracking-wider border-b border-slate-100 flex items-center justify-between">
                 <span>Connected Repositories</span>
-                <span className="text-indigo-400 font-medium">GitHub App</span>
+                <span className="text-indigo-600 font-semibold">GitHub App</span>
               </div>
               <div className="max-h-56 overflow-y-auto py-1">
                 {(repositories.length > 0
@@ -130,27 +131,27 @@ export const Topbar: React.FC<TopbarProps> = ({
                       onSelectRepo?.(r.fullName);
                       setIsRepoMenuOpen(false);
                     }}
-                    className={`w-full text-left px-3 py-2 flex items-center justify-between hover:bg-slate-800/70 transition-colors cursor-pointer ${
-                      r.fullName === currentRepo ? 'bg-indigo-950/40 text-indigo-300 font-medium' : 'text-slate-300'
+                    className={`w-full text-left px-3 py-2 flex items-center justify-between hover:bg-slate-50 transition-colors cursor-pointer ${
+                      r.fullName === currentRepo ? 'bg-indigo-50/70 text-indigo-700 font-semibold' : 'text-slate-700'
                     }`}
                   >
                     <div className="truncate">
                       <div className="font-mono text-xs">{r.fullName}</div>
                       <div className="text-[10px] text-slate-500">Default: {r.defaultBranch}</div>
                     </div>
-                    {r.fullName === currentRepo && <Check className="w-3.5 h-3.5 text-indigo-400 shrink-0" />}
+                    {r.fullName === currentRepo && <Check className="w-3.5 h-3.5 text-indigo-600 shrink-0" />}
                   </button>
                 ))}
               </div>
-              <div className="p-2 border-t border-slate-800 bg-slate-950/60">
+              <div className="p-2 border-t border-slate-100 bg-slate-50/80">
                 <button
                   onClick={() => {
                     setIsRepoMenuOpen(false);
                     onNavigateToTab?.('integrations');
                   }}
-                  className="w-full py-1.5 px-2 rounded-lg bg-indigo-600/10 hover:bg-indigo-600/20 text-indigo-300 border border-indigo-500/20 text-xs font-medium flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                  className="w-full py-1.5 px-2 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
                 >
-                  <Github className="w-3.5 h-3.5 text-indigo-400" />
+                  <Github className="w-3.5 h-3.5 text-indigo-600" />
                   <span>Connect / Manage GitHub</span>
                 </button>
               </div>
@@ -162,19 +163,19 @@ export const Topbar: React.FC<TopbarProps> = ({
         <div ref={branchRef} className="relative">
           <button
             onClick={() => setIsBranchMenuOpen(!isBranchMenuOpen)}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-slate-700 text-xs transition-colors cursor-pointer"
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200/70 border border-slate-200 text-xs transition-colors cursor-pointer shadow-2xs"
             title="Switch Git Branch"
           >
-            <GitBranch className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
-            <span className="font-mono text-xs text-indigo-300 font-medium truncate max-w-[120px] md:max-w-[160px]">
+            <GitBranch className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
+            <span className="font-mono text-xs text-indigo-700 font-semibold truncate max-w-[120px] md:max-w-[160px]">
               {currentBranch}
             </span>
-            <ChevronDown className="w-3 h-3 text-slate-500" />
+            <ChevronDown className="w-3 h-3 text-slate-400" />
           </button>
 
           {isBranchMenuOpen && (
-            <div className="absolute left-0 top-full mt-1.5 w-64 bg-slate-900 border border-slate-800 rounded-xl shadow-2xl py-1 z-50 text-xs">
-              <div className="px-3 py-1.5 text-[10px] font-mono text-slate-400 uppercase tracking-wider border-b border-slate-800">
+            <div className="absolute left-0 top-full mt-1.5 w-64 bg-white border border-slate-200 rounded-xl shadow-xl py-1 z-50 text-xs">
+              <div className="px-3 py-1.5 text-[10px] font-mono text-slate-500 uppercase tracking-wider border-b border-slate-100">
                 Discovered Branches
               </div>
               <div className="max-h-60 overflow-y-auto py-1">
@@ -185,17 +186,17 @@ export const Topbar: React.FC<TopbarProps> = ({
                       onSelectBranch(b.name);
                       setIsBranchMenuOpen(false);
                     }}
-                    className={`w-full text-left px-3 py-2 flex items-center justify-between hover:bg-slate-800/70 transition-colors cursor-pointer ${
+                    className={`w-full text-left px-3 py-2 flex items-center justify-between hover:bg-slate-50 transition-colors cursor-pointer ${
                       b.name === currentBranch
-                        ? 'bg-indigo-950/40 text-indigo-300 font-mono font-medium'
-                        : 'text-slate-300 font-mono'
+                        ? 'bg-indigo-50/70 text-indigo-700 font-mono font-semibold'
+                        : 'text-slate-700 font-mono'
                     }`}
                   >
                     <div className="truncate">
                       <div className="truncate">{b.name}</div>
                       <div className="text-[10px] text-slate-500">{b.commit} · {b.lastUpdated}</div>
                     </div>
-                    {b.name === currentBranch && <Check className="w-3.5 h-3.5 text-indigo-400 shrink-0" />}
+                    {b.name === currentBranch && <Check className="w-3.5 h-3.5 text-indigo-600 shrink-0" />}
                   </button>
                 ))}
               </div>
@@ -206,17 +207,17 @@ export const Topbar: React.FC<TopbarProps> = ({
         {/* GitHub Integration Badge */}
         <button
           onClick={() => onNavigateToTab?.('integrations')}
-          className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[11px] font-mono select-none cursor-pointer bg-slate-900 border-slate-800 hover:border-slate-700 text-slate-300"
+          className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[11px] font-mono select-none cursor-pointer bg-slate-50 border-slate-200 hover:bg-slate-100 text-slate-700 transition-colors"
           title="View GitHub Integration Status"
         >
-          <Github className="w-3 h-3 text-slate-400" />
+          <Github className="w-3 h-3 text-slate-600" />
           <span>GitHub:</span>
           <span
             className={`w-1.5 h-1.5 rounded-full ${
-              githubConnected ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'
+              githubConnected ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'
             }`}
           />
-          <span className={githubConnected ? 'text-emerald-400' : 'text-amber-400'}>
+          <span className={githubConnected ? 'text-emerald-700 font-medium' : 'text-amber-700 font-medium'}>
             {githubConnected ? 'Connected' : 'Setup'}
           </span>
         </button>
@@ -225,8 +226,8 @@ export const Topbar: React.FC<TopbarProps> = ({
         <div
           className={`hidden xl:flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[11px] font-mono select-none ${
             isBackendConnected
-              ? 'bg-emerald-950/40 text-emerald-400 border-emerald-500/30'
-              : 'bg-slate-900 text-slate-400 border-slate-800'
+              ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+              : 'bg-slate-100 text-slate-600 border-slate-200'
           }`}
           title={
             isBackendConnected
@@ -236,7 +237,7 @@ export const Topbar: React.FC<TopbarProps> = ({
         >
           <span
             className={`w-1.5 h-1.5 rounded-full ${
-              isBackendConnected ? 'bg-emerald-400 animate-pulse' : 'bg-slate-500'
+              isBackendConnected ? 'bg-emerald-500 animate-pulse' : 'bg-slate-400'
             }`}
           />
           <span>{isBackendConnected ? `API: ${backendMode.toUpperCase()}` : 'STANDALONE'}</span>
@@ -249,17 +250,17 @@ export const Topbar: React.FC<TopbarProps> = ({
         <div ref={envRef} className="relative">
           <button
             onClick={() => setIsEnvMenuOpen(!isEnvMenuOpen)}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-slate-700 text-xs text-slate-300 transition-colors cursor-pointer"
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200/70 border border-slate-200 text-xs text-slate-700 transition-colors cursor-pointer shadow-2xs font-medium"
             title="Active Environment"
           >
-            <Server className="w-3.5 h-3.5 text-blue-400" />
-            <span className="capitalize text-xs font-mono text-slate-200">{currentEnvironment}</span>
-            <ChevronDown className="w-3 h-3 text-slate-500" />
+            <Server className="w-3.5 h-3.5 text-blue-600" />
+            <span className="capitalize text-xs font-mono text-slate-800">{currentEnvironment}</span>
+            <ChevronDown className="w-3 h-3 text-slate-400" />
           </button>
 
           {isEnvMenuOpen && (
-            <div className="absolute right-0 top-full mt-1.5 w-44 bg-slate-900 border border-slate-800 rounded-xl shadow-2xl py-1 z-50 text-xs font-mono">
-              <div className="px-3 py-1.5 text-[10px] text-slate-400 uppercase tracking-wider border-b border-slate-800">
+            <div className="absolute right-0 top-full mt-1.5 w-44 bg-white border border-slate-200 rounded-xl shadow-xl py-1 z-50 text-xs font-mono">
+              <div className="px-3 py-1.5 text-[10px] text-slate-500 uppercase tracking-wider border-b border-slate-100">
                 Target Environment
               </div>
               {(['local', 'staging', 'production'] as const).map((env) => (
@@ -269,45 +270,34 @@ export const Topbar: React.FC<TopbarProps> = ({
                     onEnvironmentChange(env);
                     setIsEnvMenuOpen(false);
                   }}
-                  className={`w-full text-left px-3 py-2 flex items-center justify-between hover:bg-slate-800/70 cursor-pointer ${
-                    currentEnvironment === env ? 'text-indigo-300 font-medium' : 'text-slate-300'
+                  className={`w-full text-left px-3 py-2 flex items-center justify-between hover:bg-slate-50 cursor-pointer ${
+                    currentEnvironment === env ? 'text-indigo-600 font-semibold bg-indigo-50/50' : 'text-slate-700'
                   }`}
                 >
                   <span className="capitalize">{env}</span>
-                  {currentEnvironment === env && <Check className="w-3.5 h-3.5 text-indigo-400" />}
+                  {currentEnvironment === env && <Check className="w-3.5 h-3.5 text-indigo-600" />}
                 </button>
               ))}
             </div>
           )}
         </div>
 
-        {/* Browser Selector Indicator (Chromium / Firefox / WebKit) */}
-        <div className="flex items-center bg-slate-900 border border-slate-800 rounded-lg p-0.5 text-xs font-mono">
-          {(['chromium', 'firefox', 'webkit'] as const).map((b) => (
-            <button
-              key={b}
-              onClick={() => onBrowserChange(b)}
-              className={`px-2 py-1 rounded-md text-[11px] capitalize transition-colors cursor-pointer ${
-                currentSuite.targetBrowser === b
-                  ? 'bg-indigo-600 text-white font-medium shadow-xs'
-                  : 'text-slate-400 hover:text-slate-200'
-              }`}
-              title={`Switch test runner to ${b}`}
-            >
-              {b}
-            </button>
-          ))}
-        </div>
+        {/* 3 Browser Engines Logo Selector (Chromium / Firefox / WebKit) */}
+        <BrowserSelector
+          currentBrowser={currentSuite.targetBrowser as BrowserEngine}
+          onBrowserChange={onBrowserChange}
+          showLabels={false}
+        />
 
         {/* Global Search Shortcut (⌘K) */}
         <button
           onClick={onOpenCommandPalette}
-          className="hidden md:flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-slate-700 text-xs text-slate-400 hover:text-slate-200 transition-colors cursor-pointer"
+          className="hidden md:flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200/70 border border-slate-200 text-xs text-slate-500 hover:text-slate-800 transition-colors cursor-pointer shadow-2xs"
           title="Open Command Palette (⌘K)"
         >
           <Search className="w-3.5 h-3.5 text-slate-400" />
           <span className="text-xs">Search...</span>
-          <kbd className="font-mono text-[10px] bg-slate-850 text-slate-400 px-1.5 py-0.5 rounded border border-slate-800">
+          <kbd className="font-mono text-[10px] bg-white text-slate-500 px-1.5 py-0.5 rounded border border-slate-200 shadow-2xs">
             ⌘K
           </kbd>
         </button>
@@ -316,36 +306,36 @@ export const Topbar: React.FC<TopbarProps> = ({
         <div ref={notifRef} className="relative">
           <button
             onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
-            className="p-2 rounded-lg bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-400 hover:text-slate-200 transition-colors cursor-pointer relative"
+            className="p-2 rounded-lg bg-slate-100 hover:bg-slate-200/70 border border-slate-200 text-slate-600 hover:text-slate-900 transition-colors cursor-pointer relative shadow-2xs"
             title="Notifications"
             aria-label="Notifications"
           >
             <Bell className="w-3.5 h-3.5" />
             {hasFailure && (
-              <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-rose-500 ring-2 ring-slate-950" />
+              <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-rose-500 ring-2 ring-white" />
             )}
           </button>
 
           {isNotificationsOpen && (
-            <div className="absolute right-0 top-full mt-1.5 w-76 bg-slate-900 border border-slate-800 rounded-xl shadow-2xl p-2.5 z-50 text-xs">
-              <div className="px-2 py-1.5 text-[10px] font-mono text-slate-400 uppercase tracking-wider border-b border-slate-800">
+            <div className="absolute right-0 top-full mt-1.5 w-76 bg-white border border-slate-200 rounded-xl shadow-xl p-2.5 z-50 text-xs">
+              <div className="px-2 py-1.5 text-[10px] font-mono text-slate-500 uppercase tracking-wider border-b border-slate-100">
                 Recent Executions
               </div>
               <div className="space-y-1.5 pt-2 max-h-64 overflow-y-auto">
                 {recentRuns.map((run) => (
                   <div
                     key={run.id}
-                    className="p-2.5 rounded-lg bg-slate-950/70 border border-slate-800 text-[11px]"
+                    className="p-2.5 rounded-lg bg-slate-50 border border-slate-200 text-[11px]"
                   >
                     <div className="flex items-center justify-between">
-                      <span className="font-semibold text-slate-200 truncate">
+                      <span className="font-semibold text-slate-800 truncate">
                         {run.suiteName}
                       </span>
                       <span
-                        className={`font-mono text-[10px] px-1.5 py-0.2 rounded ${
+                        className={`font-mono text-[10px] px-1.5 py-0.2 rounded font-medium ${
                           run.status === 'passed'
-                            ? 'bg-emerald-950/50 text-emerald-400'
-                            : 'bg-rose-950/50 text-rose-400'
+                            ? 'bg-emerald-100 text-emerald-800'
+                            : 'bg-rose-100 text-rose-800'
                         }`}
                       >
                         {run.status.toUpperCase()}
@@ -364,12 +354,12 @@ export const Topbar: React.FC<TopbarProps> = ({
         {/* QA Copilot Shortcut Button (⌘J) */}
         <button
           onClick={onOpenCopilot}
-          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-indigo-950/50 hover:bg-indigo-900/50 text-indigo-300 border border-indigo-500/30 text-xs font-medium transition-colors cursor-pointer"
+          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 text-xs font-semibold transition-colors cursor-pointer shadow-2xs"
           title="Open QA Copilot Diagnostics (⌘J)"
         >
-          <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
+          <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
           <span className="hidden sm:inline">Copilot</span>
-          <kbd className="font-mono text-[10px] bg-slate-950 px-1 py-0.2 rounded border border-indigo-500/30 text-indigo-300">
+          <kbd className="font-mono text-[10px] bg-white px-1 py-0.2 rounded border border-indigo-200 text-indigo-700 shadow-2xs">
             ⌘J
           </kbd>
         </button>
@@ -378,10 +368,10 @@ export const Topbar: React.FC<TopbarProps> = ({
         <button
           onClick={onRunTest}
           disabled={isRunning}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold font-mono tracking-tight transition-all cursor-pointer shadow-sm ${
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold font-mono tracking-tight transition-all cursor-pointer shadow-xs ${
             isRunning
-              ? 'bg-amber-500 text-slate-950 cursor-wait'
-              : 'bg-indigo-600 hover:bg-indigo-500 text-white active:scale-98'
+              ? 'bg-amber-500 text-white cursor-wait'
+              : 'bg-indigo-600 hover:bg-indigo-700 text-white active:scale-98'
           }`}
           title="Run Sequence (⌘Enter)"
         >
@@ -401,7 +391,7 @@ export const Topbar: React.FC<TopbarProps> = ({
         {/* Google Account & Import Button */}
         <button
           onClick={onOpenGoogleAuth}
-          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 hover:border-slate-700 text-xs font-medium transition-colors cursor-pointer"
+          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 text-xs font-medium transition-colors cursor-pointer shadow-2xs"
           title="Google Workspace & Sheets Import"
         >
           {/* Google G SVG */}
@@ -423,17 +413,17 @@ export const Topbar: React.FC<TopbarProps> = ({
               d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
             />
           </svg>
-          <span className="hidden md:inline font-mono text-[11px]">
-            {isGoogleSignedIn ? 'Google Import' : 'Sign in'}
+          <span className="hidden md:inline font-mono text-[11px] text-slate-700">
+            {isGoogleSignedIn ? 'Google' : 'Sign in'}
           </span>
           {isGoogleSignedIn && (
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
           )}
         </button>
 
         {/* User Avatar */}
         <div
-          className="pl-1 border-l border-slate-800 cursor-pointer"
+          className="pl-1 border-l border-slate-200 cursor-pointer"
           onClick={onOpenGoogleAuth}
           title="User Profile & Google Settings"
         >

@@ -580,7 +580,7 @@ export default function App() {
   return (
     <div
       id="app-root"
-      className="flex h-screen w-screen bg-[#020617] text-[#F8FAFC] overflow-hidden font-sans antialiased"
+      className="flex h-screen w-screen bg-slate-50 text-slate-900 overflow-hidden font-sans antialiased"
     >
       {/* 1. Left Sidebar (Section 5) */}
       <Sidebar
@@ -626,18 +626,18 @@ export default function App() {
         {notification && (
           <div className="fixed top-14 right-6 z-50">
             <div
-              className={`flex items-center gap-2.5 px-3.5 py-2 rounded border shadow-xl text-xs font-mono ${
+              className={`flex items-center gap-2.5 px-3.5 py-2 rounded-xl border shadow-xl text-xs font-mono ${
                 notification.type === 'success'
-                  ? 'bg-[#0F172A] border-teal-500/50 text-teal-300'
+                  ? 'bg-white border-emerald-200 text-emerald-800 shadow-emerald-500/10'
                   : notification.type === 'error'
-                  ? 'bg-[#0F172A] border-rose-500/50 text-rose-300'
-                  : 'bg-[#0F172A] border-amber-500/50 text-amber-300'
+                  ? 'bg-white border-rose-200 text-rose-800 shadow-rose-500/10'
+                  : 'bg-white border-amber-200 text-amber-800 shadow-amber-500/10'
               }`}
             >
               {notification.type === 'success' ? (
-                <CheckCircle2 className="w-4 h-4 text-teal-400 shrink-0" />
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
               ) : (
-                <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
+                <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
               )}
               <span>{notification.message}</span>
             </div>
@@ -645,13 +645,14 @@ export default function App() {
         )}
 
         {/* 3. Main Views Routing */}
-        <main className="flex-1 overflow-hidden bg-[#020617] flex flex-col relative">
+        <main className="flex-1 overflow-hidden bg-slate-50 flex flex-col relative">
           {activeTab === 'overview' || activeTab === 'dashboard' ? (
             <DashboardCards
               suites={suites}
               testRuns={testRuns}
               jiraIssues={jiraIssues}
               currentBranch={currentBranch}
+              currentRepo={currentRepo}
               onOpenSuiteInBuilder={(suiteId) => {
                 setCurrentSuiteId(suiteId);
                 setActiveTab('workflows');
@@ -732,20 +733,20 @@ export default function App() {
             </div>
           )}
 
-          {/* Floating FAB: QA Copilot (Section 19: 48x48px circular teal button) */}
+          {/* Floating FAB: QA Copilot */}
           {!isCopilotOpen && (
             <button
               id="floating-qa-copilot-btn"
               aria-label="QA Copilot"
               onClick={() => setIsCopilotOpen(true)}
-              className="fixed bottom-6 right-6 z-40 w-12 h-12 rounded-full bg-teal-500 hover:bg-teal-400 active:scale-95 text-slate-950 shadow-xl shadow-teal-500/20 flex items-center justify-center transition-all cursor-pointer border border-teal-300/40 group"
+              className="fixed bottom-6 right-6 z-40 w-12 h-12 rounded-full bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white shadow-xl shadow-indigo-600/25 flex items-center justify-center transition-all cursor-pointer border border-indigo-400/30 group"
               title="QA Copilot · ⌘J"
             >
               <span className="relative flex items-center justify-center">
-                <Sparkles className="w-5 h-5 fill-slate-950" />
+                <Sparkles className="w-5 h-5 fill-white" />
                 {hasFailure && (
                   <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
-                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-400 border border-slate-950 animate-pulse" />
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-amber-400 border border-white animate-pulse" />
                   </span>
                 )}
               </span>
