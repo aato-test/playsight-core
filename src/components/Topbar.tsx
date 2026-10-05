@@ -19,7 +19,7 @@ import { BrowserSelector, BrowserEngine } from './BrowserSelector';
 
 interface TopbarProps {
   activeTab: ActiveTab;
-  currentSuite: TestSuite;
+  currentSuite?: TestSuite | null;
   suites: TestSuite[];
   testRuns: TestRunResult[];
   isRunning: boolean;
@@ -296,7 +296,7 @@ export const Topbar: React.FC<TopbarProps> = ({
 
         {/* 3 Browser Engines Logo Selector (Chromium / Firefox / WebKit) */}
         <BrowserSelector
-          currentBrowser={currentSuite.targetBrowser as BrowserEngine}
+          currentBrowser={(currentSuite?.targetBrowser || 'chromium') as BrowserEngine}
           onBrowserChange={onBrowserChange}
           showLabels={true}
         />
@@ -379,13 +379,15 @@ export const Topbar: React.FC<TopbarProps> = ({
         {/* Topbar Run Button */}
         <button
           onClick={onRunTest}
-          disabled={isRunning}
+          disabled={isRunning || !currentSuite}
           className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold tracking-tight transition-all cursor-pointer shadow-xs ${
             isRunning
               ? 'bg-amber-500 text-white cursor-wait'
+              : !currentSuite
+              ? 'bg-slate-200 text-slate-400 cursor-not-allowed shadow-none'
               : 'bg-indigo-600 hover:bg-indigo-700 text-white active:scale-98'
           }`}
-          title="Run Sequence (⌘Enter)"
+          title={!currentSuite ? 'No test suite selected for this repo' : 'Run Sequence (⌘Enter)'}
         >
           {isRunning ? (
             <>

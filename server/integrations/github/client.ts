@@ -1,4 +1,5 @@
 import { generateAppJwt, isGitHubAppConfigured } from './app';
+import { env } from '../../env';
 
 interface CachedToken {
   token: string;
@@ -13,6 +14,10 @@ export async function getInstallationAccessToken(installationId: number): Promis
   // Cache with 2-minute safety window
   if (cached && cached.expiresAt > Date.now() + 120_000) {
     return cached.token;
+  }
+
+  if (env.githubToken) {
+    return env.githubToken;
   }
 
   if (!isGitHubAppConfigured()) {
@@ -54,6 +59,8 @@ export async function githubApiFetch<T>(
   if (installationId) {
     const token = await getInstallationAccessToken(installationId);
     authHeader = `token ${token}`;
+  } else if (env.githubToken) {
+    authHeader = `token ${env.githubToken}`;
   } else if (isGitHubAppConfigured()) {
     const jwt = generateAppJwt();
     authHeader = `Bearer ${jwt}`;

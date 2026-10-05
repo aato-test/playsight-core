@@ -137,7 +137,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <span className="text-slate-500 tabular-nums">{suites.length}</span>
           </div>
           <div className="space-y-1">
-            {suites.map((suite) => {
+            {suites.length === 0 ? (
+              <div className="px-2 py-3 text-center rounded-lg bg-slate-50 border border-slate-100 my-1">
+                <p className="text-[11px] text-slate-400 font-sans">No suites for this repo</p>
+              </div>
+            ) : (
+              suites.map((suite) => {
               const isSelected =
                 suite.id === currentSuiteId && (activeTab === 'workflows' || activeTab === 'builder');
               return (
@@ -169,8 +174,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   </span>
                 </button>
               );
-            })}
-          </div>
+            })
+          )}
+        </div>
         </div>
 
         {/* Lower Section: Workspace Settings & Environments */}

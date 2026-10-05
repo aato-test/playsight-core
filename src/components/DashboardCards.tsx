@@ -174,109 +174,132 @@ export const DashboardCards: React.FC<DashboardProps> = ({
         </div>
 
         <div className="rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-xs">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse text-xs">
-              <thead>
-                <tr className="border-b border-slate-200 bg-slate-50/80 text-slate-500 font-sans text-xs font-semibold uppercase tracking-wider">
-                  <th className="py-3.5 px-4 font-semibold">Suite Name</th>
-                  <th className="py-3.5 px-4 font-semibold">Steps / Browser</th>
-                  <th className="py-3.5 px-4 font-semibold">Status</th>
-                  <th className="py-3.5 px-4 font-semibold">Last Run</th>
-                  <th className="py-3.5 px-4 font-semibold">Jira Story</th>
-                  <th className="py-3.5 px-4 font-semibold text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 font-sans">
-                {suites.map((suite) => {
-                  const isAttention = suite.status === 'needs_attention';
-                  return (
-                    <tr
-                      key={suite.id}
-                      className="hover:bg-slate-50/80 transition-colors group cursor-pointer"
-                      onClick={() => onOpenSuiteInBuilder(suite.id)}
-                    >
-                      {/* Name & Description */}
-                      <td className="py-3.5 px-4">
-                        <div className="font-semibold text-slate-900 group-hover:text-indigo-600 transition-colors text-sm">
-                          {suite.name}
-                        </div>
-                        <div className="text-xs text-slate-500 truncate max-w-sm mt-0.5">
-                          {suite.description}
-                        </div>
-                      </td>
-
-                      {/* Steps & Browser Icon */}
-                      <td className="py-3.5 px-4 font-sans text-xs text-slate-600">
-                        <span className="font-medium text-slate-800">{suite.nodes.length} steps</span>
-                        <span className="text-slate-400"> · </span>
-                        <span className="capitalize">{suite.targetBrowser}</span>
-                      </td>
-
-                      {/* Status indicator */}
-                      <td className="py-3.5 px-4">
-                        {isAttention ? (
-                          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-700 font-sans text-xs font-medium">
-                            <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0" />
-                            <span>Needs attention</span>
+          {suites.length === 0 ? (
+            <div className="py-16 px-6 text-center">
+              <div className="w-14 h-14 rounded-2xl bg-indigo-50 border border-indigo-200 flex items-center justify-center mx-auto mb-4 text-indigo-600 shadow-2xs">
+                <FolderGit2 className="w-7 h-7" />
+              </div>
+              <h3 className="text-base font-bold text-slate-900 font-sans">
+                No test suites created for {currentRepo}
+              </h3>
+              <p className="text-xs text-slate-500 max-w-md mx-auto mt-1.5 font-sans leading-relaxed">
+                This repository currently has no test suites. Create your first automated regression flow or test suite for <span className="font-semibold text-slate-700">{currentRepo}</span>.
+              </p>
+              <div className="mt-5">
+                <button
+                  onClick={onCreateNewWorkflow}
+                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition-all shadow-xs cursor-pointer active:scale-98"
+                >
+                  <Plus className="w-4 h-4 stroke-[2.5]" />
+                  <span>Create Test Suite for {currentRepo.split('/')[1] || currentRepo}</span>
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse text-xs">
+                <thead>
+                  <tr className="border-b border-slate-200 bg-slate-50/80 text-slate-500 font-sans text-xs font-semibold uppercase tracking-wider">
+                    <th className="py-3.5 px-4 font-semibold">Suite Name</th>
+                    <th className="py-3.5 px-4 font-semibold">Steps / Browser</th>
+                    <th className="py-3.5 px-4 font-semibold">Status</th>
+                    <th className="py-3.5 px-4 font-semibold">Last Run</th>
+                    <th className="py-3.5 px-4 font-semibold">Jira Story</th>
+                    <th className="py-3.5 px-4 font-semibold text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 font-sans">
+                  {suites.map((suite) => {
+                    const isAttention = suite.status === 'needs_attention';
+                    return (
+                      <tr
+                        key={suite.id}
+                        className="hover:bg-slate-50/80 transition-colors group cursor-pointer"
+                        onClick={() => onOpenSuiteInBuilder(suite.id)}
+                      >
+                        {/* Name & Description */}
+                        <td className="py-3.5 px-4">
+                          <div className="font-semibold text-slate-900 group-hover:text-indigo-600 transition-colors text-sm">
+                            {suite.name}
                           </div>
-                        ) : (
-                          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 font-sans text-xs font-medium">
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
-                            <span>Passing</span>
+                          <div className="text-xs text-slate-500 truncate max-w-sm mt-0.5">
+                            {suite.description}
                           </div>
-                        )}
-                      </td>
+                        </td>
 
-                      {/* Last run timestamp */}
-                      <td className="py-3.5 px-4 font-sans text-xs text-slate-500 tabular-nums">
-                        {suite.lastRunTime || 'Awaiting run'}
-                      </td>
+                        {/* Steps & Browser Icon */}
+                        <td className="py-3.5 px-4 font-sans text-xs text-slate-600">
+                          <span className="font-medium text-slate-800">{suite.nodes.length} steps</span>
+                          <span className="text-slate-400"> · </span>
+                          <span className="capitalize">{suite.targetBrowser}</span>
+                        </td>
 
-                      {/* Jira Story key */}
-                      <td className="py-3.5 px-4 font-sans text-xs text-indigo-600 font-semibold">
-                        {suite.jiraIssue || '—'}
-                      </td>
-
-                      {/* Actions */}
-                      <td className="py-3.5 px-4 text-right">
-                        <div
-                          className="flex items-center justify-end gap-1.5"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          {isAttention && (
-                            <button
-                              onClick={onOpenCopilot}
-                              className="px-2.5 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 text-xs font-sans font-medium transition-colors flex items-center gap-1 cursor-pointer"
-                              title="Diagnose in QA Copilot"
-                            >
-                              <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
-                              <span>Diagnose</span>
-                            </button>
+                        {/* Status indicator */}
+                        <td className="py-3.5 px-4">
+                          {isAttention ? (
+                            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-700 font-sans text-xs font-medium">
+                              <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0" />
+                              <span>Needs attention</span>
+                            </div>
+                          ) : (
+                            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 font-sans text-xs font-medium">
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
+                              <span>Passing</span>
+                            </div>
                           )}
-                          <button
-                            onClick={() => onTriggerQuickRun(suite.id)}
-                            disabled={isRunning}
-                            className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200 text-xs font-sans font-semibold transition-colors flex items-center gap-1 cursor-pointer"
-                            title="Execute Test Sequence"
+                        </td>
+
+                        {/* Last run timestamp */}
+                        <td className="py-3.5 px-4 font-sans text-xs text-slate-500 tabular-nums">
+                          {suite.lastRunTime || 'Awaiting run'}
+                        </td>
+
+                        {/* Jira Story key */}
+                        <td className="py-3.5 px-4 font-sans text-xs text-indigo-600 font-semibold">
+                          {suite.jiraIssue || '—'}
+                        </td>
+
+                        {/* Actions */}
+                        <td className="py-3.5 px-4 text-right">
+                          <div
+                            className="flex items-center justify-end gap-1.5"
+                            onClick={(e) => e.stopPropagation()}
                           >
-                            <Play className="w-3.5 h-3.5 text-indigo-600 fill-current" />
-                            <span>Run</span>
-                          </button>
-                          <button
-                            onClick={() => onOpenSuiteInBuilder(suite.id)}
-                            className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 border border-slate-200 text-xs font-sans font-medium transition-colors cursor-pointer"
-                            title="Open in Visual Builder"
-                          >
-                            Edit
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+                            {isAttention && (
+                              <button
+                                onClick={onOpenCopilot}
+                                className="px-2.5 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 text-xs font-sans font-medium transition-colors flex items-center gap-1 cursor-pointer"
+                                title="Diagnose in QA Copilot"
+                              >
+                                <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
+                                <span>Diagnose</span>
+                              </button>
+                            )}
+                            <button
+                              onClick={() => onTriggerQuickRun(suite.id)}
+                              disabled={isRunning}
+                              className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200 text-xs font-sans font-semibold transition-colors flex items-center gap-1 cursor-pointer"
+                              title="Execute Test Sequence"
+                            >
+                              <Play className="w-3.5 h-3.5 text-indigo-600 fill-current" />
+                              <span>Run</span>
+                            </button>
+                            <button
+                              onClick={() => onOpenSuiteInBuilder(suite.id)}
+                              className="px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 border border-slate-200 text-xs font-sans font-medium transition-colors cursor-pointer"
+                              title="Open in Visual Builder"
+                            >
+                              Edit
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       </div>
 

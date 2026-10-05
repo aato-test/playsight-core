@@ -23,6 +23,7 @@ import {
   INITIAL_COPILOT_MESSAGES,
   MOCK_TEST_HISTORY_RECORDS,
   SAMPLE_PLAYWRIGHT_TRACE,
+  ACCOUNT_REPOSITORIES,
   orderNodes,
 } from './data/mockData';
 import { validateNode } from './utils/validate';
@@ -56,7 +57,7 @@ export default function App() {
   const [currentSuiteId, setCurrentSuiteId] = useState<string>(MOCK_TEST_SUITES[0].id);
   const [testRuns, setTestRuns] = useState<TestRunResult[]>(MOCK_TEST_RUNS);
   const [jiraIssues, setJiraIssues] = useState<JiraIssue[]>(MOCK_JIRA_ISSUES);
-  const [repositories, setRepositories] = useState<GitHubRepository[]>([]);
+  const [repositories, setRepositories] = useState<GitHubRepository[]>(ACCOUNT_REPOSITORIES);
   const [currentRepo, setCurrentRepo] = useState<string>('aato-test/playsight-core');
   const [githubConnected, setGithubConnected] = useState<boolean>(true);
   const [branches, setBranches] = useState<BranchInfo[]>(MOCK_BRANCHES);
@@ -106,19 +107,11 @@ export default function App() {
           fetchGitHubRepositories(),
           fetchJiraIssues(),
         ]);
-        if (serverSuites && serverSuites.length > 0 && mounted) {
-          setSuites(serverSuites);
-          setCurrentSuiteId(serverSuites[0].id);
-        }
-        if (serverRuns && serverRuns.length > 0 && mounted) {
-          setTestRuns(serverRuns);
-        }
-        if (ghStatus && mounted) {
-          setGithubConnected(ghStatus.connected);
-        }
+        let initialRepo = currentRepo;
         if (repos && repos.length > 0 && mounted) {
           setRepositories(repos);
-          setCurrentRepo(repos[0].fullName);
+          initialRepo = repos[0].fullName;
+          setCurrentRepo(initialRepo);
           const repoBranches = await fetchGitHubBranches(repos[0].id);
           if (repoBranches && repoBranches.length > 0 && mounted) {
             setBranches(
@@ -133,6 +126,23 @@ export default function App() {
             );
             setCurrentBranch(repos[0].defaultBranch || repoBranches[0].name);
           }
+        }
+        if (serverSuites && serverSuites.length > 0 && mounted) {
+          setSuites(serverSuites);
+          const initialSuites = serverSuites.filter(
+            (s) => (s.repositoryFullName || 'aato-test/playsight-core').toLowerCase() === initialRepo.toLowerCase()
+          );
+          if (initialSuites.length > 0) {
+            setCurrentSuiteId(initialSuites[0].id);
+          } else {
+            setCurrentSuiteId('');
+          }
+        }
+        if (serverRuns && serverRuns.length > 0 && mounted) {
+          setTestRuns(serverRuns);
+        }
+        if (ghStatus && mounted) {
+          setGithubConnected(ghStatus.connected);
         }
         if (jira && jira.length > 0 && mounted) {
           setJiraIssues(jira);
@@ -162,31 +172,73 @@ export default function App() {
     setCurrentRepo(repoFullName);
     const repo = repositories.find((r) => r.fullName === repoFullName);
     if (repo) {
-      const repoBranches = await fetchGitHubBranches(repo.id);
-      if (repoBranches && repoBranches.length > 0) {
-        setBranches(
-          repoBranches.map((b) => ({
-            name: b.name,
-            commit: b.commitSha.slice(0, 7),
+      try {
+        const repoBranches = await fetchGitHubBranches(repo.id);
+        if (repoBranches && repoBranches.length > 0) {
+          setBranches(
+            repoBranches.map((b) => ({
+              name: b.name,
+              commit: b.commitSha.slice(0, 7),
+              author: repo.ownerLogin,
+              pipelineStatus: 'passed',
+              ciService: 'GitHub Actions',
+              lastUpdated: b.lastCommitAt ? 'Synced' : 'Recently',
+            }))
+          );
+          setCurrentBranch(repo.defaultBranch || repoBranches[0].name);
+        } else {
+          setBranches([
+            {
+              name: repo.defaultBranch || 'main',
+              commit: '1c54b15',
+              author: repo.ownerLogin,
+              pipelineStatus: 'passed',
+              ciService: 'GitHub Actions',
+              lastUpdated: 'Synced',
+            },
+          ]);
+          setCurrentBranch(repo.defaultBranch || 'main');
+        }
+      } catch {
+        setBranches([
+          {
+            name: repo.defaultBranch || 'main',
+            commit: '1c54b15',
             author: repo.ownerLogin,
             pipelineStatus: 'passed',
             ciService: 'GitHub Actions',
-            lastUpdated: b.lastCommitAt ? 'Synced' : 'Recently',
-          }))
-        );
-        setCurrentBranch(repo.defaultBranch || repoBranches[0].name);
+            lastUpdated: 'Synced',
+          },
+        ]);
+        setCurrentBranch(repo.defaultBranch || 'main');
       }
+    }
+    const matchingSuites = suitesRef.current.filter(
+      (s) => (s.repositoryFullName || 'aato-test/playsight-core').toLowerCase() === repoFullName.toLowerCase()
+    );
+    if (matchingSuites.length > 0) {
+      setCurrentSuiteId(matchingSuites[0].id);
+    } else {
+      setCurrentSuiteId('');
     }
     showNotification(`Switched active repository to ${repoFullName}`);
   };
 
   const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
+  // Filter test suites strictly by active repository
+  const repoSuites = suites.filter((s) => {
+    const suiteRepo = (s.repositoryFullName || 'aato-test/playsight-core').toLowerCase();
+    return suiteRepo === currentRepo.toLowerCase();
+  });
+
   const currentSuite =
-    suites.find((s) => s.id === currentSuiteId) || suites[0] || MOCK_TEST_SUITES[0];
-  const hasFailure = currentSuite.nodes.some(
-    (node) => node.status === 'failed' || Boolean(node.errorMessage)
-  );
+    repoSuites.find((s) => s.id === currentSuiteId) || repoSuites[0] || null;
+  const hasFailure = currentSuite
+    ? currentSuite.nodes.some(
+        (node) => node.status === 'failed' || Boolean(node.errorMessage)
+      )
+    : false;
 
   const showNotification = (
     message: string,
@@ -240,16 +292,22 @@ export default function App() {
 
   // Update current suite
   const handleUpdateCurrentSuite = (updatedSuite: TestSuite) => {
+    const boundSuite: TestSuite = {
+      ...updatedSuite,
+      repositoryFullName: updatedSuite.repositoryFullName || currentRepo,
+      branchName: updatedSuite.branchName || currentBranch,
+    };
     setSuites((prev) =>
-      prev.map((s) => (s.id === updatedSuite.id ? updatedSuite : s))
+      prev.map((s) => (s.id === boundSuite.id ? boundSuite : s))
     );
     if (isBackendConnected) {
-      saveSuite(updatedSuite).catch(() => {});
+      saveSuite(boundSuite).catch(() => {});
     }
   };
 
   // Switch target browser
   const handleBrowserChange = (browser: 'chromium' | 'firefox' | 'webkit') => {
+    if (!currentSuite) return;
     handleUpdateCurrentSuite({
       ...currentSuite,
       targetBrowser: browser,
@@ -267,10 +325,18 @@ export default function App() {
 
   // Create new workflow sequence
   const handleCreateWorkflow = (newSuite: TestSuite) => {
-    setSuites((prev) => [newSuite, ...prev]);
-    setCurrentSuiteId(newSuite.id);
+    const boundSuite: TestSuite = {
+      ...newSuite,
+      repositoryFullName: currentRepo,
+      branchName: currentBranch,
+    };
+    if (isBackendConnected) {
+      saveSuite(boundSuite).catch((err) => console.warn('Failed to persist suite:', err));
+    }
+    setSuites((prev) => [boundSuite, ...prev]);
+    setCurrentSuiteId(boundSuite.id);
     setActiveTab('workflows');
-    showNotification(`Created workflow "${newSuite.name}"`);
+    showNotification(`Created workflow "${boundSuite.name}" for ${currentRepo}`);
   };
 
   // Import from Google Sheets
@@ -316,16 +382,34 @@ export default function App() {
       { id: `e-${nextId}-2-3`, sourceId: `${nextId}-2`, targetId: `${nextId}-3` },
       { id: `e-${nextId}-3-4`, sourceId: `${nextId}-3`, targetId: `${nextId}-4` },
     ];
-    const updated = {
-      ...currentSuite,
-      name: `Google Sheets Ingest: ${targets[0].label}`,
-      nodes: newNodes,
-      edges: newEdges,
-      updatedAt: 'Just now',
-    };
-    handleUpdateCurrentSuite(updated);
+    if (currentSuite) {
+      const updated = {
+        ...currentSuite,
+        name: `Google Sheets Ingest: ${targets[0].label}`,
+        nodes: newNodes,
+        edges: newEdges,
+        updatedAt: 'Just now',
+      };
+      handleUpdateCurrentSuite(updated);
+    } else {
+      const created: TestSuite = {
+        id: `suite-${Date.now().toString().slice(-4)}`,
+        repositoryFullName: currentRepo,
+        branchName: currentBranch,
+        name: `Google Sheets Ingest: ${targets[0].label}`,
+        description: `Imported targets from Google Sheets for ${currentRepo}`,
+        targetBrowser: 'chromium',
+        baseUrl: targets[0].url,
+        environment: currentEnvironment,
+        status: 'passing',
+        nodes: newNodes,
+        edges: newEdges,
+        updatedAt: 'Just now',
+      };
+      handleCreateWorkflow(created);
+    }
     setActiveTab('workflows');
-    showNotification(`Imported ${targets.length} targets from Google Sheets into current suite!`);
+    showNotification(`Imported ${targets.length} targets from Google Sheets into ${currentRepo}!`);
   };
 
   // Update Jira issue
@@ -588,7 +672,7 @@ export default function App() {
       <Sidebar
         activeTab={activeTab}
         onSelectTab={setActiveTab}
-        suites={suites}
+        suites={repoSuites}
         currentSuiteId={currentSuiteId}
         onSelectSuite={setCurrentSuiteId}
       />
@@ -599,7 +683,7 @@ export default function App() {
         <Topbar
           activeTab={activeTab}
           currentSuite={currentSuite}
-          suites={suites}
+          suites={repoSuites}
           testRuns={testRuns}
           isRunning={isRunning}
           onRunTest={() => handleRunTest()}
@@ -666,7 +750,7 @@ export default function App() {
         <main className="flex-1 overflow-hidden bg-slate-50 flex flex-col relative">
           {activeTab === 'overview' || activeTab === 'dashboard' ? (
             <DashboardCards
-              suites={suites}
+              suites={repoSuites}
               testRuns={testRuns}
               jiraIssues={jiraIssues}
               currentBranch={currentBranch}
@@ -686,8 +770,10 @@ export default function App() {
             />
           ) : activeTab === 'workflows' || activeTab === 'builder' ? (
             <VisualBuilder
-              key={currentSuite.id}
+              key={currentSuite?.id || `empty-${currentRepo}`}
               suite={currentSuite}
+              currentRepo={currentRepo}
+              onCreateNewSuite={() => setIsCreateModalOpen(true)}
               onUpdateSuite={handleUpdateCurrentSuite}
               isRunning={isRunning}
               onRunTest={() => handleRunTest()}
@@ -700,7 +786,9 @@ export default function App() {
             />
           ) : activeTab === 'test-runs' || activeTab === 'history' ? (
             <TestRunHistory
-              runs={testRuns}
+              runs={testRuns.filter((r) =>
+                repoSuites.some((s) => s.id === r.suiteId || s.name === r.suiteName)
+              )}
               currentBranch={currentBranch}
               onTriggerRun={() => handleRunTest()}
               isRunning={isRunning}
@@ -708,7 +796,7 @@ export default function App() {
           ) : activeTab === 'traceability' || activeTab === 'jira' ? (
             <JiraBoard
               issues={jiraIssues}
-              suites={suites}
+              suites={repoSuites}
               onUpdateIssue={handleUpdateJiraIssue}
               onNavigateToBuilder={(suiteId) => {
                 if (suiteId) setCurrentSuiteId(suiteId);
@@ -788,7 +876,7 @@ export default function App() {
           showNotification('Canvas fitted to view');
         }}
         onEnvironmentChange={setCurrentEnvironment}
-        suites={suites}
+        suites={repoSuites}
         onSelectSuite={setCurrentSuiteId}
       />
 
@@ -797,17 +885,21 @@ export default function App() {
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
         onCreateWorkflow={handleCreateWorkflow}
+        currentRepo={currentRepo}
+        currentBranch={currentBranch}
       />
 
       {/* JSON Schema Exporter */}
-      <JsonExportModal
-        isOpen={isJsonModalOpen}
-        onClose={() => setIsJsonModalOpen(false)}
-        nodes={currentSuite.nodes}
-        edges={currentSuite.edges}
-        suiteName={currentSuite.name}
-        browser={currentSuite.targetBrowser}
-      />
+      {currentSuite && (
+        <JsonExportModal
+          isOpen={isJsonModalOpen}
+          onClose={() => setIsJsonModalOpen(false)}
+          nodes={currentSuite.nodes}
+          edges={currentSuite.edges}
+          suiteName={currentSuite.name}
+          browser={currentSuite.targetBrowser}
+        />
+      )}
 
       {/* Google Authentication & Imports Modal */}
       <GoogleAuthModal
@@ -825,22 +917,24 @@ export default function App() {
       />
 
       {/* GitHub Suite Uploader Modal */}
-      <UploadToGithubModal
-        isOpen={isUploadGithubOpen}
-        onClose={() => setIsUploadGithubOpen(false)}
-        suite={currentSuite}
-        currentRepo={currentRepo}
-        currentBranch={currentBranch}
-        branches={branches}
-        userEmail={userEmail}
-        userName={userName}
-        onSuccess={(details) => {
-          showNotification(
-            `Pushed "${currentSuite.name}" to GitHub ${details.branch} (${details.commitSha})!`,
-            'success'
-          );
-        }}
-      />
+      {currentSuite && (
+        <UploadToGithubModal
+          isOpen={isUploadGithubOpen}
+          onClose={() => setIsUploadGithubOpen(false)}
+          suite={currentSuite}
+          currentRepo={currentRepo}
+          currentBranch={currentBranch}
+          branches={branches}
+          userEmail={userEmail}
+          userName={userName}
+          onSuccess={(details) => {
+            showNotification(
+              `Pushed "${currentSuite.name}" to GitHub ${details.branch} (${details.commitSha})!`,
+              'success'
+            );
+          }}
+        />
+      )}
     </div>
   );
 }

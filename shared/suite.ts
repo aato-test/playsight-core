@@ -241,6 +241,7 @@ export const triggerTypeSchema = z.enum(['manual', 'push', 'pull_request', 'sche
 export const suiteInputSchema = z.object({
   teamId: z.string().default('team-default'),
   repositoryId: z.string().optional(),
+  repositoryFullName: z.string().optional(),
   branchName: z.string().optional(),
   name: z.string().trim().min(1).max(200),
   description: z.string().max(2000).default(''),

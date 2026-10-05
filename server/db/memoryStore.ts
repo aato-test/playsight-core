@@ -72,35 +72,102 @@ const DEFAULT_INSTALLATION: GitHubInstallationRow = {
 installationsMap.set(DEFAULT_INSTALLATION.id, DEFAULT_INSTALLATION);
 
 // Seed Discovered GitHub Repositories
-const DEFAULT_REPO: GitHubRepositoryRow = {
-  id: 'gh-repo-aato-playsight',
-  installationId: DEFAULT_INSTALLATION.id,
-  teamId: DEFAULT_TEAM.id,
-  githubRepoId: 987654321,
-  name: 'playsight-core',
-  fullName: 'aato-test/playsight-core',
-  ownerLogin: 'aato-test',
-  isPrivate: false,
-  defaultBranch: 'main',
-  htmlUrl: 'https://github.com/aato-test/playsight-core',
-  description: 'Collaborative Quality Workspace for End-to-End Regression Automation',
-  createdAt: new Date('2026-09-15T10:05:00Z'),
-  updatedAt: new Date('2026-10-05T09:00:00Z'),
-};
-repositoriesMap.set(DEFAULT_REPO.id, DEFAULT_REPO);
+const ACCOUNT_REPOS: GitHubRepositoryRow[] = [
+  {
+    id: 'gh-repo-aato-playsight-core',
+    installationId: DEFAULT_INSTALLATION.id,
+    teamId: DEFAULT_TEAM.id,
+    githubRepoId: 987654321,
+    name: 'playsight-core',
+    fullName: 'aato-test/playsight-core',
+    ownerLogin: 'aato-test',
+    isPrivate: false,
+    defaultBranch: 'main',
+    htmlUrl: 'https://github.com/aato-test/playsight-core',
+    description: 'Collaborative Quality Workspace for End-to-End Regression Automation',
+    createdAt: new Date('2026-09-15T10:05:00Z'),
+    updatedAt: new Date('2026-10-05T09:00:00Z'),
+  },
+  {
+    id: 'gh-repo-aato-playwright-automation',
+    installationId: DEFAULT_INSTALLATION.id,
+    teamId: DEFAULT_TEAM.id,
+    githubRepoId: 871234567,
+    name: 'playwright-automation',
+    fullName: 'aato-test/playwright-automation',
+    ownerLogin: 'aato-test',
+    isPrivate: false,
+    defaultBranch: 'main',
+    htmlUrl: 'https://github.com/aato-test/playwright-automation',
+    description: 'Playwright E2E automation test suite',
+    createdAt: new Date('2026-09-16T11:00:00Z'),
+    updatedAt: new Date('2026-10-05T09:00:00Z'),
+  },
+  {
+    id: 'gh-repo-aato-ticket-priority',
+    installationId: DEFAULT_INSTALLATION.id,
+    teamId: DEFAULT_TEAM.id,
+    githubRepoId: 765432198,
+    name: 'Customer-Support-Ticket-Priority-Prediction',
+    fullName: 'aato-test/Customer-Support-Ticket-Priority-Prediction',
+    ownerLogin: 'aato-test',
+    isPrivate: false,
+    defaultBranch: 'main',
+    htmlUrl: 'https://github.com/aato-test/Customer-Support-Ticket-Priority-Prediction',
+    description: 'Machine Learning prioritization workflow for customer support tickets',
+    createdAt: new Date('2026-09-17T12:00:00Z'),
+    updatedAt: new Date('2026-10-05T09:00:00Z'),
+  },
+  {
+    id: 'gh-repo-aato-playsight',
+    installationId: DEFAULT_INSTALLATION.id,
+    teamId: DEFAULT_TEAM.id,
+    githubRepoId: 654321987,
+    name: 'playsight',
+    fullName: 'aato-test/playsight',
+    ownerLogin: 'aato-test',
+    isPrivate: false,
+    defaultBranch: 'main',
+    htmlUrl: 'https://github.com/aato-test/playsight',
+    description: 'PlaySight web automation testing application',
+    createdAt: new Date('2026-09-18T14:00:00Z'),
+    updatedAt: new Date('2026-10-05T09:00:00Z'),
+  },
+  {
+    id: 'gh-repo-aato-pro',
+    installationId: DEFAULT_INSTALLATION.id,
+    teamId: DEFAULT_TEAM.id,
+    githubRepoId: 543210987,
+    name: 'pro',
+    fullName: 'aato-test/pro',
+    ownerLogin: 'aato-test',
+    isPrivate: false,
+    defaultBranch: 'main',
+    htmlUrl: 'https://github.com/aato-test/pro',
+    description: 'Production services & test configurations',
+    createdAt: new Date('2026-09-19T15:00:00Z'),
+    updatedAt: new Date('2026-10-05T09:00:00Z'),
+  },
+];
+
+for (const repo of ACCOUNT_REPOS) {
+  repositoriesMap.set(repo.id, repo);
+}
+
+const DEFAULT_REPO = ACCOUNT_REPOS[0];
 
 // Seed Discovered GitHub Branches
 const SEED_BRANCHES: GitHubBranchRow[] = [
-  {
-    id: `${DEFAULT_REPO.id}-main`,
-    repositoryId: DEFAULT_REPO.id,
+  ...ACCOUNT_REPOS.map((repo) => ({
+    id: `${repo.id}-main`,
+    repositoryId: repo.id,
     name: 'main',
     commitSha: '1c54b15',
-    commitMessage: 'docs: update comprehensive engineering README documentation',
+    commitMessage: `chore: update repository ${repo.name}`,
     isProtected: true,
     lastCommitAt: new Date('2026-10-05T09:25:00Z'),
     updatedAt: new Date('2026-10-05T09:25:00Z'),
-  },
+  })),
   {
     id: `${DEFAULT_REPO.id}-feature-checkout-fix`,
     repositoryId: DEFAULT_REPO.id,

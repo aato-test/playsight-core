@@ -9,6 +9,7 @@ import {
   TeamMessage,
   TestHistoryRecord,
   PlaywrightTraceData,
+  GitHubRepository,
 } from '../types';
 
 export const INITIAL_TEST_NODES: TestNode[] = [
@@ -261,6 +262,9 @@ export const SEARCH_EDGES: ConnectionEdge[] = [
 export const MOCK_TEST_SUITES: TestSuite[] = [
   {
     id: 'suite-cart-checkout',
+    repositoryId: 'gh-repo-aato-playsight-core',
+    repositoryFullName: 'aato-test/playsight-core',
+    branchName: 'main',
     name: 'Checkout & Payment Gateway',
     description: 'End-to-end checkout pipeline validating cart items, credit card input, and 3D-Secure Stripe response.',
     targetBrowser: 'chromium',
@@ -276,6 +280,9 @@ export const MOCK_TEST_SUITES: TestSuite[] = [
   },
   {
     id: 'suite-auth-login',
+    repositoryId: 'gh-repo-aato-playsight-core',
+    repositoryFullName: 'aato-test/playsight-core',
+    branchName: 'main',
     name: 'Authentication E2E Flow',
     description: 'Validates credential submission, session cookie creation, and dashboard arrival.',
     targetBrowser: 'chromium',
@@ -291,6 +298,9 @@ export const MOCK_TEST_SUITES: TestSuite[] = [
   },
   {
     id: 'suite-search-filtering',
+    repositoryId: 'gh-repo-aato-playsight-core',
+    repositoryFullName: 'aato-test/playsight-core',
+    branchName: 'main',
     name: 'Search & Facet Filter Test',
     description: 'Ensures debounced query dispatch, facet aggregation, and catalog search results.',
     targetBrowser: 'firefox',
@@ -874,3 +884,72 @@ export function generateExecutorJson(
     steps,
   };
 }
+
+export const ACCOUNT_REPOSITORIES: GitHubRepository[] = [
+  {
+    id: 'gh-repo-aato-playsight-core',
+    githubRepoId: 987654321,
+    name: 'playsight-core',
+    fullName: 'aato-test/playsight-core',
+    ownerLogin: 'aato-test',
+    isPrivate: false,
+    defaultBranch: 'main',
+    htmlUrl: 'https://github.com/aato-test/playsight-core',
+    description: 'Collaborative Quality Workspace for End-to-End Regression Automation',
+    branchesCount: 2,
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'gh-repo-aato-playwright-automation',
+    githubRepoId: 871234567,
+    name: 'playwright-automation',
+    fullName: 'aato-test/playwright-automation',
+    ownerLogin: 'aato-test',
+    isPrivate: false,
+    defaultBranch: 'main',
+    htmlUrl: 'https://github.com/aato-test/playwright-automation',
+    description: 'Playwright E2E automation test suite',
+    branchesCount: 1,
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'gh-repo-aato-ticket-priority',
+    githubRepoId: 765432198,
+    name: 'Customer-Support-Ticket-Priority-Prediction',
+    fullName: 'aato-test/Customer-Support-Ticket-Priority-Prediction',
+    ownerLogin: 'aato-test',
+    isPrivate: false,
+    defaultBranch: 'main',
+    htmlUrl: 'https://github.com/aato-test/Customer-Support-Ticket-Priority-Prediction',
+    description: 'Machine Learning prioritization workflow for customer support tickets',
+    branchesCount: 1,
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'gh-repo-aato-playsight',
+    githubRepoId: 654321987,
+    name: 'playsight',
+    fullName: 'aato-test/playsight',
+    ownerLogin: 'aato-test',
+    isPrivate: false,
+    defaultBranch: 'main',
+    htmlUrl: 'https://github.com/aato-test/playsight',
+    description: 'PlaySight web automation testing application',
+    branchesCount: 1,
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'gh-repo-aato-pro',
+    githubRepoId: 543210987,
+    name: 'pro',
+    fullName: 'aato-test/pro',
+    ownerLogin: 'aato-test',
+    isPrivate: false,
+    defaultBranch: 'main',
+    htmlUrl: 'https://github.com/aato-test/pro',
+    description: 'Production services & test configurations',
+    branchesCount: 1,
+    updatedAt: new Date().toISOString(),
+  },
+];
+

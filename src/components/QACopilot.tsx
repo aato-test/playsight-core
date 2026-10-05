@@ -24,7 +24,7 @@ interface QACopilotProps {
   messages: CopilotMessage[];
   onSendMessage: (text: string, sender?: 'user' | 'ai') => void;
   onHealNode: (nodeId: string, newSelector: string) => void;
-  currentSuite: TestSuite;
+  currentSuite?: TestSuite | null;
   currentBranch: string;
 }
 
@@ -62,7 +62,7 @@ export const QACopilot: React.FC<QACopilotProps> = ({
       const lower = queryText.toLowerCase();
 
       if (lower.includes('scan') || lower.includes('selector') || lower.includes('instab')) {
-        const reply = `**Selector Telemetry Analysis (Playwright Worker):**\n\n• Inspected 3 nodes in \`${currentSuite.name}\`.\n• Node \`node-chk-2\` contains DOM divergence with PR #482.\n• Stability index: \`72%\` degraded.\n• Production element available at \`button[data-testid="payment-submit"]\`.`;
+        const reply = `**Selector Telemetry Analysis (Playwright Worker):**\n\n• Inspected 3 nodes in \`${currentSuite?.name || 'Active Sequence'}\`.\n• Node \`node-chk-2\` contains DOM divergence with PR #482.\n• Stability index: \`72%\` degraded.\n• Production element available at \`button[data-testid="payment-submit"]\`.`;
         onSendMessage(reply, 'ai');
       } else if (lower.includes('mutation') || lower.includes('diff')) {
         const reply = `**Git PR #482 Mutation Diff Summary:**\n\`\`\`diff\n- <button data-testid="checkout-submit" class="btn-primary">\n+ <button data-testid="payment-submit" class="btn-primary">\n\`\`\`\nReplacement recommended with 97% confidence score.`;
@@ -71,7 +71,7 @@ export const QACopilot: React.FC<QACopilotProps> = ({
         const reply = `**Recommended Assertion for Checkout:**\n\`\`\`ts\nawait expect(page.locator("div.confirmation-banner")).toContainText("payment.status === 'success'");\n\`\`\`\nAdded to pipeline suggestions.`;
         onSendMessage(reply, 'ai');
       } else {
-        const reply = `Diagnostics verified on branch \`${currentBranch}\`. Sequence \`${currentSuite.name}\` loaded. Ready to run automated AST repairs or auto-heal selectors.`;
+        const reply = `Diagnostics verified on branch \`${currentBranch}\`. Sequence \`${currentSuite?.name || 'Active Sequence'}\` loaded. Ready to run automated AST repairs or auto-heal selectors.`;
         onSendMessage(reply, 'ai');
       }
     }, 600);

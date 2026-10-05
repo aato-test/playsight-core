@@ -34,6 +34,7 @@ const suiteBodySchema = z
     id: z.string().max(200).optional(),
     teamId: z.string().optional(),
     repositoryId: z.string().optional(),
+    repositoryFullName: z.string().optional(),
     branchName: z.string().optional(),
     name: z.string(),
     description: z.string().optional(),
@@ -51,7 +52,7 @@ const suiteBodySchema = z
     id: b.id,
     input: suiteInputSchema.parse({
       teamId: b.teamId ?? 'team-default',
-      repositoryId: b.repositoryId,
+      repositoryId: b.repositoryFullName ?? b.repositoryId,
       branchName: b.branchName,
       name: b.name,
       description: b.description ?? '',
@@ -78,7 +79,10 @@ api.get('/health', route(async (_req, res) => {
 }));
 
 // Suites
-api.get('/suites', route(async (_req, res) => res.json(await listSuites())));
+api.get('/suites', route(async (req, res) => {
+  const repo = typeof req.query.repo === 'string' ? req.query.repo : undefined;
+  res.json(await listSuites('team-default', repo));
+}));
 
 api.get('/suites/:id', route(async (req, res) => {
   const { id } = idParam.parse(req.params);

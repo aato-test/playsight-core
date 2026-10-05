@@ -95,10 +95,11 @@ export async function checkBackendHealth(): Promise<HealthResponse | null> {
   }
 }
 
-/** Fetch all test suites from server */
-export async function fetchSuites(): Promise<TestSuite[] | null> {
+/** Fetch test suites from server, optionally filtered by repository */
+export async function fetchSuites(repo?: string): Promise<TestSuite[] | null> {
   try {
-    const res = await fetch('/api/suites');
+    const url = repo ? `/api/suites?repo=${encodeURIComponent(repo)}` : '/api/suites';
+    const res = await fetch(url);
     if (!res.ok) return null;
     return await res.json();
   } catch {
@@ -117,18 +118,23 @@ export async function fetchSuite(id: string): Promise<TestSuite | null> {
   }
 }
 
-/** Save or update a suite */
+/** Save or update a suite with auto-create fallback on 404 */
 export async function saveSuite(suite: TestSuite): Promise<TestSuite | null> {
   try {
-    const isUpdate = Boolean(suite.id);
-    const url = isUpdate ? `/api/suites/${encodeURIComponent(suite.id)}` : '/api/suites';
-    const method = isUpdate ? 'PUT' : 'POST';
-
-    const res = await fetch(url, {
-      method,
+    const res = await fetch(`/api/suites/${encodeURIComponent(suite.id)}`, {
+      method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(suite),
     });
+
+    if (res.status === 404) {
+      const createRes = await fetch('/api/suites', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(suite),
+      });
+      if (createRes.ok) return await createRes.json();
+    }
 
     if (!res.ok) return null;
     return await res.json();

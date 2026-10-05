@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Layers, ArrowRight } from 'lucide-react';
+import { X, Layers, ArrowRight, FolderGit2 } from 'lucide-react';
 import { TestSuite } from '../types';
 import { BrowserSelector, BrowserEngine } from './BrowserSelector';
 
@@ -7,12 +7,16 @@ interface CreateWorkflowModalProps {
   isOpen: boolean;
   onClose: () => void;
   onCreateWorkflow: (suite: TestSuite) => void;
+  currentRepo?: string;
+  currentBranch?: string;
 }
 
 export const CreateWorkflowModal: React.FC<CreateWorkflowModalProps> = ({
   isOpen,
   onClose,
   onCreateWorkflow,
+  currentRepo = 'aato-test/playsight-core',
+  currentBranch = 'main',
 }) => {
   const [name, setName] = useState('Checkout Payment Regression');
   const [browser, setBrowser] = useState<BrowserEngine>('chromium');
@@ -28,8 +32,10 @@ export const CreateWorkflowModal: React.FC<CreateWorkflowModalProps> = ({
     const newId = `suite-${Date.now().toString().slice(-4)}`;
     const newSuite: TestSuite = {
       id: newId,
+      repositoryFullName: currentRepo,
+      branchName: currentBranch,
       name: name.trim(),
-      description: `Automated regression sequence on ${environment} for ${browser}.`,
+      description: `Automated regression sequence on ${environment} for ${browser} (${currentRepo}).`,
       targetBrowser: browser,
       baseUrl: startingUrl.trim(),
       environment,
@@ -88,6 +94,18 @@ export const CreateWorkflowModal: React.FC<CreateWorkflowModalProps> = ({
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Target Repository Info */}
+          <div className="bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 flex items-center justify-between text-xs">
+            <span className="font-sans text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
+              Target Repo
+            </span>
+            <span className="font-semibold text-indigo-700 flex items-center gap-1.5 font-sans">
+              <FolderGit2 className="w-3.5 h-3.5 text-indigo-600" />
+              <span>{currentRepo}</span>
+              <span className="text-slate-400 font-normal">({currentBranch})</span>
+            </span>
+          </div>
+
           {/* Workflow Name */}
           <div>
             <label className="block text-[11px] font-mono text-slate-500 uppercase tracking-wider mb-1">

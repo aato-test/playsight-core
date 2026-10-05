@@ -16,7 +16,8 @@ export const env = {
   headless: process.env.PLAYWRIGHT_HEADLESS !== 'false',
   copilotModel: process.env.COPILOT_MODEL || 'openai/gpt-5-mini',
 
-  // GitHub App Integration
+  // GitHub App / Account Integration
+  githubToken: process.env.GITHUB_TOKEN || '',
   githubAppId: process.env.GITHUB_APP_ID || '',
   githubAppPrivateKey: process.env.GITHUB_APP_PRIVATE_KEY || '',
   githubAppWebhookSecret: process.env.GITHUB_APP_WEBHOOK_SECRET || '',

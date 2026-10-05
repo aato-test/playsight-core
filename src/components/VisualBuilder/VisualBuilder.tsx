@@ -43,10 +43,14 @@ import {
   Radio,
   BookmarkCheck,
   Github,
+  FolderGit2,
+  Plus,
 } from 'lucide-react';
 
 interface VisualBuilderProps {
-  suite: TestSuite;
+  suite?: TestSuite | null;
+  currentRepo?: string;
+  onCreateNewSuite?: () => void;
   onUpdateSuite: (updatedSuite: TestSuite) => void;
   isRunning: boolean;
   onRunTest: () => void;
@@ -58,6 +62,8 @@ interface VisualBuilderProps {
 
 export const VisualBuilder: React.FC<VisualBuilderProps> = ({
   suite,
+  currentRepo = 'aato-test/playsight-core',
+  onCreateNewSuite,
   onUpdateSuite,
   isRunning,
   onRunTest,
@@ -65,6 +71,31 @@ export const VisualBuilder: React.FC<VisualBuilderProps> = ({
   onAutoHealTrigger,
   onOpenUploadGithub,
 }) => {
+  if (!suite) {
+    return (
+      <div className="flex-1 flex flex-col items-center justify-center p-8 bg-slate-50 text-center font-sans">
+        <div className="w-16 h-16 rounded-2xl bg-indigo-50 border border-indigo-200 flex items-center justify-center mb-4 text-indigo-600 shadow-2xs">
+          <FolderGit2 className="w-8 h-8" />
+        </div>
+        <h2 className="text-xl font-bold text-slate-900">
+          No test suite selected for {currentRepo}
+        </h2>
+        <p className="text-xs text-slate-500 max-w-md mt-2 mb-6 font-sans leading-relaxed">
+          There are currently no test suites for this repository. Create your first automated sequence to begin designing visually.
+        </p>
+        {onCreateNewSuite && (
+          <button
+            onClick={onCreateNewSuite}
+            className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs shadow-xs transition-all flex items-center gap-2 cursor-pointer active:scale-98"
+          >
+            <Plus className="w-4 h-4 stroke-[2.5]" />
+            <span>Create Test Suite for {currentRepo.split('/')[1] || currentRepo}</span>
+          </button>
+        )}
+      </div>
+    );
+  }
+
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(
     suite.nodes.length > 0 ? suite.nodes[0].id : null
   );

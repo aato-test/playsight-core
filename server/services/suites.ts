@@ -6,7 +6,20 @@ import type { SuiteInput } from '../../shared/suite';
 import { recordAudit } from './audit';
 import { memoryStore } from '../db/memoryStore';
 
-export async function listSuites(teamId: string = 'team-default') {
+export function getRepositoryFullName(repositoryId?: string | null): string {
+  if (!repositoryId) return 'aato-test/playsight-core';
+  if (repositoryId.includes('/')) return repositoryId;
+  const repo = memoryStore.repositories.get(repositoryId);
+  if (repo) return repo.fullName;
+  for (const r of memoryStore.repositories.values()) {
+    if (r.id === repositoryId || r.name === repositoryId) {
+      return r.fullName;
+    }
+  }
+  return repositoryId;
+}
+
+export async function listSuites(teamId: string = 'team-default', repoFullName?: string) {
   if (hasDatabase && db) {
     const rows = await db
       .select()
@@ -14,14 +27,26 @@ export async function listSuites(teamId: string = 'team-default') {
       .where(eq(testSuites.teamId, teamId))
       .orderBy(desc(testSuites.updatedAt));
     const latest = await latestRunBySuite();
-    return rows.map((row) => toSuiteDTO(row, latest.get(row.id)));
+    let dtos = rows.map((row) => toSuiteDTO(row, latest.get(row.id)));
+    if (repoFullName) {
+      dtos = dtos.filter(
+        (d) => d.repositoryFullName?.toLowerCase() === repoFullName.toLowerCase()
+      );
+    }
+    return dtos;
   }
 
   const rows = Array.from(memoryStore.suites.values())
     .filter((s) => s.teamId === teamId)
     .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
   const latest = getMemoryLatestRuns();
-  return rows.map((row) => toSuiteDTO(row, latest.get(row.id)));
+  let dtos = rows.map((row) => toSuiteDTO(row, latest.get(row.id)));
+  if (repoFullName) {
+    dtos = dtos.filter(
+      (d) => d.repositoryFullName?.toLowerCase() === repoFullName.toLowerCase()
+    );
+  }
+  return dtos;
 }
 
 export async function getSuite(id: string) {
@@ -35,10 +60,11 @@ export async function getSuite(id: string) {
 export async function createSuite(input: SuiteInput, id?: string) {
   const suiteId = id ?? `suite-${randomUUID()}`;
   const now = new Date();
+  const repoId = input.repositoryId || (input as any).repositoryFullName || null;
   const row: SuiteRow = {
     id: suiteId,
     teamId: input.teamId || 'team-default',
-    repositoryId: input.repositoryId ?? null,
+    repositoryId: repoId,
     branchName: input.branchName ?? null,
     name: input.name,
     description: input.description ?? '',
@@ -193,10 +219,12 @@ export function toSuiteDTO(row: SuiteRow, latest?: { status: string; createdAt: 
       : latest.status === 'failed'
         ? 'needs_attention'
         : 'draft';
+  const repositoryFullName = getRepositoryFullName(row.repositoryId);
   return {
     id: row.id,
     teamId: row.teamId,
     repositoryId: row.repositoryId ?? undefined,
+    repositoryFullName,
     branchName: row.branchName ?? undefined,
     triggerType: row.triggerType,
     triggerConfig: row.triggerConfig,

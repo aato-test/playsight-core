@@ -239,6 +239,7 @@ export interface TestSuite {
   id: string;
   teamId?: string;
   repositoryId?: string;
+  repositoryFullName?: string;
   branchName?: string;
   name: string;
   description: string;
