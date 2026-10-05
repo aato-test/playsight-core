@@ -6,7 +6,15 @@ import { suiteInputSchema, type SuiteInput } from '../../shared/suite';
  * Demo suites that target real public sites so a fresh database can execute end-to-end.
  * They are clearly labelled "Demo" and are only seeds — no runs or results are seeded.
  */
-const demoSuites: (SuiteInput & { id: string })[] = [
+const demoSuites: {
+  id: string;
+  name: string;
+  description?: string;
+  baseUrl?: string;
+  browser?: string;
+  environment?: string;
+  definition: unknown;
+}[] = [
   {
     id: 'demo-playwright-docs',
     name: 'Demo: Playwright docs navigation',

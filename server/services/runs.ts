@@ -24,6 +24,13 @@ export async function createRun(input: {
   branch?: string;
   commit?: string;
   triggeredBy?: string;
+  triggerEvent?: 'manual' | 'push' | 'pull_request' | 'scheduled';
+  repositoryId?: string;
+  repositoryFullName?: string;
+  pullRequestNumber?: number;
+  pullRequestUrl?: string;
+  pullRequestSourceBranch?: string;
+  pullRequestTargetBranch?: string;
   rerunOf?: string;
 }) {
   const suite = await getSuite(input.suiteId);
@@ -39,11 +46,14 @@ export async function createRun(input: {
 
   const runRow: RunRow = {
     id: runId,
+    teamId: suite.teamId || 'team-default',
     status: 'queued',
     createdAt: now,
     startedAt: null,
     completedAt: null,
-    branch: input.branch ?? null,
+    repositoryId: input.repositoryId ?? suite.repositoryId ?? null,
+    repositoryFullName: input.repositoryFullName ?? null,
+    branch: input.branch ?? suite.branchName ?? null,
     commit: input.commit ?? null,
     environment: input.environment ?? suite.environment,
     suiteId: suite.id,
@@ -57,6 +67,11 @@ export async function createRun(input: {
     durationMs: null,
     releaseGateStatus: 'pending',
     triggeredBy: input.triggeredBy ?? 'PlaySight UI',
+    triggerEvent: input.triggerEvent ?? 'manual',
+    pullRequestNumber: input.pullRequestNumber ?? null,
+    pullRequestUrl: input.pullRequestUrl ?? null,
+    pullRequestSourceBranch: input.pullRequestSourceBranch ?? null,
+    pullRequestTargetBranch: input.pullRequestTargetBranch ?? null,
     rerunOf: input.rerunOf ?? null,
     error: null,
   };
@@ -65,6 +80,7 @@ export async function createRun(input: {
     id: `res-${randomUUID()}`,
     runId,
     suiteId: suite.id,
+    testCaseId: null,
     testName: suite.name,
     browser,
     browserVersion: null,

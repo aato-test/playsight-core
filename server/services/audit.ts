@@ -22,12 +22,14 @@ export type AuditEventType =
 export async function recordAudit(event: {
   eventType: AuditEventType;
   message: string;
+  teamId?: string;
   runId?: string | null;
   suiteId?: string | null;
   metadata?: Record<string, unknown>;
 }) {
   const row: AuditRow = {
     id: randomUUID(),
+    teamId: event.teamId || 'team-default',
     eventType: event.eventType,
     message: event.message,
     runId: event.runId ?? null,

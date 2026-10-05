@@ -1,4 +1,14 @@
-import { TestSuite, TestRunResult, PlaywrightTraceData } from '../types';
+import {
+  TestSuite,
+  TestRunResult,
+  PlaywrightTraceData,
+  GitHubStatusResponse,
+  GitHubRepository,
+  GitHubBranch,
+  JiraStatusResponse,
+  JiraIssue,
+  TestCase,
+} from '../types';
 
 export interface HealthResponse {
   status: string;
@@ -291,3 +301,143 @@ export function mapServerRunToTestRunResult(serverRun: ServerRunDTO): TestRunRes
     artifacts: allArtifacts,
   };
 }
+
+// ==========================================
+// GitHub & Jira Integrations Client
+// ==========================================
+
+export async function fetchGitHubStatus(): Promise<GitHubStatusResponse | null> {
+  try {
+    const res = await fetch('/api/integrations/github');
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+
+export async function getGitHubInstallUrl(): Promise<string | null> {
+  try {
+    const res = await fetch('/api/integrations/github/install');
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.installUrl ?? null;
+  } catch {
+    return null;
+  }
+}
+
+export async function disconnectGitHub(): Promise<boolean> {
+  try {
+    const res = await fetch('/api/integrations/github/disconnect', { method: 'POST' });
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
+
+export async function fetchGitHubRepositories(): Promise<GitHubRepository[] | null> {
+  try {
+    const res = await fetch('/api/integrations/github/repositories');
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+
+export async function fetchGitHubBranches(repoId: string): Promise<GitHubBranch[] | null> {
+  try {
+    const res = await fetch(`/api/integrations/github/repositories/${encodeURIComponent(repoId)}/branches`);
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+
+export async function syncGitHubBranches(repoId: string): Promise<GitHubBranch[] | null> {
+  try {
+    const res = await fetch(`/api/integrations/github/repositories/${encodeURIComponent(repoId)}/sync`, {
+      method: 'POST',
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.branches ?? null;
+  } catch {
+    return null;
+  }
+}
+
+export async function fetchJiraStatus(): Promise<JiraStatusResponse | null> {
+  try {
+    const res = await fetch('/api/integrations/jira');
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+
+export async function fetchJiraIssues(): Promise<JiraIssue[] | null> {
+  try {
+    const res = await fetch('/api/integrations/jira/issues');
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+
+// ==========================================
+// Test Cases & Suite Association Client
+// ==========================================
+
+export async function fetchTestCases(): Promise<TestCase[] | null> {
+  try {
+    const res = await fetch('/api/test-cases');
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+
+export async function createTestCase(testCase: Partial<TestCase>): Promise<TestCase | null> {
+  try {
+    const res = await fetch('/api/test-cases', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(testCase),
+    });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+
+export async function fetchSuiteTestCases(suiteId: string): Promise<TestCase[] | null> {
+  try {
+    const res = await fetch(`/api/suites/${encodeURIComponent(suiteId)}/test-cases`);
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+
+export async function setSuiteTestCases(suiteId: string, testCaseIds: string[]): Promise<TestCase[] | null> {
+  try {
+    const res = await fetch(`/api/suites/${encodeURIComponent(suiteId)}/test-cases`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ testCaseIds }),
+    });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+

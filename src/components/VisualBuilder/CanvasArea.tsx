@@ -26,6 +26,7 @@ import {
   ClickStepData,
   InputStepData,
   AssertStepData,
+  TestCase,
 } from '../../types';
 
 interface CanvasAreaProps {
@@ -35,6 +36,7 @@ interface CanvasAreaProps {
   onSelectNode: (nodeId: string | null) => void;
   onUpdateNodePosition: (nodeId: string, position: { x: number; y: number }) => void;
   onAddNode: (type: StepType, position?: { x: number; y: number }) => void;
+  onAddTestCase?: (testCase: TestCase, position?: { x: number; y: number }) => void;
   onDeleteNode: (nodeId: string) => void;
   onConnectNodes: (sourceId: string, targetId: string) => void;
   onDeleteEdge: (edgeId: string) => void;
@@ -49,6 +51,7 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
   onSelectNode,
   onUpdateNodePosition,
   onAddNode,
+  onAddTestCase,
   onDeleteNode,
   onConnectNodes,
   onDeleteEdge,
@@ -257,6 +260,30 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
       ref={containerRef}
       id="builder-canvas-viewport"
       onMouseDown={handleCanvasMouseDown}
+      onDragOver={(e) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'copy';
+      }}
+      onDrop={(e) => {
+        e.preventDefault();
+        const stepType = e.dataTransfer.getData('application/testflow-node-type') as StepType;
+        const testCaseJson = e.dataTransfer.getData('application/playsight-test-case');
+        if (containerRef.current) {
+          const rect = containerRef.current.getBoundingClientRect();
+          const x = Math.round((e.clientX - rect.left - pan.x) / scale);
+          const y = Math.round((e.clientY - rect.top - pan.y) / scale);
+          if (testCaseJson) {
+            try {
+              const tc = JSON.parse(testCaseJson) as TestCase;
+              onAddTestCase?.(tc, { x, y });
+              return;
+            } catch {}
+          }
+          if (stepType) {
+            onAddNode(stepType, { x, y });
+          }
+        }
+      }}
       className="flex-1 h-full relative overflow-hidden bg-[#020617] select-none cursor-default"
       style={{
         backgroundImage: `radial-gradient(circle, rgba(148, 163, 184, 0.09) 1px, transparent 1px)`,
@@ -298,7 +325,7 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
               markerHeight="6"
               orient="auto-start-reverse"
             >
-              <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#14b8a6" />
+              <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#6366f1" />
             </marker>
             <marker
               id="edge-arrow-passed"
@@ -347,7 +374,7 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
             let isAnimated = false;
 
             if (sourceNode.status === 'running' || isRunning) {
-              edgeColor = '#14b8a6';
+              edgeColor = '#6366f1';
               markerId = 'url(#edge-arrow-running)';
               isAnimated = true;
             } else if (sourceNode.status === 'success' && targetNode.status === 'success') {
@@ -409,7 +436,7 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
                 <path
                   d={pathData}
                   fill="none"
-                  stroke="#14b8a6"
+                  stroke="#6366f1"
                   strokeWidth={2}
                   strokeDasharray="4,4"
                   markerEnd="url(#edge-arrow-running)"
@@ -439,13 +466,13 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
                 top: `${node.position.y}px`,
                 width: `${NODE_WIDTH}px`,
               }}
-              className={`absolute pointer-events-auto rounded bg-[#0F172A] border transition-all cursor-move select-none ${
+              className={`absolute pointer-events-auto rounded-xl bg-slate-900 border transition-all cursor-move select-none shadow-md ${
                 isSelected
-                  ? 'border-teal-400 ring-1 ring-teal-500/30 shadow-lg shadow-teal-500/10'
-                  : 'border-[#1E293B] hover:border-[#334155]'
+                  ? 'border-indigo-500 ring-2 ring-indigo-500/40 shadow-xl shadow-indigo-950/50'
+                  : 'border-slate-800 hover:border-slate-700'
               } ${
                 node.status === 'running'
-                  ? 'border-teal-400 ring-1 ring-teal-400'
+                  ? 'border-indigo-400 ring-2 ring-indigo-400/50 animate-pulse'
                   : node.status === 'success'
                   ? 'border-emerald-500/50'
                   : node.status === 'failed'
@@ -457,22 +484,22 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
               <div
                 onMouseUp={(e) => handlePortMouseUp(e, node.id)}
                 title="Input Port (drop connection here)"
-                className="absolute -left-2 top-[38px] w-4 h-4 rounded-xs bg-[#020617] border border-[#475569] hover:border-teal-400 hover:bg-teal-500/20 flex items-center justify-center transition-all cursor-crosshair z-30"
+                className="absolute -left-2 top-[38px] w-4 h-4 rounded-full bg-slate-950 border-2 border-slate-600 hover:border-indigo-400 hover:scale-110 flex items-center justify-center transition-all cursor-crosshair z-30"
               >
-                <div className="w-1 h-1 rounded-xs bg-[#64748B]" />
+                <div className="w-1.5 h-1.5 rounded-full bg-slate-400" />
               </div>
 
               {/* Output Port (Right side) */}
               <div
                 onMouseDown={(e) => handlePortMouseDown(e, node.id)}
                 title="Output Port (drag to next step)"
-                className="absolute -right-2 top-[38px] w-4 h-4 rounded-xs bg-[#020617] border border-teal-500 hover:border-teal-300 hover:bg-teal-500/30 flex items-center justify-center transition-all cursor-crosshair z-30"
+                className="absolute -right-2 top-[38px] w-4 h-4 rounded-full bg-slate-950 border-2 border-indigo-500 hover:border-indigo-300 hover:scale-110 flex items-center justify-center transition-all cursor-crosshair z-30"
               >
-                <div className="w-1 h-1 rounded-xs bg-teal-400" />
+                <div className="w-1.5 h-1.5 rounded-full bg-indigo-400" />
               </div>
 
               {/* Node Header */}
-              <div className="px-3 py-2 border-b border-[#1E293B] flex items-center justify-between bg-[#111827]">
+              <div className="px-3.5 py-2.5 border-b border-slate-800 rounded-t-xl flex items-center justify-between bg-slate-950/60">
                 <div className="flex items-center gap-2 min-w-0">
                   <div className={`p-1 rounded bg-[#020617] border border-[#1E293B] ${config.color}`}>
                     <Icon className="w-3.5 h-3.5" />

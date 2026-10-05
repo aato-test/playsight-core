@@ -30,6 +30,10 @@ import {
   fetchRuns,
   saveSuite,
   triggerServerRun,
+  fetchGitHubStatus,
+  fetchGitHubRepositories,
+  fetchGitHubBranches,
+  fetchJiraIssues,
 } from './services/api';
 import {
   ActiveTab,
@@ -40,6 +44,7 @@ import {
   CopilotMessage,
   TestHistoryRecord,
   TestNode,
+  GitHubRepository,
 } from './types';
 import { CheckCircle2, AlertCircle, Sparkles } from 'lucide-react';
 
@@ -49,8 +54,11 @@ export default function App() {
   const [currentSuiteId, setCurrentSuiteId] = useState<string>(MOCK_TEST_SUITES[0].id);
   const [testRuns, setTestRuns] = useState<TestRunResult[]>(MOCK_TEST_RUNS);
   const [jiraIssues, setJiraIssues] = useState<JiraIssue[]>(MOCK_JIRA_ISSUES);
+  const [repositories, setRepositories] = useState<GitHubRepository[]>([]);
+  const [currentRepo, setCurrentRepo] = useState<string>('aato-test/playsight-core');
+  const [githubConnected, setGithubConnected] = useState<boolean>(true);
   const [branches, setBranches] = useState<BranchInfo[]>(MOCK_BRANCHES);
-  const [currentBranch, setCurrentBranch] = useState<string>('feature/checkout-fix');
+  const [currentBranch, setCurrentBranch] = useState<string>('main');
   const [currentEnvironment, setCurrentEnvironment] = useState<'local' | 'staging' | 'production'>('staging');
   const [copilotMessages, setCopilotMessages] = useState<CopilotMessage[]>(INITIAL_COPILOT_MESSAGES);
   const [history, setHistory] = useState<TestHistoryRecord[]>(MOCK_TEST_HISTORY_RECORDS);
@@ -76,7 +84,7 @@ export default function App() {
     suitesRef.current = suites;
   }, [suites]);
 
-  // Section 29: Connect to Backend API when Available
+  // Connect to Backend API & Fetch Real Integrations Data
   useEffect(() => {
     let mounted = true;
     async function initBackend() {
@@ -84,9 +92,12 @@ export default function App() {
       if (health && mounted) {
         setIsBackendConnected(true);
         setBackendMode(health.mode || 'live');
-        const [serverSuites, serverRuns] = await Promise.all([
+        const [serverSuites, serverRuns, ghStatus, repos, jira] = await Promise.all([
           fetchSuites(),
           fetchRuns({ limit: 50 }),
+          fetchGitHubStatus(),
+          fetchGitHubRepositories(),
+          fetchJiraIssues(),
         ]);
         if (serverSuites && serverSuites.length > 0 && mounted) {
           setSuites(serverSuites);
@@ -95,6 +106,30 @@ export default function App() {
         if (serverRuns && serverRuns.length > 0 && mounted) {
           setTestRuns(serverRuns);
         }
+        if (ghStatus && mounted) {
+          setGithubConnected(ghStatus.connected);
+        }
+        if (repos && repos.length > 0 && mounted) {
+          setRepositories(repos);
+          setCurrentRepo(repos[0].fullName);
+          const repoBranches = await fetchGitHubBranches(repos[0].id);
+          if (repoBranches && repoBranches.length > 0 && mounted) {
+            setBranches(
+              repoBranches.map((b) => ({
+                name: b.name,
+                commit: b.commitSha.slice(0, 7),
+                author: repos[0].ownerLogin,
+                pipelineStatus: 'passed',
+                ciService: 'GitHub Actions',
+                lastUpdated: b.lastCommitAt ? 'Synced' : 'Recently',
+              }))
+            );
+            setCurrentBranch(repos[0].defaultBranch || repoBranches[0].name);
+          }
+        }
+        if (jira && jira.length > 0 && mounted) {
+          setJiraIssues(jira);
+        }
       }
     }
     initBackend();
@@ -102,6 +137,41 @@ export default function App() {
       mounted = false;
     };
   }, []);
+
+  const refreshWorkspace = async () => {
+    const [ghStatus, repos, jira, serverRuns] = await Promise.all([
+      fetchGitHubStatus(),
+      fetchGitHubRepositories(),
+      fetchJiraIssues(),
+      fetchRuns({ limit: 50 }),
+    ]);
+    if (ghStatus) setGithubConnected(ghStatus.connected);
+    if (repos && repos.length > 0) setRepositories(repos);
+    if (jira && jira.length > 0) setJiraIssues(jira);
+    if (serverRuns && serverRuns.length > 0) setTestRuns(serverRuns);
+  };
+
+  const handleSelectRepo = async (repoFullName: string) => {
+    setCurrentRepo(repoFullName);
+    const repo = repositories.find((r) => r.fullName === repoFullName);
+    if (repo) {
+      const repoBranches = await fetchGitHubBranches(repo.id);
+      if (repoBranches && repoBranches.length > 0) {
+        setBranches(
+          repoBranches.map((b) => ({
+            name: b.name,
+            commit: b.commitSha.slice(0, 7),
+            author: repo.ownerLogin,
+            pipelineStatus: 'passed',
+            ciService: 'GitHub Actions',
+            lastUpdated: b.lastCommitAt ? 'Synced' : 'Recently',
+          }))
+        );
+        setCurrentBranch(repo.defaultBranch || repoBranches[0].name);
+      }
+    }
+    showNotification(`Switched active repository to ${repoFullName}`);
+  };
 
   const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -475,6 +545,10 @@ export default function App() {
           branches={branches}
           currentBranch={currentBranch}
           onSelectBranch={handleSelectBranch}
+          currentRepo={currentRepo}
+          onSelectRepo={handleSelectRepo}
+          repositories={repositories}
+          githubConnected={githubConnected}
           onOpenCopilot={() => setIsCopilotOpen(true)}
           onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
           currentEnvironment={currentEnvironment}
@@ -482,6 +556,7 @@ export default function App() {
           hasFailure={hasFailure}
           isBackendConnected={isBackendConnected}
           backendMode={backendMode}
+          onNavigateToTab={(tab) => setActiveTab(tab)}
         />
 
         {/* Global Toast Notification */}
@@ -568,7 +643,7 @@ export default function App() {
               currentBranch={currentBranch}
             />
           ) : activeTab === 'integrations' ? (
-            <IntegrationsView currentBranch={currentBranch} />
+            <IntegrationsView currentBranch={currentBranch} onRefreshWorkspace={refreshWorkspace} />
           ) : (
             <SettingsView currentBranch={currentBranch} />
           )}

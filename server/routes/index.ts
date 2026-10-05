@@ -9,6 +9,8 @@ import { artifactAbsolutePath, getArtifact } from '../services/artifacts';
 import { createSuite, deleteSuite, getSuite, listSuites, toSuiteDTO, updateSuite } from '../services/suites';
 import { cancelRun, createRun, getEvidence, getMetrics, getRunDetail, listRuns, rerun, ValidationError } from '../services/runs';
 import { copilotRouter } from './copilot';
+import { integrationsRouter } from './integrations';
+import { testCasesRouter, suiteTestCasesRouter } from './testCases';
 
 type Handler = (req: Request, res: Response) => Promise<unknown>;
 const route = (fn: Handler) => (req: Request, res: Response, next: NextFunction) => fn(req, res).catch(next);
@@ -29,6 +31,9 @@ const createRunSchema = z.object({
 const suiteBodySchema = z
   .object({
     id: z.string().max(200).optional(),
+    teamId: z.string().optional(),
+    repositoryId: z.string().optional(),
+    branchName: z.string().optional(),
     name: z.string(),
     description: z.string().optional(),
     baseUrl: z.string().optional(),
@@ -36,18 +41,25 @@ const suiteBodySchema = z
     browser: z.string().optional(),
     environment: z.string().optional(),
     jiraIssue: z.string().optional(),
+    triggerType: z.enum(['manual', 'push', 'pull_request', 'scheduled']).optional(),
+    triggerConfig: z.record(z.unknown()).optional(),
     nodes: z.array(z.unknown()),
     edges: z.array(z.unknown()),
   })
   .transform((b) => ({
     id: b.id,
     input: suiteInputSchema.parse({
+      teamId: b.teamId ?? 'team-default',
+      repositoryId: b.repositoryId,
+      branchName: b.branchName,
       name: b.name,
       description: b.description ?? '',
       baseUrl: b.baseUrl ?? '',
       browser: b.browser ?? b.targetBrowser ?? 'chromium',
       environment: b.environment ?? 'staging',
       jiraIssue: b.jiraIssue,
+      triggerType: b.triggerType ?? 'manual',
+      triggerConfig: b.triggerConfig ?? {},
       definition: sanitizeDefinition({ nodes: b.nodes, edges: b.edges }),
     }),
   }));
@@ -177,6 +189,9 @@ api.get('/audit', route(async (req, res) => {
 }));
 
 api.use('/copilot', copilotRouter);
+api.use('/integrations', integrationsRouter);
+api.use('/test-cases', testCasesRouter);
+api.use('/suites/:suiteId/test-cases', suiteTestCasesRouter);
 
 api.use((_req, res) => res.status(404).json({ error: 'Not found' }));
 

@@ -13,7 +13,14 @@ app.use((_req, res, next) => {
   if (env.isProduction) res.setHeader('Strict-Transport-Security', 'max-age=63072000');
   next();
 });
-app.use(express.json({ limit: '2mb' }));
+app.use(
+  express.json({
+    limit: '2mb',
+    verify: (req, _res, buf) => {
+      (req as unknown as { rawBody?: Buffer }).rawBody = buf;
+    },
+  })
+);
 app.use('/api', api);
 app.use('/artifacts', express.static(env.artifactsDir));
 

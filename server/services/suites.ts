@@ -6,16 +6,20 @@ import type { SuiteInput } from '../../shared/suite';
 import { recordAudit } from './audit';
 import { memoryStore } from '../db/memoryStore';
 
-export async function listSuites() {
+export async function listSuites(teamId: string = 'team-default') {
   if (hasDatabase && db) {
-    const rows = await db.select().from(testSuites).orderBy(desc(testSuites.updatedAt));
+    const rows = await db
+      .select()
+      .from(testSuites)
+      .where(eq(testSuites.teamId, teamId))
+      .orderBy(desc(testSuites.updatedAt));
     const latest = await latestRunBySuite();
     return rows.map((row) => toSuiteDTO(row, latest.get(row.id)));
   }
 
-  const rows = Array.from(memoryStore.suites.values()).sort(
-    (a, b) => b.updatedAt.getTime() - a.updatedAt.getTime()
-  );
+  const rows = Array.from(memoryStore.suites.values())
+    .filter((s) => s.teamId === teamId)
+    .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
   const latest = getMemoryLatestRuns();
   return rows.map((row) => toSuiteDTO(row, latest.get(row.id)));
 }
@@ -33,12 +37,17 @@ export async function createSuite(input: SuiteInput, id?: string) {
   const now = new Date();
   const row: SuiteRow = {
     id: suiteId,
+    teamId: input.teamId || 'team-default',
+    repositoryId: input.repositoryId ?? null,
+    branchName: input.branchName ?? null,
     name: input.name,
     description: input.description ?? '',
     baseUrl: input.baseUrl ?? '',
     browser: input.browser ?? 'chromium',
     environment: input.environment ?? 'staging',
     jiraIssue: input.jiraIssue ?? null,
+    triggerType: input.triggerType ?? 'manual',
+    triggerConfig: input.triggerConfig ?? {},
     definition: input.definition,
     createdAt: now,
     updatedAt: now,
@@ -50,7 +59,7 @@ export async function createSuite(input: SuiteInput, id?: string) {
       eventType: 'suite_created',
       suiteId: dbRow.id,
       message: `Suite "${dbRow.name}" created`,
-      metadata: { steps: dbRow.definition.nodes.length },
+      metadata: { steps: dbRow.definition.nodes.length, repositoryId: dbRow.repositoryId },
     });
     return toSuiteDTO(dbRow);
   }
@@ -60,7 +69,7 @@ export async function createSuite(input: SuiteInput, id?: string) {
     eventType: 'suite_created',
     suiteId: row.id,
     message: `Suite "${row.name}" created`,
-    metadata: { steps: row.definition.nodes.length },
+    metadata: { steps: row.definition.nodes.length, repositoryId: row.repositoryId },
   });
   return toSuiteDTO(row);
 }
@@ -71,7 +80,15 @@ export async function updateSuite(id: string, input: SuiteInput) {
   if (hasDatabase && db) {
     const [row] = await db
       .update(testSuites)
-      .set({ ...input, updatedAt: now })
+      .set({
+        ...input,
+        teamId: input.teamId || 'team-default',
+        repositoryId: input.repositoryId ?? null,
+        branchName: input.branchName ?? null,
+        triggerType: input.triggerType ?? 'manual',
+        triggerConfig: input.triggerConfig ?? {},
+        updatedAt: now,
+      })
       .where(eq(testSuites.id, id))
       .returning();
     if (!row) return null;
@@ -79,7 +96,7 @@ export async function updateSuite(id: string, input: SuiteInput) {
       eventType: 'suite_updated',
       suiteId: row.id,
       message: `Suite "${row.name}" updated`,
-      metadata: { steps: row.definition.nodes.length, browser: row.browser },
+      metadata: { steps: row.definition.nodes.length, browser: row.browser, repositoryId: row.repositoryId },
     });
     const latest = await latestRunBySuite(id);
     return toSuiteDTO(row, latest.get(id));
@@ -90,12 +107,17 @@ export async function updateSuite(id: string, input: SuiteInput) {
 
   const updated: SuiteRow = {
     ...existing,
+    teamId: input.teamId || existing.teamId,
+    repositoryId: input.repositoryId !== undefined ? input.repositoryId ?? null : existing.repositoryId,
+    branchName: input.branchName !== undefined ? input.branchName ?? null : existing.branchName,
     name: input.name,
     description: input.description ?? '',
     baseUrl: input.baseUrl ?? '',
     browser: input.browser ?? existing.browser,
     environment: input.environment ?? existing.environment,
     jiraIssue: input.jiraIssue ?? null,
+    triggerType: input.triggerType ?? existing.triggerType,
+    triggerConfig: input.triggerConfig ?? existing.triggerConfig,
     definition: input.definition,
     updatedAt: now,
   };
@@ -105,7 +127,7 @@ export async function updateSuite(id: string, input: SuiteInput) {
     eventType: 'suite_updated',
     suiteId: updated.id,
     message: `Suite "${updated.name}" updated`,
-    metadata: { steps: updated.definition.nodes.length, browser: updated.browser },
+    metadata: { steps: updated.definition.nodes.length, browser: updated.browser, repositoryId: updated.repositoryId },
   });
   const latest = getMemoryLatestRuns(id);
   return toSuiteDTO(updated, latest.get(id));
@@ -162,7 +184,7 @@ function getMemoryLatestRuns(suiteId?: string) {
   return map;
 }
 
-/** Maps a DB row to the frontend's existing `TestSuite` shape. */
+/** Maps a DB row to the frontend's existing `TestSuite` shape with GitHub repo and trigger data */
 export function toSuiteDTO(row: SuiteRow, latest?: { status: string; createdAt: Date }) {
   const status = !latest
     ? 'draft'
@@ -173,6 +195,11 @@ export function toSuiteDTO(row: SuiteRow, latest?: { status: string; createdAt: 
         : 'draft';
   return {
     id: row.id,
+    teamId: row.teamId,
+    repositoryId: row.repositoryId ?? undefined,
+    branchName: row.branchName ?? undefined,
+    triggerType: row.triggerType,
+    triggerConfig: row.triggerConfig,
     name: row.name,
     description: row.description,
     baseUrl: row.baseUrl,

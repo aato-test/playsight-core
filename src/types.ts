@@ -54,11 +54,20 @@ export interface ConnectionEdge {
 
 export interface TestSuite {
   id: string;
+  teamId?: string;
+  repositoryId?: string;
+  branchName?: string;
   name: string;
   description: string;
   targetBrowser: 'chromium' | 'firefox' | 'webkit';
   baseUrl: string;
   environment?: 'local' | 'staging' | 'production';
+  triggerType?: 'manual' | 'push' | 'pull_request' | 'scheduled';
+  triggerConfig?: {
+    branches?: string[];
+    paths?: string[];
+    cronExpression?: string;
+  };
   nodes: TestNode[];
   edges: ConnectionEdge[];
   status?: 'passing' | 'needs_attention' | 'failed';
@@ -66,6 +75,76 @@ export interface TestSuite {
   lastRunTime?: string;
   jiraIssue?: string;
   updatedAt: string;
+}
+
+export interface TestCase {
+  id: string;
+  teamId: string;
+  title: string;
+  description: string;
+  stepType: StepType;
+  definition: TestNode;
+  jiraIssueKey?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface GitHubInstallation {
+  id: string;
+  installationId: number;
+  accountLogin: string;
+  accountType: 'User' | 'Organization';
+  avatarUrl: string | null;
+  status: 'active' | 'suspended' | 'deleted';
+  installedAt: string;
+}
+
+export interface GitHubRepository {
+  id: string;
+  githubRepoId: number;
+  name: string;
+  fullName: string;
+  ownerLogin: string;
+  isPrivate: boolean;
+  defaultBranch: string;
+  htmlUrl: string;
+  description: string | null;
+  branchesCount?: number;
+  updatedAt: string;
+}
+
+export interface GitHubBranch {
+  id: string;
+  name: string;
+  commitSha: string;
+  commitMessage: string | null;
+  isProtected: boolean;
+  lastCommitAt: string | null;
+}
+
+export interface GitHubStatusResponse {
+  connected: boolean;
+  installation: GitHubInstallation | null;
+  app: {
+    id?: string;
+    name: string;
+    slug: string;
+    clientId?: string;
+    isConfigured: boolean;
+    installUrl: string;
+  };
+  repositoriesCount: number;
+}
+
+export interface JiraStatusResponse {
+  connected: boolean;
+  connection: {
+    id: string;
+    siteName: string;
+    siteUrl: string;
+    status: string;
+  } | null;
+  issuesCount: number;
 }
 
 export interface PlaywrightTraceAction {

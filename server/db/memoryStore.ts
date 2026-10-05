@@ -1,19 +1,231 @@
 import { randomUUID } from 'node:crypto';
-import type { SuiteRow, RunRow, ResultRow, ArtifactRow, AuditRow } from './schema';
-import type { SuiteInput, SuiteDefinition } from '../../shared/suite';
+import type {
+  TeamRow,
+  GitHubInstallationRow,
+  GitHubRepositoryRow,
+  GitHubBranchRow,
+  WebhookDeliveryRow,
+  TestCaseRow,
+  SuiteTestCaseRow,
+  SuiteRow,
+  RunRow,
+  ResultRow,
+  ArtifactRow,
+  AuditRow,
+  JiraConnectionRow,
+  JiraProjectRow,
+  JiraBoardRow,
+  JiraIssueRow,
+} from './schema';
+import type { SuiteInput, SuiteDefinition, ExecutableNode } from '../../shared/suite';
 import { evaluateReleaseGate } from '../services/releaseGate';
 
 // In-memory collections
+const teamsMap = new Map<string, TeamRow>();
+const installationsMap = new Map<string, GitHubInstallationRow>();
+const repositoriesMap = new Map<string, GitHubRepositoryRow>();
+const branchesMap = new Map<string, GitHubBranchRow>();
+const deliveriesMap = new Map<string, WebhookDeliveryRow>();
+const testCasesMap = new Map<string, TestCaseRow>();
+const suiteTestCasesMap = new Map<string, SuiteTestCaseRow>();
 const suitesMap = new Map<string, SuiteRow>();
 const runsMap = new Map<string, RunRow>();
 const resultsMap = new Map<string, ResultRow>();
 const artifactsMap = new Map<string, ArtifactRow>();
 const auditMap = new Map<string, AuditRow>();
+const jiraConnectionsMap = new Map<string, JiraConnectionRow>();
+const jiraProjectsMap = new Map<string, JiraProjectRow>();
+const jiraBoardsMap = new Map<string, JiraBoardRow>();
+const jiraIssuesMap = new Map<string, JiraIssueRow>();
+
+// Seed Default Team
+const DEFAULT_TEAM: TeamRow = {
+  id: 'team-default',
+  name: 'PlaySight Core Team',
+  slug: 'playsight-team',
+  createdAt: new Date('2026-09-01T00:00:00Z'),
+  updatedAt: new Date('2026-09-01T00:00:00Z'),
+};
+teamsMap.set(DEFAULT_TEAM.id, DEFAULT_TEAM);
+
+// Seed GitHub App Installation (aato-test user account)
+const DEFAULT_INSTALLATION: GitHubInstallationRow = {
+  id: 'gh-inst-542109',
+  teamId: DEFAULT_TEAM.id,
+  installationId: 54210987,
+  accountLogin: 'aato-test',
+  accountType: 'User',
+  avatarUrl: 'https://avatars.githubusercontent.com/u/19876543?v=4',
+  targetId: 19876543,
+  permissions: {
+    contents: 'read',
+    metadata: 'read',
+    pull_requests: 'read',
+    statuses: 'write',
+  },
+  events: ['push', 'pull_request', 'installation'],
+  status: 'active',
+  installedAt: new Date('2026-09-15T10:00:00Z'),
+  createdAt: new Date('2026-09-15T10:00:00Z'),
+  updatedAt: new Date('2026-09-15T10:00:00Z'),
+};
+installationsMap.set(DEFAULT_INSTALLATION.id, DEFAULT_INSTALLATION);
+
+// Seed Discovered GitHub Repositories
+const DEFAULT_REPO: GitHubRepositoryRow = {
+  id: 'gh-repo-aato-playsight',
+  installationId: DEFAULT_INSTALLATION.id,
+  teamId: DEFAULT_TEAM.id,
+  githubRepoId: 987654321,
+  name: 'playsight-core',
+  fullName: 'aato-test/playsight-core',
+  ownerLogin: 'aato-test',
+  isPrivate: false,
+  defaultBranch: 'main',
+  htmlUrl: 'https://github.com/aato-test/playsight-core',
+  description: 'Collaborative Quality Workspace for End-to-End Regression Automation',
+  createdAt: new Date('2026-09-15T10:05:00Z'),
+  updatedAt: new Date('2026-10-05T09:00:00Z'),
+};
+repositoriesMap.set(DEFAULT_REPO.id, DEFAULT_REPO);
+
+// Seed Discovered GitHub Branches
+const SEED_BRANCHES: GitHubBranchRow[] = [
+  {
+    id: `${DEFAULT_REPO.id}-main`,
+    repositoryId: DEFAULT_REPO.id,
+    name: 'main',
+    commitSha: '1c54b15',
+    commitMessage: 'docs: update comprehensive engineering README documentation',
+    isProtected: true,
+    lastCommitAt: new Date('2026-10-05T09:25:00Z'),
+    updatedAt: new Date('2026-10-05T09:25:00Z'),
+  },
+  {
+    id: `${DEFAULT_REPO.id}-feature-checkout-fix`,
+    repositoryId: DEFAULT_REPO.id,
+    name: 'feature/checkout-fix',
+    commitSha: 'b284c1f',
+    commitMessage: 'fix(checkout): resolve selector instability in payment confirmation',
+    isProtected: false,
+    lastCommitAt: new Date('2026-10-04T16:30:00Z'),
+    updatedAt: new Date('2026-10-04T16:30:00Z'),
+  },
+  {
+    id: `${DEFAULT_REPO.id}-develop`,
+    repositoryId: DEFAULT_REPO.id,
+    name: 'develop',
+    commitSha: '8a94e10',
+    commitMessage: 'chore: sprint 42 integration testing pass',
+    isProtected: false,
+    lastCommitAt: new Date('2026-10-03T11:15:00Z'),
+    updatedAt: new Date('2026-10-03T11:15:00Z'),
+  },
+];
+SEED_BRANCHES.forEach((b) => branchesMap.set(b.id, b));
+
+// Seed Individual Test Cases
+const SEED_TEST_CASES: TestCaseRow[] = [
+  {
+    id: 'tc-nav-portal',
+    teamId: DEFAULT_TEAM.id,
+    title: 'Launch Checkout Portal',
+    description: 'Opens /checkout and confirms domcontentloaded state',
+    stepType: 'navigate',
+    definition: {
+      id: 'step-1',
+      type: 'navigate',
+      title: 'Launch Checkout Portal',
+      position: { x: 100, y: 180 },
+      data: { url: '/checkout', timeout: 5000, waitUntil: 'load' },
+    },
+    jiraIssueKey: 'CHK-184',
+    createdAt: new Date('2026-09-20T00:00:00Z'),
+    updatedAt: new Date('2026-09-20T00:00:00Z'),
+  },
+  {
+    id: 'tc-input-email',
+    teamId: DEFAULT_TEAM.id,
+    title: 'Enter Customer Email',
+    description: 'Fills user email input with validated corporate address',
+    stepType: 'input',
+    definition: {
+      id: 'step-2',
+      type: 'input',
+      title: 'Enter Customer Email',
+      position: { x: 440, y: 180 },
+      data: { selector: '#customer-email', value: 'qa-test@internal.net', clearFirst: true, maskInput: false, timeout: 5000 },
+    },
+    jiraIssueKey: 'CHK-184',
+    createdAt: new Date('2026-09-20T00:00:00Z'),
+    updatedAt: new Date('2026-09-20T00:00:00Z'),
+  },
+  {
+    id: 'tc-select-shipping',
+    teamId: DEFAULT_TEAM.id,
+    title: 'Select Express Shipping',
+    description: 'Selects the expedited delivery option radio element',
+    stepType: 'click',
+    definition: {
+      id: 'step-3',
+      type: 'click',
+      title: 'Select Express Shipping',
+      position: { x: 780, y: 180 },
+      data: { selector: '[data-testid="shipping-express"]', clickType: 'single', waitForSelector: true, timeout: 5000 },
+    },
+    jiraIssueKey: 'CHK-184',
+    createdAt: new Date('2026-09-20T00:00:00Z'),
+    updatedAt: new Date('2026-09-20T00:00:00Z'),
+  },
+  {
+    id: 'tc-confirm-payment',
+    teamId: DEFAULT_TEAM.id,
+    title: 'Confirm Payment Submission',
+    description: 'Submits payment form using validated test-id selector',
+    stepType: 'click',
+    definition: {
+      id: 'step-4',
+      type: 'click',
+      title: 'Confirm Payment Submission',
+      position: { x: 1120, y: 180 },
+      data: { selector: '[data-testid="payment-submit"]', clickType: 'single', waitForSelector: true, timeout: 6000 },
+    },
+    jiraIssueKey: 'CHK-184',
+    createdAt: new Date('2026-09-20T00:00:00Z'),
+    updatedAt: new Date('2026-09-20T00:00:00Z'),
+  },
+  {
+    id: 'tc-assert-order',
+    teamId: DEFAULT_TEAM.id,
+    title: 'Assert Order Confirmation #',
+    description: 'Verifies header displays order confirmed status banner',
+    stepType: 'assert',
+    definition: {
+      id: 'step-5',
+      type: 'assert',
+      title: 'Assert Order Confirmation #',
+      position: { x: 1460, y: 180 },
+      data: { selector: '.order-success-title', assertionType: 'text_contains', expectedValue: 'Order Confirmed', failureMessage: 'Order confirmation header was not rendered', timeout: 5000 },
+    },
+    jiraIssueKey: 'CHK-184',
+    createdAt: new Date('2026-09-20T00:00:00Z'),
+    updatedAt: new Date('2026-09-20T00:00:00Z'),
+  },
+];
+SEED_TEST_CASES.forEach((tc) => testCasesMap.set(tc.id, tc));
 
 // Initial demo suites
-const INITIAL_DEMO_SUITES: (SuiteInput & { id: string })[] = [
+const INITIAL_DEMO_SUITES: (Partial<SuiteInput> & {
+  id: string;
+  name: string;
+  definition: SuiteDefinition;
+})[] = [
   {
     id: 'demo-playwright-docs',
+    teamId: DEFAULT_TEAM.id,
+    repositoryId: DEFAULT_REPO.id,
+    branchName: 'main',
+    triggerType: 'manual',
     name: 'Demo: Playwright docs navigation',
     description: 'Opens playwright.dev, follows "Get started" and verifies the installation page. Expected to pass.',
     baseUrl: 'https://playwright.dev',
@@ -60,6 +272,10 @@ const INITIAL_DEMO_SUITES: (SuiteInput & { id: string })[] = [
   },
   {
     id: 'demo-example-missing-login',
+    teamId: DEFAULT_TEAM.id,
+    repositoryId: DEFAULT_REPO.id,
+    branchName: 'feature/checkout-fix',
+    triggerType: 'push',
     name: 'Demo: Example.com missing login button',
     description: 'Verifies example.com, then asserts a login button that does not exist. Expected to fail with evidence.',
     baseUrl: 'https://example.com',
@@ -98,6 +314,10 @@ const INITIAL_DEMO_SUITES: (SuiteInput & { id: string })[] = [
   },
   {
     id: 'suite-checkout-flow',
+    teamId: DEFAULT_TEAM.id,
+    repositoryId: DEFAULT_REPO.id,
+    branchName: 'feature/checkout-fix',
+    triggerType: 'push',
     name: 'E2E Checkout Regression Sequence',
     description: 'End-to-end critical checkout flow with payment submission and order confirmation',
     baseUrl: 'https://shop.local.internal',
@@ -106,41 +326,11 @@ const INITIAL_DEMO_SUITES: (SuiteInput & { id: string })[] = [
     jiraIssue: 'CHK-184',
     definition: {
       nodes: [
-        {
-          id: 'step-1',
-          type: 'navigate',
-          title: 'Launch Checkout Portal',
-          position: { x: 100, y: 180 },
-          data: { url: '/checkout', timeout: 5000, waitUntil: 'load' },
-        },
-        {
-          id: 'step-2',
-          type: 'input',
-          title: 'Enter Customer Email',
-          position: { x: 440, y: 180 },
-          data: { selector: '#customer-email', value: 'qa-test@internal.net', clearFirst: true, maskInput: false, timeout: 5000 },
-        },
-        {
-          id: 'step-3',
-          type: 'click',
-          title: 'Select Express Shipping',
-          position: { x: 780, y: 180 },
-          data: { selector: '[data-testid="shipping-express"]', clickType: 'single', waitForSelector: true, timeout: 5000 },
-        },
-        {
-          id: 'step-4',
-          type: 'click',
-          title: 'Confirm Payment Submission',
-          position: { x: 1120, y: 180 },
-          data: { selector: '[data-testid="checkout-submit"]', clickType: 'single', waitForSelector: true, timeout: 6000 },
-        },
-        {
-          id: 'step-5',
-          type: 'assert',
-          title: 'Assert Order Confirmation #',
-          position: { x: 1460, y: 180 },
-          data: { selector: '.order-success-title', assertionType: 'text_contains', expectedValue: 'Order Confirmed', failureMessage: 'Order confirmation header was not rendered', timeout: 5000 },
-        },
+        SEED_TEST_CASES[0].definition,
+        SEED_TEST_CASES[1].definition,
+        SEED_TEST_CASES[2].definition,
+        SEED_TEST_CASES[3].definition,
+        SEED_TEST_CASES[4].definition,
       ],
       edges: [
         { id: 'edge-1', sourceId: 'step-1', targetId: 'step-2' },
@@ -157,27 +347,47 @@ for (const s of INITIAL_DEMO_SUITES) {
   const now = new Date();
   suitesMap.set(s.id, {
     id: s.id,
+    teamId: s.teamId ?? DEFAULT_TEAM.id,
+    repositoryId: s.repositoryId ?? DEFAULT_REPO.id,
+    branchName: s.branchName ?? 'main',
     name: s.name,
     description: s.description ?? '',
     baseUrl: s.baseUrl ?? '',
     browser: s.browser ?? 'chromium',
     environment: s.environment ?? 'staging',
     jiraIssue: s.jiraIssue ?? null,
+    triggerType: s.triggerType ?? 'manual',
+    triggerConfig: { branches: ['main', 'feature/checkout-fix'] },
     definition: s.definition,
     createdAt: now,
     updatedAt: now,
   });
 }
 
+// Associate test cases to suite-checkout-flow
+SEED_TEST_CASES.forEach((tc, idx) => {
+  const stcId = `stc-checkout-${tc.id}`;
+  suiteTestCasesMap.set(stcId, {
+    id: stcId,
+    suiteId: 'suite-checkout-flow',
+    testCaseId: tc.id,
+    orderIndex: idx,
+    createdAt: new Date(),
+  });
+});
+
 // Seed the two runs corresponding to artifacts/ directory
 const SEED_RUN_1: RunRow = {
   id: 'run-18f39e44-a126-45c6-9af8-e22a4cb61455',
+  teamId: DEFAULT_TEAM.id,
   status: 'passed',
   createdAt: new Date(Date.now() - 3600_000 * 4),
   startedAt: new Date(Date.now() - 3600_000 * 4),
   completedAt: new Date(Date.now() - 3600_000 * 4 + 1420),
+  repositoryId: DEFAULT_REPO.id,
+  repositoryFullName: DEFAULT_REPO.fullName,
   branch: 'main',
-  commit: 'f6ef9d5',
+  commit: '410c540',
   environment: 'production',
   suiteId: 'demo-playwright-docs',
   suiteName: 'Demo: Playwright docs navigation',
@@ -193,6 +403,11 @@ const SEED_RUN_1: RunRow = {
   durationMs: 1420,
   releaseGateStatus: 'passed',
   triggeredBy: 'PlaySight Automation',
+  triggerEvent: 'manual',
+  pullRequestNumber: null,
+  pullRequestUrl: null,
+  pullRequestSourceBranch: null,
+  pullRequestTargetBranch: null,
   rerunOf: null,
   error: null,
 };
@@ -201,6 +416,7 @@ const SEED_RESULT_1: ResultRow = {
   id: 'res-43706389-cb6c-4f75-a742-592f801b4dff',
   runId: 'run-18f39e44-a126-45c6-9af8-e22a4cb61455',
   suiteId: 'demo-playwright-docs',
+  testCaseId: null,
   testName: 'Demo: Playwright docs navigation',
   browser: 'chromium',
   browserVersion: '124.0.6367.60',
@@ -261,10 +477,13 @@ const SEED_ARTIFACT_2: ArtifactRow = {
 
 const SEED_RUN_2: RunRow = {
   id: 'run-e358b5b4-67c5-47af-a1e4-8bf9f58edfb3',
+  teamId: DEFAULT_TEAM.id,
   status: 'failed',
   createdAt: new Date(Date.now() - 3600_000 * 2),
   startedAt: new Date(Date.now() - 3600_000 * 2),
   completedAt: new Date(Date.now() - 3600_000 * 2 + 2150),
+  repositoryId: DEFAULT_REPO.id,
+  repositoryFullName: DEFAULT_REPO.fullName,
   branch: 'feature/checkout-fix',
   commit: 'b284c1f',
   environment: 'staging',
@@ -281,7 +500,12 @@ const SEED_RUN_2: RunRow = {
   skippedTests: 0,
   durationMs: 2150,
   releaseGateStatus: 'failed',
-  triggeredBy: 'CI Webhook (GitHub)',
+  triggeredBy: 'GitHub Push (aato-test/playsight-core:feature/checkout-fix)',
+  triggerEvent: 'push',
+  pullRequestNumber: null,
+  pullRequestUrl: null,
+  pullRequestSourceBranch: null,
+  pullRequestTargetBranch: null,
   rerunOf: null,
   error: 'Element #login-button not found within 3000ms',
 };
@@ -290,6 +514,7 @@ const SEED_RESULT_2: ResultRow = {
   id: 'res-994bcaf3-8bb2-4caf-9b25-69b1df0c3c58',
   runId: 'run-e358b5b4-67c5-47af-a1e4-8bf9f58edfb3',
   suiteId: 'demo-example-missing-login',
+  testCaseId: null,
   testName: 'Demo: Example.com missing login button',
   browser: 'chromium',
   browserVersion: '124.0.6367.60',
@@ -346,6 +571,63 @@ const SEED_ARTIFACT_4: ArtifactRow = {
   createdAt: SEED_RUN_2.createdAt,
 };
 
+// Seed Jira Connection & Issues
+const DEFAULT_JIRA_CONN: JiraConnectionRow = {
+  id: 'jira-conn-1',
+  teamId: DEFAULT_TEAM.id,
+  cloudId: 'cloud-aato-test-01',
+  siteUrl: 'https://aato-team.atlassian.net',
+  siteName: 'aato-team.atlassian.net',
+  status: 'active',
+  createdAt: new Date('2026-09-10T00:00:00Z'),
+  updatedAt: new Date('2026-09-10T00:00:00Z'),
+};
+jiraConnectionsMap.set(DEFAULT_JIRA_CONN.id, DEFAULT_JIRA_CONN);
+
+const DEFAULT_JIRA_PROJECT: JiraProjectRow = {
+  id: 'jira-proj-chk',
+  connectionId: DEFAULT_JIRA_CONN.id,
+  teamId: DEFAULT_TEAM.id,
+  projectKey: 'CHK',
+  name: 'Checkout Core Automation',
+  avatarUrl: null,
+  createdAt: new Date('2026-09-10T00:00:00Z'),
+  updatedAt: new Date('2026-09-10T00:00:00Z'),
+};
+jiraProjectsMap.set(DEFAULT_JIRA_PROJECT.id, DEFAULT_JIRA_PROJECT);
+
+const SEED_JIRA_ISSUES: JiraIssueRow[] = [
+  {
+    id: 'jira-issue-1',
+    teamId: DEFAULT_TEAM.id,
+    projectId: DEFAULT_JIRA_PROJECT.id,
+    issueKey: 'CHK-184',
+    summary: 'Payment submission selector instability in checkout flow',
+    status: 'in_progress',
+    priority: 'high',
+    assigneeName: 'Prakash S.',
+    assigneeAvatar: null,
+    linkedSuiteId: 'suite-checkout-flow',
+    createdAt: new Date('2026-09-28T09:00:00Z'),
+    updatedAt: new Date('2026-10-04T16:00:00Z'),
+  },
+  {
+    id: 'jira-issue-2',
+    teamId: DEFAULT_TEAM.id,
+    projectId: DEFAULT_JIRA_PROJECT.id,
+    issueKey: 'CHK-182',
+    summary: 'Verify Playwright documentation getting-started path',
+    status: 'done',
+    priority: 'medium',
+    assigneeName: 'Elena Rostova',
+    assigneeAvatar: null,
+    linkedSuiteId: 'demo-playwright-docs',
+    createdAt: new Date('2026-09-25T11:00:00Z'),
+    updatedAt: new Date('2026-10-02T15:00:00Z'),
+  },
+];
+SEED_JIRA_ISSUES.forEach((iss) => jiraIssuesMap.set(iss.id, iss));
+
 runsMap.set(SEED_RUN_1.id, SEED_RUN_1);
 runsMap.set(SEED_RUN_2.id, SEED_RUN_2);
 resultsMap.set(SEED_RESULT_1.id, SEED_RESULT_1);
@@ -356,9 +638,20 @@ artifactsMap.set(SEED_ARTIFACT_3.id, SEED_ARTIFACT_3);
 artifactsMap.set(SEED_ARTIFACT_4.id, SEED_ARTIFACT_4);
 
 export const memoryStore = {
+  teams: teamsMap,
+  installations: installationsMap,
+  repositories: repositoriesMap,
+  branches: branchesMap,
+  deliveries: deliveriesMap,
+  testCases: testCasesMap,
+  suiteTestCases: suiteTestCasesMap,
   suites: suitesMap,
   runs: runsMap,
   results: resultsMap,
   artifacts: artifactsMap,
   audit: auditMap,
+  jiraConnections: jiraConnectionsMap,
+  jiraProjects: jiraProjectsMap,
+  jiraBoards: jiraBoardsMap,
+  jiraIssues: jiraIssuesMap,
 };

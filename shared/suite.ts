@@ -82,20 +82,43 @@ export const suiteDefinitionSchema = z.object({
   edges: z.array(edgeSchema).max(400),
 });
 
+export const triggerTypeSchema = z.enum(['manual', 'push', 'pull_request', 'scheduled']).default('manual');
+
 export const suiteInputSchema = z.object({
+  teamId: z.string().default('team-default'),
+  repositoryId: z.string().optional(),
+  branchName: z.string().optional(),
   name: z.string().trim().min(1).max(200),
   description: z.string().max(2000).default(''),
   baseUrl: z.string().trim().max(2000).default(''),
   browser: browserSchema.default('chromium'),
   environment: environmentSchema.default('staging'),
   jiraIssue: z.string().max(50).optional(),
+  triggerType: triggerTypeSchema,
+  triggerConfig: z
+    .object({
+      branches: z.array(z.string()).optional(),
+      paths: z.array(z.string()).optional(),
+      cronExpression: z.string().optional(),
+    })
+    .default({}),
   definition: suiteDefinitionSchema,
+});
+
+export const testCaseInputSchema = z.object({
+  teamId: z.string().default('team-default'),
+  title: z.string().trim().min(1).max(200),
+  description: z.string().max(2000).default(''),
+  stepType: z.enum(['navigate', 'click', 'input', 'assert']),
+  definition: testNodeSchema,
+  jiraIssueKey: z.string().max(50).optional(),
 });
 
 export type ExecutableNode = z.infer<typeof testNodeSchema>;
 export type ExecutableEdge = z.infer<typeof edgeSchema>;
 export type SuiteDefinition = z.infer<typeof suiteDefinitionSchema>;
 export type SuiteInput = z.infer<typeof suiteInputSchema>;
+export type TestCaseInput = z.infer<typeof testCaseInputSchema>;
 
 type Orderable = { id: string; position: { x: number; y: number } };
 type Linkable = { sourceId: string; targetId: string };
