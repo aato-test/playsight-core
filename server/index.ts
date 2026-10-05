@@ -1,4 +1,5 @@
 import { env } from './env';
+import fs from 'node:fs';
 import path from 'node:path';
 import express from 'express';
 import { api } from './routes';
@@ -33,6 +34,19 @@ if (env.isProduction) {
   const { createServer } = await import('vite');
   const vite = await createServer({ server: { middlewareMode: true }, appType: 'spa' });
   app.use(vite.middlewares);
+
+  app.get(/^(?!\/api).*/, async (req, res, next) => {
+    try {
+      const url = req.originalUrl;
+      const indexPath = path.resolve(process.cwd(), 'index.html');
+      let template = fs.readFileSync(indexPath, 'utf-8');
+      template = await vite.transformIndexHtml(url, template);
+      res.status(200).set({ 'Content-Type': 'text/html' }).end(template);
+    } catch (e) {
+      vite.ssrFixStacktrace(e as Error);
+      next(e);
+    }
+  });
 }
 
 const server = app.listen(env.port, '0.0.0.0', () => {
