@@ -257,7 +257,7 @@ async function executeTest(ctx: {
         await executeStep(page, node, baseUrl);
         step.status = 'passed';
         step.durationMs = Date.now() - t0;
-        if (node.data.captureScreenshot) {
+        if ('captureScreenshot' in node.data && node.data.captureScreenshot) {
           const artifact = await saveArtifact({
             runId,
             resultId: result.id,

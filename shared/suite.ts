@@ -55,6 +55,131 @@ const assertData = z
     }
   });
 
+const scrollData = z.object({
+  direction: z.enum(['down', 'up', 'to_bottom', 'to_selector']).default('down'),
+  selector: z.string().trim().default(''),
+  distancePx: z.coerce.number().default(600),
+  smooth: z.boolean().default(true),
+  timeout: timeoutSchema,
+  captureScreenshot: z.boolean().optional(),
+});
+
+const waitForData = z.object({
+  waitType: z.enum(['selector', 'timeout', 'networkidle']).default('timeout'),
+  selector: z.string().trim().default(''),
+  durationMs: z.coerce.number().default(2000),
+  timeout: timeoutSchema,
+});
+
+const screenshotData = z.object({
+  captureFullPage: z.boolean().default(true),
+  selector: z.string().trim().default(''),
+  fileName: z.string().trim().default('screenshot.png'),
+  timeout: timeoutSchema,
+});
+
+const selectDropdownData = z.object({
+  selector: z.string().trim().min(1, 'Selector is required'),
+  selectValue: z.string().default(''),
+  selectBy: z.enum(['value', 'label', 'index']).default('value'),
+  timeout: timeoutSchema,
+});
+
+const hoverData = z.object({
+  selector: z.string().trim().min(1, 'Selector is required'),
+  timeout: timeoutSchema,
+});
+
+const pressKeyData = z.object({
+  key: z.string().trim().default('Enter'),
+  selector: z.string().trim().default(''),
+  timeout: timeoutSchema,
+});
+
+const extractTextData = z.object({
+  selector: z.string().trim().min(1, 'Selector is required'),
+  variableName: z.string().trim().min(1, 'Variable name is required').default('extractedText'),
+  extractMultiple: z.boolean().default(false),
+  trimWhitespace: z.boolean().default(true),
+  timeout: timeoutSchema,
+});
+
+const extractAttributeData = z.object({
+  selector: z.string().trim().min(1, 'Selector is required'),
+  attribute: z.string().trim().min(1, 'Attribute name is required').default('href'),
+  variableName: z.string().trim().min(1, 'Variable name is required').default('extractedAttr'),
+  extractMultiple: z.boolean().default(false),
+  timeout: timeoutSchema,
+});
+
+const extractTableData = z.object({
+  selector: z.string().trim().min(1, 'Selector is required').default('table'),
+  variableName: z.string().trim().min(1, 'Variable name is required').default('extractedTable'),
+  parseHeaders: z.boolean().default(true),
+  timeout: timeoutSchema,
+});
+
+const extractListData = z.object({
+  parentSelector: z.string().trim().min(1, 'Parent/List selector is required'),
+  itemSelector: z.string().trim().min(1, 'Item selector is required'),
+  variableName: z.string().trim().min(1, 'Variable name is required').default('extractedList'),
+  timeout: timeoutSchema,
+});
+
+const extractHtmlData = z.object({
+  selector: z.string().trim().min(1, 'Selector is required'),
+  htmlType: z.enum(['innerHTML', 'outerHTML']).default('innerHTML'),
+  variableName: z.string().trim().min(1, 'Variable name is required').default('extractedHtml'),
+  timeout: timeoutSchema,
+});
+
+const paginationData = z.object({
+  nextButtonSelector: z.string().trim().min(1, 'Next button selector is required'),
+  maxPages: z.coerce.number().int().min(1).max(100).default(5),
+  waitAfterClickMs: z.coerce.number().int().default(1500),
+  timeout: timeoutSchema,
+});
+
+const loopElementsData = z.object({
+  itemSelector: z.string().trim().min(1, 'Item selector is required'),
+  maxItems: z.coerce.number().int().min(1).max(500).default(20),
+  timeout: timeoutSchema,
+});
+
+const exportJsonData = z.object({
+  datasetVariable: z.string().trim().default('scrapedData'),
+  fileName: z.string().trim().default('scraped_results.json'),
+  prettyPrint: z.boolean().default(true),
+  timeout: timeoutSchema.default(1000),
+});
+
+const exportCsvData = z.object({
+  datasetVariable: z.string().trim().default('scrapedData'),
+  fileName: z.string().trim().default('scraped_results.csv'),
+  delimiter: z.string().default(','),
+  timeout: timeoutSchema.default(1000),
+});
+
+const webhookPushData = z.object({
+  endpointUrl: z.string().trim().min(1, 'Endpoint URL is required'),
+  method: z.enum(['POST', 'PUT']).default('POST'),
+  authHeader: z.string().default(''),
+  timeout: timeoutSchema,
+});
+
+const cookieBannerData = z.object({
+  acceptSelector: z.string().trim().default('[id*="cookie" i] button, [class*="cookie" i] button, button:has-text("Accept")'),
+  dismissSelector: z.string().trim().default(''),
+  optional: z.boolean().default(true),
+  timeout: timeoutSchema.default(3000),
+});
+
+const captchaDetectData = z.object({
+  alertOnDetect: z.boolean().default(true),
+  actionOnDetect: z.enum(['wait_for_user', 'abort']).default('wait_for_user'),
+  timeout: timeoutSchema.default(5000),
+});
+
 const nodeBase = {
   id: z.string().min(1),
   title: z.string().default('Untitled step'),
@@ -65,10 +190,39 @@ const nodeBase = {
 };
 
 export const testNodeSchema = z.discriminatedUnion('type', [
+  // Navigation & Browsing
   z.object({ ...nodeBase, type: z.literal('navigate'), data: navigateData }),
+  z.object({ ...nodeBase, type: z.literal('scroll'), data: scrollData }),
+  z.object({ ...nodeBase, type: z.literal('wait_for'), data: waitForData }),
+  z.object({ ...nodeBase, type: z.literal('screenshot'), data: screenshotData }),
+
+  // Interaction
   z.object({ ...nodeBase, type: z.literal('click'), data: clickData }),
   z.object({ ...nodeBase, type: z.literal('input'), data: inputData }),
+  z.object({ ...nodeBase, type: z.literal('select_dropdown'), data: selectDropdownData }),
+  z.object({ ...nodeBase, type: z.literal('hover'), data: hoverData }),
+  z.object({ ...nodeBase, type: z.literal('press_key'), data: pressKeyData }),
+
+  // Data Extraction & Web Scraping
+  z.object({ ...nodeBase, type: z.literal('extract_text'), data: extractTextData }),
+  z.object({ ...nodeBase, type: z.literal('extract_attribute'), data: extractAttributeData }),
+  z.object({ ...nodeBase, type: z.literal('extract_table'), data: extractTableData }),
+  z.object({ ...nodeBase, type: z.literal('extract_list'), data: extractListData }),
+  z.object({ ...nodeBase, type: z.literal('extract_html'), data: extractHtmlData }),
+
+  // Pagination & Loops
+  z.object({ ...nodeBase, type: z.literal('pagination'), data: paginationData }),
+  z.object({ ...nodeBase, type: z.literal('loop_elements'), data: loopElementsData }),
+
+  // Data Export & Output
+  z.object({ ...nodeBase, type: z.literal('export_json'), data: exportJsonData }),
+  z.object({ ...nodeBase, type: z.literal('export_csv'), data: exportCsvData }),
+  z.object({ ...nodeBase, type: z.literal('webhook_push'), data: webhookPushData }),
+
+  // Validation & Anti-Bot
   z.object({ ...nodeBase, type: z.literal('assert'), data: assertData }),
+  z.object({ ...nodeBase, type: z.literal('cookie_banner'), data: cookieBannerData }),
+  z.object({ ...nodeBase, type: z.literal('captcha_detect'), data: captchaDetectData }),
 ]);
 
 export const edgeSchema = z.object({
@@ -105,11 +259,36 @@ export const suiteInputSchema = z.object({
   definition: suiteDefinitionSchema,
 });
 
+export const stepTypeSchema = z.enum([
+  'navigate',
+  'scroll',
+  'wait_for',
+  'screenshot',
+  'click',
+  'input',
+  'select_dropdown',
+  'hover',
+  'press_key',
+  'extract_text',
+  'extract_attribute',
+  'extract_table',
+  'extract_list',
+  'extract_html',
+  'pagination',
+  'loop_elements',
+  'export_json',
+  'export_csv',
+  'webhook_push',
+  'assert',
+  'cookie_banner',
+  'captcha_detect',
+]);
+
 export const testCaseInputSchema = z.object({
   teamId: z.string().default('team-default'),
   title: z.string().trim().min(1).max(200),
   description: z.string().max(2000).default(''),
-  stepType: z.enum(['navigate', 'click', 'input', 'assert']),
+  stepType: stepTypeSchema,
   definition: testNodeSchema,
   jiraIssueKey: z.string().max(50).optional(),
 });

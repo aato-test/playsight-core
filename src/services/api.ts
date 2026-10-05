@@ -441,3 +441,41 @@ export async function setSuiteTestCases(suiteId: string, testCaseIds: string[]):
   }
 }
 
+export async function fetchCurrentUser() {
+  try {
+    const res = await fetch('/api/auth/me');
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+
+export async function signInGoogle(email: string = 'prakashsivakumar27@gmail.com', name: string = 'Prakash Sivakumar') {
+  try {
+    const res = await fetch('/api/auth/google', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, name }),
+    });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+
+export async function importFromGoogle(sourceType: 'sheets' | 'drive', sourceUrl: string = '', sampleId?: string) {
+  try {
+    const res = await fetch('/api/auth/import/google', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sourceType, sourceUrl, sampleId }),
+    });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+

@@ -14,6 +14,24 @@ import {
   ClickStepData,
   InputStepData,
   AssertStepData,
+  ScrollStepData,
+  WaitForStepData,
+  ScreenshotStepData,
+  SelectDropdownStepData,
+  HoverStepData,
+  PressKeyStepData,
+  ExtractTextStepData,
+  ExtractAttributeStepData,
+  ExtractTableStepData,
+  ExtractListStepData,
+  ExtractHtmlStepData,
+  PaginationStepData,
+  LoopElementsStepData,
+  ExportJsonStepData,
+  ExportCsvStepData,
+  WebhookPushStepData,
+  CookieBannerStepData,
+  CaptchaDetectStepData,
 } from '../../types';
 import {
   Play,
@@ -71,12 +89,37 @@ export const VisualBuilder: React.FC<VisualBuilderProps> = ({
       defaultData = {
         url: '/checkout',
         timeout: 8000,
-        waitUntil: 'networkidle',
+        waitUntil: 'load',
       } as NavigateStepData;
-    } else if (type === 'click') {
-      defaultTitle = 'Click Submit';
+    } else if (type === 'scroll') {
+      defaultTitle = 'Scroll Viewport';
       defaultData = {
-        selector: '[data-testid="checkout-submit"]',
+        direction: 'down',
+        selector: '',
+        distancePx: 800,
+        smooth: true,
+        timeout: 5000,
+      } as ScrollStepData;
+    } else if (type === 'wait_for') {
+      defaultTitle = 'Wait / Delay';
+      defaultData = {
+        waitType: 'timeout',
+        selector: '',
+        durationMs: 2000,
+        timeout: 10000,
+      } as WaitForStepData;
+    } else if (type === 'screenshot') {
+      defaultTitle = 'Capture Snapshot';
+      defaultData = {
+        captureFullPage: true,
+        selector: '',
+        fileName: 'snapshot.png',
+        timeout: 5000,
+      } as ScreenshotStepData;
+    } else if (type === 'click') {
+      defaultTitle = 'Click Element';
+      defaultData = {
+        selector: '[data-testid="submit"]',
         clickType: 'single',
         waitForSelector: true,
         timeout: 6000,
@@ -84,19 +127,136 @@ export const VisualBuilder: React.FC<VisualBuilderProps> = ({
     } else if (type === 'input') {
       defaultTitle = 'Input Field';
       defaultData = {
-        selector: '#card-number',
-        value: '4242 •••• •••• 4242',
+        selector: '#search-box',
+        value: 'Search query',
         clearFirst: true,
         maskInput: false,
         timeout: 5000,
       } as InputStepData;
+    } else if (type === 'select_dropdown') {
+      defaultTitle = 'Select Dropdown';
+      defaultData = {
+        selector: 'select#category',
+        selectValue: 'electronics',
+        selectBy: 'value',
+        timeout: 5000,
+      } as SelectDropdownStepData;
+    } else if (type === 'hover') {
+      defaultTitle = 'Hover Element';
+      defaultData = {
+        selector: '.nav-dropdown-trigger',
+        timeout: 5000,
+      } as HoverStepData;
+    } else if (type === 'press_key') {
+      defaultTitle = 'Press Key';
+      defaultData = {
+        key: 'Enter',
+        selector: 'input[type="search"]',
+        timeout: 5000,
+      } as PressKeyStepData;
+    } else if (type === 'extract_text') {
+      defaultTitle = 'Extract Text';
+      defaultData = {
+        selector: '.product-title',
+        variableName: 'productTitles',
+        extractMultiple: true,
+        trimWhitespace: true,
+        timeout: 6000,
+      } as ExtractTextStepData;
+    } else if (type === 'extract_attribute') {
+      defaultTitle = 'Extract Attribute';
+      defaultData = {
+        selector: 'a.product-link',
+        attribute: 'href',
+        variableName: 'productUrls',
+        extractMultiple: true,
+        timeout: 6000,
+      } as ExtractAttributeStepData;
+    } else if (type === 'extract_table') {
+      defaultTitle = 'Extract HTML Table';
+      defaultData = {
+        selector: 'table.data-grid',
+        variableName: 'catalogTable',
+        parseHeaders: true,
+        timeout: 8000,
+      } as ExtractTableStepData;
+    } else if (type === 'extract_list') {
+      defaultTitle = 'Extract List Items';
+      defaultData = {
+        parentSelector: '.product-grid',
+        itemSelector: '.card-body',
+        variableName: 'itemsList',
+        timeout: 8000,
+      } as ExtractListStepData;
+    } else if (type === 'extract_html') {
+      defaultTitle = 'Extract Raw HTML';
+      defaultData = {
+        selector: '#main-content',
+        htmlType: 'innerHTML',
+        variableName: 'rawHtml',
+        timeout: 5000,
+      } as ExtractHtmlStepData;
+    } else if (type === 'pagination') {
+      defaultTitle = 'Paginate Results';
+      defaultData = {
+        nextButtonSelector: 'a.pagination-next, button:has-text("Next")',
+        maxPages: 5,
+        waitAfterClickMs: 1500,
+        timeout: 10000,
+      } as PaginationStepData;
+    } else if (type === 'loop_elements') {
+      defaultTitle = 'Loop Elements';
+      defaultData = {
+        itemSelector: '.catalog-row',
+        maxItems: 25,
+        timeout: 10000,
+      } as LoopElementsStepData;
+    } else if (type === 'export_json') {
+      defaultTitle = 'Export to JSON';
+      defaultData = {
+        datasetVariable: 'scrapedData',
+        fileName: 'scraped_dataset.json',
+        prettyPrint: true,
+        timeout: 1000,
+      } as ExportJsonStepData;
+    } else if (type === 'export_csv') {
+      defaultTitle = 'Export to CSV';
+      defaultData = {
+        datasetVariable: 'scrapedData',
+        fileName: 'scraped_dataset.csv',
+        delimiter: ',',
+        timeout: 1000,
+      } as ExportCsvStepData;
+    } else if (type === 'webhook_push') {
+      defaultTitle = 'Push Webhook';
+      defaultData = {
+        endpointUrl: 'https://api.example.com/webhooks/ingest',
+        method: 'POST',
+        authHeader: '',
+        timeout: 10000,
+      } as WebhookPushStepData;
+    } else if (type === 'cookie_banner') {
+      defaultTitle = 'Dismiss Cookie Banner';
+      defaultData = {
+        acceptSelector: '#onetrust-accept-btn-handler, button:has-text("Accept")',
+        dismissSelector: '',
+        optional: true,
+        timeout: 3000,
+      } as CookieBannerStepData;
+    } else if (type === 'captcha_detect') {
+      defaultTitle = 'Anti-Bot Guard';
+      defaultData = {
+        alertOnDetect: true,
+        actionOnDetect: 'wait_for_user',
+        timeout: 5000,
+      } as CaptchaDetectStepData;
     } else if (type === 'assert') {
       defaultTitle = 'Assert State';
       defaultData = {
         selector: 'body',
-        assertionType: 'expression',
-        expectedValue: 'order.status === "confirmed"',
-        failureMessage: 'Confirmation state check failed',
+        assertionType: 'is_visible',
+        expectedValue: '',
+        failureMessage: 'Verification failed',
         timeout: 5000,
       } as AssertStepData;
     }
@@ -333,6 +493,127 @@ export const VisualBuilder: React.FC<VisualBuilderProps> = ({
         ...suite,
         nodes: checkoutNodes,
         edges: checkoutEdges,
+        updatedAt: 'Just now',
+      });
+      setSelectedNodeId('step-1');
+    } else if (presetName === 'scraper-catalog') {
+      const scraperNodes: TestNode[] = [
+        {
+          id: 'step-1',
+          type: 'navigate',
+          title: 'Navigate Product Catalog',
+          position: { x: 80, y: 140 },
+          data: { url: 'https://news.ycombinator.com', timeout: 8000, waitUntil: 'load' } as NavigateStepData,
+          status: 'idle',
+        },
+        {
+          id: 'step-2',
+          type: 'cookie_banner',
+          title: 'Dismiss Cookie Banner',
+          position: { x: 430, y: 140 },
+          data: { acceptSelector: 'button:has-text("Accept"), button:has-text("Consent")', dismissSelector: '', optional: true, timeout: 3000 } as CookieBannerStepData,
+          status: 'idle',
+        },
+        {
+          id: 'step-3',
+          type: 'scroll',
+          title: 'Scroll Down Feed',
+          position: { x: 780, y: 140 },
+          data: { direction: 'down', selector: '', distancePx: 800, smooth: true, timeout: 5000 } as ScrollStepData,
+          status: 'idle',
+        },
+        {
+          id: 'step-4',
+          type: 'extract_table',
+          title: 'Scrape Products / Headlines Table',
+          position: { x: 1130, y: 140 },
+          data: { selector: 'table.itemlist, table', variableName: 'scrapedTableData', parseHeaders: true, timeout: 8000 } as ExtractTableStepData,
+          status: 'idle',
+        },
+        {
+          id: 'step-5',
+          type: 'pagination',
+          title: 'Paginate to Next Page',
+          position: { x: 1480, y: 140 },
+          data: { nextButtonSelector: 'a.morelink, a[rel="next"]', maxPages: 3, waitAfterClickMs: 1500, timeout: 8000 } as PaginationStepData,
+          status: 'idle',
+        },
+        {
+          id: 'step-6',
+          type: 'export_json',
+          title: 'Export to Scraped Dataset JSON',
+          position: { x: 1830, y: 140 },
+          data: { datasetVariable: 'scrapedTableData', fileName: 'catalog_export.json', prettyPrint: true, timeout: 2000 } as ExportJsonStepData,
+          status: 'idle',
+        },
+      ];
+      const scraperEdges: ConnectionEdge[] = [
+        { id: 'e-1-2', sourceId: 'step-1', targetId: 'step-2' },
+        { id: 'e-2-3', sourceId: 'step-2', targetId: 'step-3' },
+        { id: 'e-3-4', sourceId: 'step-3', targetId: 'step-4' },
+        { id: 'e-4-5', sourceId: 'step-4', targetId: 'step-5' },
+        { id: 'e-5-6', sourceId: 'step-5', targetId: 'step-6' },
+      ];
+      onUpdateSuite({
+        ...suite,
+        nodes: scraperNodes,
+        edges: scraperEdges,
+        updatedAt: 'Just now',
+      });
+      setSelectedNodeId('step-1');
+    } else if (presetName === 'scraper-leads') {
+      const leadsNodes: TestNode[] = [
+        {
+          id: 'step-1',
+          type: 'navigate',
+          title: 'Open Directory Portal',
+          position: { x: 80, y: 140 },
+          data: { url: 'https://example.com/directory', timeout: 8000, waitUntil: 'load' } as NavigateStepData,
+          status: 'idle',
+        },
+        {
+          id: 'step-2',
+          type: 'wait_for',
+          title: 'Wait for Directory Grid',
+          position: { x: 430, y: 140 },
+          data: { waitType: 'timeout', selector: '', durationMs: 1500, timeout: 5000 } as WaitForStepData,
+          status: 'idle',
+        },
+        {
+          id: 'step-3',
+          type: 'extract_list',
+          title: 'Extract Member Cards',
+          position: { x: 780, y: 140 },
+          data: { parentSelector: '.directory-list, .grid', itemSelector: '.member-card, .card', variableName: 'memberList', timeout: 8000 } as ExtractListStepData,
+          status: 'idle',
+        },
+        {
+          id: 'step-4',
+          type: 'extract_attribute',
+          title: 'Extract Profile Hrefs',
+          position: { x: 1130, y: 140 },
+          data: { selector: 'a.profile-link, a', attribute: 'href', variableName: 'profileUrls', extractMultiple: true, timeout: 6000 } as ExtractAttributeStepData,
+          status: 'idle',
+        },
+        {
+          id: 'step-5',
+          type: 'export_csv',
+          title: 'Export Leads to CSV',
+          position: { x: 1480, y: 140 },
+          data: { datasetVariable: 'memberList', fileName: 'leads_directory.csv', delimiter: ',', timeout: 2000 } as ExportCsvStepData,
+          status: 'idle',
+        },
+      ];
+      const leadsEdges: ConnectionEdge[] = [
+        { id: 'e-1-2', sourceId: 'step-1', targetId: 'step-2' },
+        { id: 'e-2-3', sourceId: 'step-2', targetId: 'step-3' },
+        { id: 'e-3-4', sourceId: 'step-3', targetId: 'step-4' },
+        { id: 'e-4-5', sourceId: 'step-4', targetId: 'step-5' },
+      ];
+      onUpdateSuite({
+        ...suite,
+        nodes: leadsNodes,
+        edges: leadsEdges,
         updatedAt: 'Just now',
       });
       setSelectedNodeId('step-1');

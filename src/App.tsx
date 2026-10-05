@@ -13,6 +13,7 @@ import { QACopilot } from './components/QACopilot';
 import { CommandPalette } from './components/CommandPalette';
 import { CreateWorkflowModal } from './components/CreateWorkflowModal';
 import { JsonExportModal } from './components/VisualBuilder/JsonExportModal';
+import { GoogleAuthModal } from './components/GoogleAuthModal';
 import {
   MOCK_TEST_SUITES,
   MOCK_TEST_RUNS,
@@ -70,6 +71,10 @@ export default function App() {
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isJsonModalOpen, setIsJsonModalOpen] = useState(false);
+  const [isGoogleModalOpen, setIsGoogleModalOpen] = useState(false);
+  const [isGoogleSignedIn, setIsGoogleSignedIn] = useState(true);
+  const [userName, setUserName] = useState('Prakash Sivakumar');
+  const [userEmail, setUserEmail] = useState('prakashsivakumar27@gmail.com');
   const [isRunning, setIsRunning] = useState(false);
 
   const [notification, setNotification] = useState<{
@@ -264,6 +269,61 @@ export default function App() {
     setCurrentSuiteId(newSuite.id);
     setActiveTab('workflows');
     showNotification(`Created workflow "${newSuite.name}"`);
+  };
+
+  // Import from Google Sheets
+  const handleImportGoogleTargets = (targets: { url: string; label: string }[]) => {
+    if (targets.length === 0) return;
+    const nextId = `node-${Date.now().toString().slice(-4)}`;
+    const newNodes: TestNode[] = [
+      {
+        id: `${nextId}-1`,
+        type: 'navigate',
+        title: `Navigate to ${targets[0].label}`,
+        position: { x: 80, y: 140 },
+        data: { url: targets[0].url, timeout: 8000, waitUntil: 'load' } as any,
+        status: 'idle',
+      },
+      {
+        id: `${nextId}-2`,
+        type: 'cookie_banner',
+        title: 'Auto-Dismiss Cookie Banner',
+        position: { x: 430, y: 140 },
+        data: { acceptSelector: 'button:has-text("Accept"), button:has-text("Consent"), #accept-btn', dismissSelector: '', optional: true, timeout: 3000 } as any,
+        status: 'idle',
+      },
+      {
+        id: `${nextId}-3`,
+        type: 'extract_table',
+        title: 'Extract Content / Table Data',
+        position: { x: 780, y: 140 },
+        data: { selector: 'table, .grid-table, .data-view', variableName: 'sheetScrapedItems', parseHeaders: true, timeout: 8000 } as any,
+        status: 'idle',
+      },
+      {
+        id: `${nextId}-4`,
+        type: 'export_csv',
+        title: 'Export Results to CSV',
+        position: { x: 1130, y: 140 },
+        data: { datasetVariable: 'sheetScrapedItems', fileName: 'google_sheets_export.csv', delimiter: ',', timeout: 2000 } as any,
+        status: 'idle',
+      },
+    ];
+    const newEdges = [
+      { id: `e-${nextId}-1-2`, sourceId: `${nextId}-1`, targetId: `${nextId}-2` },
+      { id: `e-${nextId}-2-3`, sourceId: `${nextId}-2`, targetId: `${nextId}-3` },
+      { id: `e-${nextId}-3-4`, sourceId: `${nextId}-3`, targetId: `${nextId}-4` },
+    ];
+    const updated = {
+      ...currentSuite,
+      name: `Google Sheets Ingest: ${targets[0].label}`,
+      nodes: newNodes,
+      edges: newEdges,
+      updatedAt: 'Just now',
+    };
+    handleUpdateCurrentSuite(updated);
+    setActiveTab('workflows');
+    showNotification(`Imported ${targets.length} targets from Google Sheets into current suite!`);
   };
 
   // Update Jira issue
@@ -557,6 +617,9 @@ export default function App() {
           isBackendConnected={isBackendConnected}
           backendMode={backendMode}
           onNavigateToTab={(tab) => setActiveTab(tab)}
+          onOpenGoogleAuth={() => setIsGoogleModalOpen(true)}
+          isGoogleSignedIn={isGoogleSignedIn}
+          userEmail={userEmail}
         />
 
         {/* Global Toast Notification */}
@@ -724,6 +787,21 @@ export default function App() {
         edges={currentSuite.edges}
         suiteName={currentSuite.name}
         browser={currentSuite.targetBrowser}
+      />
+
+      {/* Google Authentication & Imports Modal */}
+      <GoogleAuthModal
+        isOpen={isGoogleModalOpen}
+        onClose={() => setIsGoogleModalOpen(false)}
+        userEmail={userEmail}
+        userName={userName}
+        isSignedIn={isGoogleSignedIn}
+        onAuthChange={(signedIn, user) => {
+          setIsGoogleSignedIn(signedIn);
+          setUserName(user.name);
+          setUserEmail(user.email);
+        }}
+        onImportTargets={handleImportGoogleTargets}
       />
     </div>
   );

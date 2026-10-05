@@ -1,9 +1,59 @@
-export type StepType = 'navigate' | 'click' | 'input' | 'assert';
+export type StepType =
+  // Navigation & Browsing
+  | 'navigate'
+  | 'scroll'
+  | 'wait_for'
+  | 'screenshot'
+  // Interaction
+  | 'click'
+  | 'input'
+  | 'select_dropdown'
+  | 'hover'
+  | 'press_key'
+  // Data Extraction & Web Scraping
+  | 'extract_text'
+  | 'extract_attribute'
+  | 'extract_table'
+  | 'extract_list'
+  | 'extract_html'
+  // Pagination & Loops
+  | 'pagination'
+  | 'loop_elements'
+  // Data Export & Output
+  | 'export_json'
+  | 'export_csv'
+  | 'webhook_push'
+  // Validation & Anti-Bot
+  | 'assert'
+  | 'cookie_banner'
+  | 'captcha_detect';
 
 export interface NavigateStepData {
   url: string;
   timeout: number;
   waitUntil: 'load' | 'domcontentloaded' | 'networkidle';
+}
+
+export interface ScrollStepData {
+  direction: 'down' | 'up' | 'to_bottom' | 'to_selector';
+  selector?: string;
+  distancePx: number;
+  smooth: boolean;
+  timeout: number;
+}
+
+export interface WaitForStepData {
+  waitType: 'selector' | 'timeout' | 'networkidle';
+  selector?: string;
+  durationMs: number;
+  timeout: number;
+}
+
+export interface ScreenshotStepData {
+  captureFullPage: boolean;
+  selector?: string;
+  fileName: string;
+  timeout: number;
 }
 
 export interface ClickStepData {
@@ -21,6 +71,95 @@ export interface InputStepData {
   timeout: number;
 }
 
+export interface SelectDropdownStepData {
+  selector: string;
+  selectValue: string;
+  selectBy: 'value' | 'label' | 'index';
+  timeout: number;
+}
+
+export interface HoverStepData {
+  selector: string;
+  timeout: number;
+}
+
+export interface PressKeyStepData {
+  key: string;
+  selector?: string;
+  timeout: number;
+}
+
+export interface ExtractTextStepData {
+  selector: string;
+  variableName: string;
+  extractMultiple: boolean;
+  trimWhitespace: boolean;
+  timeout: number;
+}
+
+export interface ExtractAttributeStepData {
+  selector: string;
+  attribute: string;
+  variableName: string;
+  extractMultiple: boolean;
+  timeout: number;
+}
+
+export interface ExtractTableStepData {
+  selector: string;
+  variableName: string;
+  parseHeaders: boolean;
+  timeout: number;
+}
+
+export interface ExtractListStepData {
+  parentSelector: string;
+  itemSelector: string;
+  variableName: string;
+  timeout: number;
+}
+
+export interface ExtractHtmlStepData {
+  selector: string;
+  htmlType: 'innerHTML' | 'outerHTML';
+  variableName: string;
+  timeout: number;
+}
+
+export interface PaginationStepData {
+  nextButtonSelector: string;
+  maxPages: number;
+  waitAfterClickMs: number;
+  timeout: number;
+}
+
+export interface LoopElementsStepData {
+  itemSelector: string;
+  maxItems: number;
+  timeout: number;
+}
+
+export interface ExportJsonStepData {
+  datasetVariable: string;
+  fileName: string;
+  prettyPrint: boolean;
+  timeout: number;
+}
+
+export interface ExportCsvStepData {
+  datasetVariable: string;
+  fileName: string;
+  delimiter: string;
+  timeout: number;
+}
+
+export interface WebhookPushStepData {
+  endpointUrl: string;
+  method: 'POST' | 'PUT';
+  authHeader?: string;
+  timeout: number;
+}
+
 export interface AssertStepData {
   selector: string;
   assertionType: 'is_visible' | 'text_contains' | 'text_equals' | 'has_value' | 'url_contains' | 'expression';
@@ -29,7 +168,51 @@ export interface AssertStepData {
   timeout: number;
 }
 
-export type StepData = NavigateStepData | ClickStepData | InputStepData | AssertStepData;
+export interface CookieBannerStepData {
+  acceptSelector: string;
+  dismissSelector?: string;
+  optional: boolean;
+  timeout: number;
+}
+
+export interface CaptchaDetectStepData {
+  alertOnDetect: boolean;
+  actionOnDetect: 'wait_for_user' | 'abort';
+  timeout: number;
+}
+
+export interface UserProfile {
+  name: string;
+  email: string;
+  avatarUrl?: string;
+  provider: 'google' | 'local';
+  role: string;
+  teamId: string;
+}
+
+export type StepData =
+  | NavigateStepData
+  | ScrollStepData
+  | WaitForStepData
+  | ScreenshotStepData
+  | ClickStepData
+  | InputStepData
+  | SelectDropdownStepData
+  | HoverStepData
+  | PressKeyStepData
+  | ExtractTextStepData
+  | ExtractAttributeStepData
+  | ExtractTableStepData
+  | ExtractListStepData
+  | ExtractHtmlStepData
+  | PaginationStepData
+  | LoopElementsStepData
+  | ExportJsonStepData
+  | ExportCsvStepData
+  | WebhookPushStepData
+  | AssertStepData
+  | CookieBannerStepData
+  | CaptchaDetectStepData;
 
 export interface TestNode {
   id: string;

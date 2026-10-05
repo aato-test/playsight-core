@@ -11,6 +11,7 @@ import { cancelRun, createRun, getEvidence, getMetrics, getRunDetail, listRuns, 
 import { copilotRouter } from './copilot';
 import { integrationsRouter } from './integrations';
 import { testCasesRouter, suiteTestCasesRouter } from './testCases';
+import { authRouter } from './auth';
 
 type Handler = (req: Request, res: Response) => Promise<unknown>;
 const route = (fn: Handler) => (req: Request, res: Response, next: NextFunction) => fn(req, res).catch(next);
@@ -192,6 +193,7 @@ api.use('/copilot', copilotRouter);
 api.use('/integrations', integrationsRouter);
 api.use('/test-cases', testCasesRouter);
 api.use('/suites/:suiteId/test-cases', suiteTestCasesRouter);
+api.use('/auth', authRouter);
 
 api.use((_req, res) => res.status(404).json({ error: 'Not found' }));
 
