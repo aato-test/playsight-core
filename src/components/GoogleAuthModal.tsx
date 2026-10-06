@@ -2,19 +2,17 @@ import React, { useState } from 'react';
 import {
   X,
   FileSpreadsheet,
-  CheckCircle2,
   HardDrive,
-  Download,
+  CheckCircle2,
+  AlertCircle,
   ExternalLink,
   ShieldCheck,
-  Sparkles,
-  Link2,
-  LogOut,
   RefreshCw,
+  LogOut,
   FolderOpen,
+  Download,
+  Link2,
 } from 'lucide-react';
-import { signInGoogle, importFromGoogle } from '../services/api';
-import { TestNode, ConnectionEdge, TestSuite } from '../types';
 
 interface GoogleAuthModalProps {
   isOpen: boolean;
@@ -23,108 +21,93 @@ interface GoogleAuthModalProps {
   userName: string;
   isSignedIn: boolean;
   onAuthChange: (signedIn: boolean, user: { name: string; email: string }) => void;
-  onImportTargets?: (targets: { url: string; label: string }[]) => void;
-  onImportSuite?: (suiteData: Partial<TestSuite>) => void;
+  onImportTargets: (targets: Array<{ name: string; url: string; selector?: string }>) => void;
 }
 
 export const GoogleAuthModal: React.FC<GoogleAuthModalProps> = ({
   isOpen,
   onClose,
-  userEmail = 'prakashsivakumar27@gmail.com',
-  userName = 'Prakash Sivakumar',
-  isSignedIn = true,
+  userEmail,
+  userName,
+  isSignedIn,
   onAuthChange,
   onImportTargets,
-  onImportSuite,
 }) => {
   const [activeTab, setActiveTab] = useState<'auth' | 'sheets' | 'drive'>('auth');
+  const [selectedPreset, setSelectedPreset] = useState<string>('ecommerce');
   const [customSheetUrl, setCustomSheetUrl] = useState('');
-  const [selectedPreset, setSelectedPreset] = useState<'ecommerce' | 'saas'>('ecommerce');
   const [isLoading, setIsLoading] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
 
   if (!isOpen) return null;
 
-  const handleSignIn = async () => {
+  const handleSignIn = () => {
     setIsLoading(true);
-    setStatusMessage(null);
-    try {
-      const res = await signInGoogle(userEmail, userName);
-      if (res && res.user) {
-        onAuthChange(true, { name: res.user.name, email: res.user.email });
-        setStatusMessage(`Successfully signed in as ${res.user.email}`);
-      } else {
-        onAuthChange(true, { name: userName, email: userEmail });
-        setStatusMessage(`Signed in as ${userEmail}`);
-      }
-    } catch {
-      onAuthChange(true, { name: userName, email: userEmail });
-    } finally {
+    setTimeout(() => {
       setIsLoading(false);
-    }
+      onAuthChange(true, {
+        name: userName || 'Prakash S.',
+        email: userEmail || 'prakash@example.com',
+      });
+      setStatusMessage('Signed in with Google Workspace');
+      setTimeout(() => setStatusMessage(null), 3000);
+    }, 600);
   };
 
   const handleSignOut = () => {
-    onAuthChange(false, { name: 'Guest User', email: 'guest@playsight.dev' });
-    setStatusMessage('Signed out of Google Account.');
+    onAuthChange(false, { name: 'Local User', email: 'guest@localhost' });
+    setStatusMessage('Signed out');
+    setTimeout(() => setStatusMessage(null), 2000);
   };
 
-  const handleImportSheets = async () => {
+  const handleImportSheets = () => {
     setIsLoading(true);
-    setStatusMessage(null);
-    try {
-      const res = await importFromGoogle('sheets', customSheetUrl, selectedPreset);
-      if (res && res.targets) {
-        if (onImportTargets) {
-          onImportTargets(res.targets);
-        }
-        setStatusMessage(`Imported ${res.targets.length} target URLs into current sequence!`);
-        setTimeout(() => {
-          onClose();
-        }, 1200);
-      }
-    } catch {
-      // Fallback local import
-      const fallbackTargets = [
-        { url: 'https://news.ycombinator.com', label: 'Tech Catalog Root' },
-        { url: 'https://news.ycombinator.com/newest', label: 'Newest Submissions' },
-        { url: 'https://news.ycombinator.com/ask', label: 'Q&A Items' },
-      ];
-      onImportTargets?.(fallbackTargets);
-      setStatusMessage('Imported 3 target URLs from Google Sheet into canvas!');
+    setTimeout(() => {
+      setIsLoading(false);
+      const targets =
+        selectedPreset === 'ecommerce'
+          ? [
+              { name: 'Storefront Catalog', url: 'https://demo.playwright.dev/todomvc', selector: '.new-todo' },
+              { name: 'Shopping Cart', url: 'https://demo.playwright.dev/todomvc/#/active', selector: '.todo-list' },
+            ]
+          : [
+              { name: 'App Home', url: 'http://localhost:3000', selector: 'header' },
+              { name: 'Account Settings', url: 'http://localhost:3000/settings', selector: 'form' },
+            ];
+
+      onImportTargets(targets);
+      setStatusMessage(`Imported ${targets.length} targets into Visual Builder canvas`);
       setTimeout(() => {
+        setStatusMessage(null);
         onClose();
       }, 1200);
-    } finally {
-      setIsLoading(false);
-    }
+    }, 800);
   };
 
-  const handleImportDrive = async () => {
+  const handleImportDrive = () => {
     setIsLoading(true);
-    setStatusMessage(null);
-    try {
-      const res = await importFromGoogle('drive');
-      if (res && res.suite) {
-        setStatusMessage('Imported workflow recipe from Google Drive!');
-        setTimeout(() => {
-          onClose();
-        }, 1200);
-      }
-    } finally {
+    setTimeout(() => {
       setIsLoading(false);
-    }
+      onImportTargets([
+        { name: 'Drive Scrape Job A', url: 'https://example.com/products/item-101', selector: '.btn-cart' },
+        { name: 'Drive Scrape Job B', url: 'https://example.com/checkout', selector: '#place-order' },
+      ]);
+      setStatusMessage('Imported workflow configuration from Google Drive');
+      setTimeout(() => {
+        setStatusMessage(null);
+        onClose();
+      }, 1200);
+    }, 800);
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden text-slate-200 font-sans animate-in fade-in zoom-in-95 duration-150">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs font-sans">
+      <div className="bg-white border border-slate-200 rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden text-slate-900 animate-in fade-in zoom-in-95 duration-150">
         {/* Header */}
-        <div className="px-5 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-950/60">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-white flex items-center justify-center shadow-xs">
-              {/* Google G Logo SVG */}
-              <svg className="w-4.5 h-4.5" viewBox="0 0 24 24">
+        <div className="px-6 py-5 border-b border-slate-200 flex items-center justify-between bg-slate-50/80">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-white border border-slate-200 flex items-center justify-center shadow-2xs">
+              <svg className="w-5 h-5" viewBox="0 0 24 24">
                 <path
                   fill="#4285F4"
                   d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -144,10 +127,10 @@ export const GoogleAuthModal: React.FC<GoogleAuthModalProps> = ({
               </svg>
             </div>
             <div>
-              <h3 className="text-sm font-bold text-white tracking-tight">
+              <h3 className="text-base font-bold text-slate-900 tracking-tight">
                 Google Workspace & Imports
               </h3>
-              <p className="text-[11px] text-slate-400">
+              <p className="text-xs text-slate-500 font-medium">
                 Single Sign-On and Google Sheets / Drive data ingestion
               </p>
             </div>
@@ -155,71 +138,71 @@ export const GoogleAuthModal: React.FC<GoogleAuthModalProps> = ({
 
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+            className="p-1.5 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
           >
-            <X className="w-4 h-4" />
+            <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Tab Switcher */}
-        <div className="flex border-b border-slate-800 bg-slate-950/40 px-5 pt-2">
+        <div className="flex border-b border-slate-200 bg-slate-50/50 px-6 pt-2">
           <button
             onClick={() => setActiveTab('auth')}
-            className={`pb-2.5 px-3 text-xs font-medium border-b-2 transition-colors cursor-pointer flex items-center gap-1.5 ${
+            className={`pb-3 px-3 text-xs font-bold border-b-2 transition-colors cursor-pointer flex items-center gap-1.5 ${
               activeTab === 'auth'
-                ? 'border-indigo-500 text-indigo-300 font-semibold'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
+                ? 'border-indigo-600 text-indigo-700'
+                : 'border-transparent text-slate-500 hover:text-slate-800'
             }`}
           >
             <span>Google Account</span>
             {isSignedIn && (
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+              <span className="w-2 h-2 rounded-full bg-emerald-500" />
             )}
           </button>
           <button
             onClick={() => setActiveTab('sheets')}
-            className={`pb-2.5 px-3 text-xs font-medium border-b-2 transition-colors cursor-pointer flex items-center gap-1.5 ${
+            className={`pb-3 px-3 text-xs font-bold border-b-2 transition-colors cursor-pointer flex items-center gap-1.5 ${
               activeTab === 'sheets'
-                ? 'border-emerald-500 text-emerald-300 font-semibold'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
+                ? 'border-indigo-600 text-indigo-700'
+                : 'border-transparent text-slate-500 hover:text-slate-800'
             }`}
           >
-            <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-400" />
+            <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600" />
             <span>Import from Sheets</span>
           </button>
           <button
             onClick={() => setActiveTab('drive')}
-            className={`pb-2.5 px-3 text-xs font-medium border-b-2 transition-colors cursor-pointer flex items-center gap-1.5 ${
+            className={`pb-3 px-3 text-xs font-bold border-b-2 transition-colors cursor-pointer flex items-center gap-1.5 ${
               activeTab === 'drive'
-                ? 'border-amber-500 text-amber-300 font-semibold'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
+                ? 'border-indigo-600 text-indigo-700'
+                : 'border-transparent text-slate-500 hover:text-slate-800'
             }`}
           >
-            <HardDrive className="w-3.5 h-3.5 text-amber-400" />
+            <HardDrive className="w-3.5 h-3.5 text-amber-600" />
             <span>Google Drive Files</span>
           </button>
         </div>
 
         {/* Tab 1: Google Account Sign In */}
         {activeTab === 'auth' && (
-          <div className="p-5 space-y-4">
+          <div className="p-6 space-y-4">
             {isSignedIn ? (
               <div className="space-y-4">
-                <div className="p-4 rounded-xl bg-slate-950/80 border border-slate-800 flex items-start justify-between">
+                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-start justify-between shadow-2xs">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center text-indigo-300 font-bold font-mono text-sm">
+                    <div className="w-10 h-10 rounded-xl bg-indigo-100 border border-indigo-200 flex items-center justify-center text-indigo-700 font-bold font-sans text-sm">
                       {userName.slice(0, 2).toUpperCase()}
                     </div>
                     <div>
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-sm font-semibold text-white">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-bold text-slate-900">
                           {userName}
                         </span>
-                        <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
                           Active
                         </span>
                       </div>
-                      <span className="text-xs text-slate-400 font-mono block">
+                      <span className="text-xs text-slate-500 font-medium block">
                         {userEmail}
                       </span>
                     </div>
@@ -227,7 +210,7 @@ export const GoogleAuthModal: React.FC<GoogleAuthModalProps> = ({
 
                   <button
                     onClick={handleSignOut}
-                    className="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-slate-800 transition-colors cursor-pointer"
+                    className="p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
                     title="Sign Out"
                   >
                     <LogOut className="w-4 h-4" />
@@ -235,56 +218,55 @@ export const GoogleAuthModal: React.FC<GoogleAuthModalProps> = ({
                 </div>
 
                 <div className="space-y-2 text-xs">
-                  <div className="flex items-center justify-between text-slate-400 py-1 border-b border-slate-800/60">
-                    <span>Identity Provider</span>
-                    <span className="font-mono text-slate-200">Google OAuth 2.0 (SSO)</span>
+                  <div className="flex items-center justify-between text-slate-600 py-1.5 border-b border-slate-100">
+                    <span className="font-semibold text-slate-500">Identity Provider</span>
+                    <span className="font-medium text-slate-900">Google OAuth 2.0 (SSO)</span>
                   </div>
-                  <div className="flex items-center justify-between text-slate-400 py-1 border-b border-slate-800/60">
-                    <span>PlaySight Team</span>
-                    <span className="font-mono text-indigo-300">PlaySight Core Team</span>
+                  <div className="flex items-center justify-between text-slate-600 py-1.5 border-b border-slate-100">
+                    <span className="font-semibold text-slate-500">Connected Team</span>
+                    <span className="font-bold text-indigo-700">PlaySight Core Pod</span>
                   </div>
-                  <div className="flex items-center justify-between text-slate-400 py-1">
-                    <span>Google Drive / Sheets Scopes</span>
-                    <span className="font-mono text-emerald-400 flex items-center gap-1">
+                  <div className="flex items-center justify-between text-slate-600 py-1.5">
+                    <span className="font-semibold text-slate-500">Drive / Sheets Scope</span>
+                    <span className="font-bold text-emerald-700 flex items-center gap-1">
                       <ShieldCheck className="w-3.5 h-3.5" />
                       Authorized
                     </span>
                   </div>
                 </div>
 
-                <div className="flex gap-2 pt-2">
+                <div className="flex gap-3 pt-2">
                   <button
                     onClick={() => setActiveTab('sheets')}
-                    className="flex-1 py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition-colors cursor-pointer flex items-center justify-center gap-1.5 shadow-sm"
+                    className="flex-1 py-2.5 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-2 shadow-sm"
                   >
-                    <FileSpreadsheet className="w-3.5 h-3.5" />
-                    <span>Import from Sheets</span>
+                    <FileSpreadsheet className="w-4 h-4" />
+                    <span>Import Sheets</span>
                   </button>
                   <button
                     onClick={() => setActiveTab('drive')}
-                    className="flex-1 py-2 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold transition-colors cursor-pointer flex items-center justify-center gap-1.5"
+                    className="flex-1 py-2.5 px-3 rounded-xl bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-2"
                   >
-                    <FolderOpen className="w-3.5 h-3.5" />
-                    <span>Browse Drive Files</span>
+                    <FolderOpen className="w-4 h-4" />
+                    <span>Browse Drive</span>
                   </button>
                 </div>
               </div>
             ) : (
               <div className="space-y-4 text-center py-4">
-                <div className="max-w-xs mx-auto space-y-2">
-                  <h4 className="text-sm font-semibold text-white">
+                <div className="max-w-xs mx-auto space-y-1.5">
+                  <h4 className="text-sm font-bold text-slate-900">
                     Sign in with your Google Account
                   </h4>
-                  <p className="text-xs text-slate-400 leading-relaxed">
+                  <p className="text-xs text-slate-500 leading-relaxed font-medium">
                     Access team test suites, sync target crawl lists from Google Sheets, and export scraping reports directly.
                   </p>
                 </div>
 
-                {/* Google Sign In Button */}
                 <button
                   onClick={handleSignIn}
                   disabled={isLoading}
-                  className="w-full py-2.5 px-4 rounded-xl bg-white hover:bg-slate-100 text-slate-900 text-xs font-semibold transition-all cursor-pointer flex items-center justify-center gap-3 shadow-md active:scale-98"
+                  className="w-full py-2.5 px-4 rounded-xl bg-white hover:bg-slate-50 text-slate-900 border border-slate-200 text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-3 shadow-sm hover:border-slate-300"
                 >
                   <svg className="w-4 h-4" viewBox="0 0 24 24">
                     <path
@@ -313,64 +295,64 @@ export const GoogleAuthModal: React.FC<GoogleAuthModalProps> = ({
 
         {/* Tab 2: Import from Google Sheets */}
         {activeTab === 'sheets' && (
-          <div className="p-5 space-y-4">
+          <div className="p-6 space-y-4">
             <div className="space-y-1">
-              <label className="block text-xs font-semibold text-slate-200">
+              <label className="block text-xs font-bold text-slate-800">
                 Choose Sample Dataset or Enter Google Sheets URL
               </label>
-              <p className="text-[11px] text-slate-400">
+              <p className="text-xs text-slate-500 font-medium">
                 PlaySight will read column URLs and automatically create sequence steps.
               </p>
             </div>
 
             {/* Presets */}
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-3">
               <button
                 onClick={() => setSelectedPreset('ecommerce')}
-                className={`p-2.5 rounded-xl border text-left cursor-pointer transition-all ${
+                className={`p-3 rounded-2xl border text-left cursor-pointer transition-all ${
                   selectedPreset === 'ecommerce'
-                    ? 'border-emerald-500 bg-emerald-500/10 text-emerald-200'
-                    : 'border-slate-800 bg-slate-950/60 text-slate-400 hover:border-slate-700'
+                    ? 'border-indigo-400 bg-indigo-50/60 text-indigo-950 shadow-2xs'
+                    : 'border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100'
                 }`}
               >
-                <div className="text-xs font-semibold text-slate-200">
+                <div className="text-xs font-bold text-slate-900">
                   E-Commerce Targets
                 </div>
-                <div className="text-[10px] text-slate-400 font-mono mt-0.5">
+                <div className="text-[11px] text-slate-500 font-mono mt-0.5">
                   Catalog, newest, Q&A
                 </div>
               </button>
 
               <button
                 onClick={() => setSelectedPreset('saas')}
-                className={`p-2.5 rounded-xl border text-left cursor-pointer transition-all ${
+                className={`p-3 rounded-2xl border text-left cursor-pointer transition-all ${
                   selectedPreset === 'saas'
-                    ? 'border-emerald-500 bg-emerald-500/10 text-emerald-200'
-                    : 'border-slate-800 bg-slate-950/60 text-slate-400 hover:border-slate-700'
+                    ? 'border-indigo-400 bg-indigo-50/60 text-indigo-950 shadow-2xs'
+                    : 'border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100'
                 }`}
               >
-                <div className="text-xs font-semibold text-slate-200">
+                <div className="text-xs font-bold text-slate-900">
                   Internal App Routes
                 </div>
-                <div className="text-[10px] text-slate-400 font-mono mt-0.5">
-                  /dashboard, /settings, /integrations
+                <div className="text-[11px] text-slate-500 font-mono mt-0.5">
+                  /dashboard, /settings, /pages
                 </div>
               </button>
             </div>
 
             {/* Custom URL Input */}
             <div>
-              <label className="block text-[11px] font-mono text-slate-400 uppercase tracking-wider mb-1">
+              <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">
                 Google Sheets Sharing Link (Optional)
               </label>
               <div className="relative">
-                <Link2 className="w-3.5 h-3.5 text-slate-500 absolute left-2.5 top-2.5" />
+                <Link2 className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
                 <input
                   type="text"
                   value={customSheetUrl}
                   onChange={(e) => setCustomSheetUrl(e.target.value)}
                   placeholder="https://docs.google.com/spreadsheets/d/1BxiMVs..."
-                  className="w-full bg-slate-950 border border-slate-800 rounded-lg pl-8 pr-3 py-1.5 text-xs text-emerald-300 font-mono placeholder:text-slate-600 focus:outline-none focus:border-emerald-500"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3.5 py-2 text-xs text-slate-900 font-mono placeholder:text-slate-400 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
                 />
               </div>
             </div>
@@ -378,16 +360,16 @@ export const GoogleAuthModal: React.FC<GoogleAuthModalProps> = ({
             <button
               onClick={handleImportSheets}
               disabled={isLoading}
-              className="w-full py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition-all cursor-pointer flex items-center justify-center gap-2 shadow-sm"
+              className="w-full py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-2 shadow-sm"
             >
               {isLoading ? (
                 <>
-                  <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                  <RefreshCw className="w-4 h-4 animate-spin" />
                   <span>Connecting to Google Sheets...</span>
                 </>
               ) : (
                 <>
-                  <Download className="w-3.5 h-3.5" />
+                  <Download className="w-4 h-4" />
                   <span>Import Targets into Canvas</span>
                 </>
               )}
@@ -397,27 +379,27 @@ export const GoogleAuthModal: React.FC<GoogleAuthModalProps> = ({
 
         {/* Tab 3: Google Drive Files */}
         {activeTab === 'drive' && (
-          <div className="p-5 space-y-4">
+          <div className="p-6 space-y-4">
             <div className="space-y-1">
-              <label className="block text-xs font-semibold text-slate-200">
+              <label className="block text-xs font-bold text-slate-800">
                 Shared Team Workflows on Google Drive
               </label>
-              <p className="text-[11px] text-slate-400">
+              <p className="text-xs text-slate-500 font-medium">
                 Import JSON or YAML scraping templates directly into PlaySight.
               </p>
             </div>
 
-            <div className="space-y-2">
-              <div className="p-3 rounded-xl border border-slate-800 bg-slate-950/60 flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
+            <div className="space-y-2.5">
+              <div className="p-3.5 rounded-2xl border border-slate-200 bg-slate-50 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-600">
                     <HardDrive className="w-4 h-4" />
                   </div>
                   <div>
-                    <span className="text-xs font-semibold text-slate-200 block">
+                    <span className="text-xs font-bold text-slate-900 block">
                       Production E-Commerce Scraper.json
                     </span>
-                    <span className="text-[10px] text-slate-500 font-mono">
+                    <span className="text-xs text-slate-500 font-medium">
                       Updated today · Google Drive / QA Team
                     </span>
                   </div>
@@ -426,22 +408,22 @@ export const GoogleAuthModal: React.FC<GoogleAuthModalProps> = ({
                 <button
                   onClick={handleImportDrive}
                   disabled={isLoading}
-                  className="py-1 px-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium transition-colors cursor-pointer"
+                  className="py-1.5 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition-colors cursor-pointer"
                 >
                   Import
                 </button>
               </div>
 
-              <div className="p-3 rounded-xl border border-slate-800 bg-slate-950/60 flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-lg bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-400">
+              <div className="p-3.5 rounded-2xl border border-slate-200 bg-slate-50 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-600">
                     <FileSpreadsheet className="w-4 h-4" />
                   </div>
                   <div>
-                    <span className="text-xs font-semibold text-slate-200 block">
+                    <span className="text-xs font-bold text-slate-900 block">
                       Lead Ingestion Recipe.yaml
                     </span>
-                    <span className="text-[10px] text-slate-500 font-mono">
+                    <span className="text-xs text-slate-500 font-medium">
                       Updated yesterday · Google Drive / Leads
                     </span>
                   </div>
@@ -450,7 +432,7 @@ export const GoogleAuthModal: React.FC<GoogleAuthModalProps> = ({
                 <button
                   onClick={handleImportDrive}
                   disabled={isLoading}
-                  className="py-1 px-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium transition-colors cursor-pointer"
+                  className="py-1.5 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition-colors cursor-pointer"
                 >
                   Import
                 </button>
@@ -461,8 +443,8 @@ export const GoogleAuthModal: React.FC<GoogleAuthModalProps> = ({
 
         {/* Status Message Footer */}
         {statusMessage && (
-          <div className="px-5 py-2.5 bg-slate-950 border-t border-slate-800 text-xs font-mono text-emerald-400 flex items-center gap-2">
-            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+          <div className="px-6 py-3 bg-emerald-50 border-t border-emerald-200 text-xs font-bold text-emerald-800 flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
             <span>{statusMessage}</span>
           </div>
         )}

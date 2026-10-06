@@ -6,9 +6,17 @@ import { jiraIssues, jiraConnections } from '../db/schema';
 import { memoryStore } from '../db/memoryStore';
 import { getGitHubAppInfo, getAppInstallationUrl } from '../integrations/github/app';
 import { getInstallationForTeam, registerInstallation, disconnectTeamInstallation } from '../integrations/github/installations';
-import { listRepositoriesForTeam } from '../integrations/github/repositories';
+import { listRepositoriesForTeam, getRepositoryById } from '../integrations/github/repositories';
 import { listBranchesForRepository, syncBranchesForRepository } from '../integrations/github/branches';
 import { verifyWebhookSignature, handleGitHubWebhook } from '../integrations/github/webhooks';
+import {
+  getPagesForRepository,
+  testIndividualPage,
+  testAllPagesForRepository,
+  fetchRepositoryContents,
+  fetchRepositoryFileContent,
+} from '../integrations/github/pages';
+import { verifyJiraCredentials, fetchJiraProjectIssues } from '../integrations/jira/client';
 
 type Handler = (req: Request, res: Response) => Promise<unknown>;
 const route = (fn: Handler) => (req: Request, res: Response, next: NextFunction) => fn(req, res).catch(next);
@@ -115,6 +123,71 @@ integrationsRouter.post(
     const teamId = (req.body?.teamId as string) || 'team-default';
     const branches = await syncBranchesForRepository(repoId, teamId);
     res.json({ ok: true, branches });
+  })
+);
+
+function parseRepoSlug(repoParam: string): { owner: string; repo: string; fullName: string } {
+  const clean = decodeURIComponent(repoParam).replace(/^repo-/, '');
+  if (clean.includes('/')) {
+    const parts = clean.split('/');
+    return { owner: parts[0], repo: parts[1], fullName: clean };
+  }
+  return { owner: 'aato-test', repo: clean, fullName: `aato-test/${clean}` };
+}
+
+/** GET /api/integrations/github/repositories/:repoId/contents - List repo files and directories */
+integrationsRouter.get(
+  '/github/repositories/:repoId/contents',
+  route(async (req, res) => {
+    const { owner, repo } = parseRepoSlug(req.params.repoId);
+    const path = (req.query.path as string) || '';
+    const contents = await fetchRepositoryContents(owner, repo, path);
+    res.json(contents);
+  })
+);
+
+/** GET /api/integrations/github/repositories/:repoId/file - Stream file content */
+integrationsRouter.get(
+  '/github/repositories/:repoId/file',
+  route(async (req, res) => {
+    const { owner, repo } = parseRepoSlug(req.params.repoId);
+    const filePath = (req.query.path as string) || '';
+    if (!filePath) {
+      return res.status(400).json({ error: 'Query param "path" is required' });
+    }
+    const file = await fetchRepositoryFileContent(owner, repo, filePath);
+    res.json(file);
+  })
+);
+
+/** GET /api/integrations/github/repositories/:repoId/pages - Discovered pages & starting points */
+integrationsRouter.get(
+  '/github/repositories/:repoId/pages',
+  route(async (req, res) => {
+    const { fullName } = parseRepoSlug(req.params.repoId);
+    const pages = await getPagesForRepository(fullName);
+    res.json(pages);
+  })
+);
+
+/** POST /api/integrations/github/repositories/:repoId/pages/:pageId/test - Test an individual page */
+integrationsRouter.post(
+  '/github/repositories/:repoId/pages/:pageId/test',
+  route(async (req, res) => {
+    const { fullName } = parseRepoSlug(req.params.repoId);
+    const pageId = String(req.params.pageId);
+    const result = await testIndividualPage(pageId, fullName);
+    res.json(result);
+  })
+);
+
+/** POST /api/integrations/github/repositories/:repoId/pages/test-all - Test all discovered pages */
+integrationsRouter.post(
+  '/github/repositories/:repoId/pages/test-all',
+  route(async (req, res) => {
+    const { fullName } = parseRepoSlug(req.params.repoId);
+    const results = await testAllPagesForRepository(fullName);
+    res.json(results);
   })
 );
 
@@ -232,3 +305,95 @@ integrationsRouter.get(
     res.json(issues);
   })
 );
+
+/** POST /api/integrations/jira/connect - User connects Jira instance via UI */
+integrationsRouter.post(
+  '/jira/connect',
+  route(async (req, res) => {
+    const { siteUrl, email, apiToken, projectKey = 'PROJ', teamId = 'team-default' } = req.body || {};
+    if (!siteUrl) {
+      return res.status(400).json({ error: 'Jira Site URL is required' });
+    }
+
+    const normalizedSite = siteUrl.startsWith('http') ? siteUrl : `https://${siteUrl}`;
+    let siteName = 'jira.atlassian.net';
+    try {
+      siteName = new URL(normalizedSite).hostname;
+    } catch {
+      return res.status(400).json({ error: 'Invalid Jira Site URL format.' });
+    }
+
+    // If email and apiToken are provided, verify credentials with Jira Cloud
+    if (email && apiToken) {
+      const verifyResult = await verifyJiraCredentials(normalizedSite, email, apiToken);
+      if (!verifyResult.success) {
+        return res.status(401).json({ error: verifyResult.error });
+      }
+
+      // Fetch actual Jira project issues if valid
+      const remoteIssues = await fetchJiraProjectIssues(normalizedSite, email, apiToken, projectKey);
+      if (remoteIssues.length > 0) {
+        for (const [id, issue] of memoryStore.jiraIssues.entries()) {
+          if (issue.teamId === teamId) memoryStore.jiraIssues.delete(id);
+        }
+        for (const rIssue of remoteIssues) {
+          memoryStore.jiraIssues.set(rIssue.id, {
+            id: rIssue.id,
+            teamId,
+            projectId: `proj-${projectKey.toLowerCase()}`,
+            issueKey: rIssue.key,
+            summary: rIssue.summary,
+            status: rIssue.status as any,
+            priority: rIssue.priority as any,
+            assigneeName: rIssue.assigneeName || null,
+            assigneeAvatar: rIssue.assigneeAvatar || null,
+            linkedSuiteId: null,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          });
+        }
+      }
+    }
+
+    const connId = `jira-conn-${Date.now()}`;
+    const newConnection = {
+      id: connId,
+      teamId,
+      cloudId: `cloud-${siteName.replace(/[^a-zA-Z0-9]/g, '-')}`,
+      siteUrl: normalizedSite,
+      siteName,
+      status: 'active' as const,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+
+    memoryStore.jiraConnections.set(connId, newConnection);
+
+    res.json({
+      success: true,
+      connected: true,
+      connection: {
+        id: newConnection.id,
+        siteName: newConnection.siteName,
+        siteUrl: newConnection.siteUrl,
+        status: newConnection.status,
+      },
+      message: `Successfully connected Jira Cloud instance (${siteName})`,
+    });
+  })
+);
+
+/** POST /api/integrations/jira/disconnect - Disconnect Jira */
+integrationsRouter.post(
+  '/jira/disconnect',
+  route(async (req, res) => {
+    const teamId = (req.body?.teamId as string) || 'team-default';
+    for (const [id, conn] of memoryStore.jiraConnections.entries()) {
+      if (conn.teamId === teamId) {
+        memoryStore.jiraConnections.delete(id);
+      }
+    }
+    res.json({ success: true, connected: false });
+  })
+);
+

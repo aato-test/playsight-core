@@ -99,8 +99,6 @@ export async function syncBranchesForRepository(
     if (existing.length) return existing.map(toBranchDTO);
     ghBranches = [
       { name: 'main', commit: { sha: '1c54b15', url: '' }, protected: true },
-      { name: 'feature/checkout-fix', commit: { sha: 'b284c1f', url: '' }, protected: false },
-      { name: 'develop', commit: { sha: '8a94e10', url: '' }, protected: false },
     ];
   }
 

@@ -40,35 +40,35 @@ export const TraceViewer: React.FC<TraceViewerProps> = ({ isOpen, onClose, run }
   return (
     <div
       id="playwright-trace-viewer-modal"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#020617]/85 backdrop-blur-xs font-sans select-none"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs font-sans select-none"
     >
-      <div className="w-full max-w-5xl h-[85vh] bg-[#0F172A] border border-[#1E293B] rounded shadow-2xl flex flex-col overflow-hidden text-[#F8FAFC]">
-        {/* Playwright Trace Header (Section 22) */}
-        <div className="h-14 px-5 border-b border-[#1E293B] bg-[#020617] flex items-center justify-between shrink-0">
-          <div className="flex items-center gap-3">
-            <div className="w-7 h-7 rounded bg-[#111827] border border-[#1E293B] flex items-center justify-center text-teal-400">
-              <Activity className="w-4 h-4" />
+      <div className="w-full max-w-5xl h-[85vh] bg-white border border-slate-200 rounded-3xl shadow-2xl flex flex-col overflow-hidden text-slate-900">
+        {/* Playwright Trace Header */}
+        <div className="h-16 px-6 border-b border-slate-200 bg-slate-50/80 flex items-center justify-between shrink-0">
+          <div className="flex items-center gap-3.5">
+            <div className="w-8 h-8 rounded-xl bg-indigo-50 border border-indigo-200 flex items-center justify-center text-indigo-600 shadow-2xs">
+              <Activity className="w-4.5 h-4.5" />
             </div>
             <div>
-              <div className="flex items-center gap-2">
-                <h3 className="text-xs font-bold text-[#F8FAFC] tracking-tight font-mono uppercase">
+              <div className="flex items-center gap-2.5">
+                <h3 className="text-sm font-bold text-slate-900 tracking-tight">
                   Playwright Trace Inspector
                 </h3>
                 <span
-                  className={`text-[10px] font-mono px-1.5 py-0.2 rounded border ${
+                  className={`text-xs font-bold px-2.5 py-0.5 rounded-full border shadow-2xs ${
                     isPassed
-                      ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
-                      : 'bg-rose-500/10 text-rose-400 border-rose-500/30'
+                      ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                      : 'bg-rose-50 text-rose-700 border-rose-200'
                   }`}
                 >
                   {run.status.toUpperCase()}
                 </span>
                 {'releaseGateStatus' in run && run.releaseGateStatus && (
                   <span
-                    className={`text-[10px] font-mono px-1.5 py-0.2 rounded border ${
+                    className={`text-[11px] font-bold px-2 py-0.5 rounded-full border ${
                       run.releaseGateStatus === 'passed'
-                        ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
-                        : 'bg-rose-500/10 text-rose-400 border-rose-500/30'
+                        ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                        : 'bg-rose-50 text-rose-700 border-rose-200'
                     }`}
                     title={run.releaseGate?.reason}
                   >
@@ -76,8 +76,8 @@ export const TraceViewer: React.FC<TraceViewerProps> = ({ isOpen, onClose, run }
                   </span>
                 )}
               </div>
-              <div className="text-[11px] text-[#94A3B8] font-mono mt-0.5">
-                {'suiteName' in run ? run.suiteName : run.testName} · {run.browser || 'Chromium 124'} · {(('durationMs' in run ? run.durationMs : run.durationM * 60000) / 1000).toFixed(2)}s
+              <div className="text-xs text-slate-500 font-medium mt-0.5">
+                {'suiteName' in run ? run.suiteName : run.testName} · {run.browser || 'Chromium'} · {(('durationMs' in run ? run.durationMs : run.durationM * 60000) / 1000).toFixed(2)}s
               </div>
             </div>
           </div>
@@ -97,7 +97,7 @@ export const TraceViewer: React.FC<TraceViewerProps> = ({ isOpen, onClose, run }
                 a.download = `trace-${run.id}.json`;
                 a.click();
               }}
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#111827] hover:bg-[#1E293B] text-[#94A3B8] hover:text-[#F8FAFC] border border-[#1E293B] text-xs font-mono transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 text-xs font-bold transition-all shadow-2xs cursor-pointer"
               title="Download Trace Artifact (.zip/.json)"
             >
               <Download className="w-3.5 h-3.5" />
@@ -105,21 +105,21 @@ export const TraceViewer: React.FC<TraceViewerProps> = ({ isOpen, onClose, run }
             </button>
             <button
               onClick={onClose}
-              className="p-1.5 text-[#94A3B8] hover:text-[#F8FAFC] hover:bg-[#1E293B] rounded transition-colors cursor-pointer"
+              className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer"
             >
-              <X className="w-4 h-4" />
+              <X className="w-5 h-5" />
             </button>
           </div>
         </div>
 
-        {/* Section 22: Visual Timeline Bar */}
-        <div className="px-5 py-2.5 border-b border-[#1E293B] bg-[#020617]/40 flex flex-col gap-1.5 shrink-0 font-mono text-[11px]">
-          <div className="flex items-center justify-between text-[#64748B]">
-            <span>Timeline</span>
-            <span>0.00s — {(('durationMs' in run ? run.durationMs : run.durationM * 60000) / 1000).toFixed(2)}s</span>
+        {/* Visual Timeline Bar */}
+        <div className="px-6 py-3 border-b border-slate-200 bg-slate-50/50 flex flex-col gap-1.5 shrink-0 text-xs font-medium">
+          <div className="flex items-center justify-between text-slate-500 font-semibold">
+            <span>Execution Timeline</span>
+            <span className="font-mono">0.00s — {(('durationMs' in run ? run.durationMs : run.durationM * 60000) / 1000).toFixed(2)}s</span>
           </div>
           {/* Waterfall bar */}
-          <div className="w-full bg-[#111827] h-5 rounded-xs border border-[#1E293B] flex overflow-hidden relative">
+          <div className="w-full bg-slate-100 h-6 rounded-lg border border-slate-200 flex overflow-hidden relative">
             {actions.map((act, i) => {
               const widthPct = Math.max(15, (act.durationMs / (trace?.durationMs || 1840)) * 100);
               const isSelected = selectedActionIndex === i;
@@ -128,12 +128,12 @@ export const TraceViewer: React.FC<TraceViewerProps> = ({ isOpen, onClose, run }
                   key={i}
                   onClick={() => setSelectedActionIndex(i)}
                   style={{ width: `${widthPct}%` }}
-                  className={`h-full border-r border-[#1E293B] flex items-center justify-center px-1 text-[10px] cursor-pointer transition-colors truncate ${
+                  className={`h-full border-r border-white flex items-center justify-center px-1 text-[11px] font-bold cursor-pointer transition-colors truncate ${
                     isSelected
-                      ? 'bg-teal-500/25 text-teal-300 font-bold border-teal-500'
+                      ? 'bg-indigo-600 text-white shadow-inner'
                       : act.status === 'passed'
-                      ? 'bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/25'
-                      : 'bg-rose-500/20 text-rose-300 hover:bg-rose-500/30'
+                      ? 'bg-emerald-100 text-emerald-800 hover:bg-emerald-200'
+                      : 'bg-rose-100 text-rose-800 hover:bg-rose-200'
                   }`}
                   title={`${act.title} (${act.durationMs}ms)`}
                 >
@@ -144,8 +144,8 @@ export const TraceViewer: React.FC<TraceViewerProps> = ({ isOpen, onClose, run }
           </div>
         </div>
 
-        {/* Tab Navigation: Actions, Console, Network, Screenshots, DOM snapshot */}
-        <div className="px-5 py-1.5 border-b border-[#1E293B] bg-[#020617]/30 flex items-center gap-1.5 shrink-0 font-mono text-xs">
+        {/* Tab Navigation */}
+        <div className="px-6 border-b border-slate-200 flex items-center gap-4 shrink-0 text-xs font-bold">
           {[
             { id: 'actions', label: `Actions (${actions.length})` },
             { id: 'console', label: `Console (${consoleLogs.length})` },
@@ -156,10 +156,10 @@ export const TraceViewer: React.FC<TraceViewerProps> = ({ isOpen, onClose, run }
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`px-2.5 py-1 rounded transition-colors cursor-pointer ${
+              className={`py-3 border-b-2 cursor-pointer transition-colors ${
                 activeTab === tab.id
-                  ? 'bg-[#111827] text-teal-300 border border-[#1E293B] font-semibold'
-                  : 'text-[#94A3B8] hover:text-[#F8FAFC]'
+                  ? 'border-indigo-600 text-indigo-700'
+                  : 'border-transparent text-slate-500 hover:text-slate-800'
               }`}
             >
               {tab.label}
@@ -168,12 +168,12 @@ export const TraceViewer: React.FC<TraceViewerProps> = ({ isOpen, onClose, run }
         </div>
 
         {/* Tab Content Panels */}
-        <div className="flex-1 overflow-y-auto p-5 text-xs font-mono">
+        <div className="flex-1 overflow-y-auto p-6 text-xs">
           {/* Actions Section */}
           {activeTab === 'actions' && (
-            <div className="space-y-2">
-              <div className="text-[11px] text-[#64748B] uppercase">Playwright Step Sequence</div>
-              <div className="divide-y divide-[#1E293B] rounded border border-[#1E293B] bg-[#020617] overflow-hidden">
+            <div className="space-y-3">
+              <div className="text-xs font-bold text-slate-500 uppercase tracking-wider">Playwright Step Sequence</div>
+              <div className="divide-y divide-slate-100 rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-2xs">
                 {actions.map((act, index) => {
                   const isActPassed = act.status === 'passed';
                   const isSelected = selectedActionIndex === index;
@@ -181,18 +181,20 @@ export const TraceViewer: React.FC<TraceViewerProps> = ({ isOpen, onClose, run }
                     <div
                       key={index}
                       onClick={() => setSelectedActionIndex(index)}
-                      className={`p-3 flex items-start justify-between cursor-pointer transition-colors ${
-                        isSelected ? 'bg-[#111827] border-l-2 border-teal-400' : 'hover:bg-[#111827]/40'
+                      className={`p-4 flex items-start justify-between cursor-pointer transition-colors ${
+                        isSelected ? 'bg-indigo-50/50 border-l-4 border-indigo-600' : 'hover:bg-slate-50'
                       }`}
                     >
-                      <div className="flex items-start gap-2.5">
-                        <span className="text-[#64748B] text-[10px]">0{act.stepNumber}</span>
+                      <div className="flex items-start gap-3">
+                        <span className="text-slate-400 font-bold text-xs">0{act.stepNumber}</span>
                         <div>
-                          <div className="font-semibold text-[#F8FAFC] flex items-center gap-2">
+                          <div className="font-bold text-slate-900 flex items-center gap-2">
                             <span>{act.title}</span>
-                            <span className="text-[10px] text-teal-400 font-mono">({act.action})</span>
+                            <span className="text-xs text-indigo-700 font-mono bg-indigo-50 px-2 py-0.5 rounded border border-indigo-200">
+                              {act.action}
+                            </span>
                           </div>
-                          <div className="text-[11px] text-[#94A3B8] mt-1 bg-[#0A0F1D] p-1.5 rounded border border-[#1E293B]/70 font-mono">
+                          <div className="text-xs text-slate-700 mt-1.5 bg-slate-50 p-2 rounded-xl border border-slate-200 font-mono">
                             <code>{act.apiCall}</code>
                           </div>
                         </div>
@@ -200,13 +202,15 @@ export const TraceViewer: React.FC<TraceViewerProps> = ({ isOpen, onClose, run }
 
                       <div className="text-right shrink-0 ml-4">
                         <span
-                          className={`text-[10px] font-bold ${
-                            isActPassed ? 'text-emerald-400' : 'text-rose-400'
+                          className={`text-xs font-bold px-2 py-0.5 rounded-full border ${
+                            isActPassed
+                              ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                              : 'bg-rose-50 text-rose-700 border-rose-200'
                           }`}
                         >
                           {act.status.toUpperCase()}
                         </span>
-                        <div className="text-[10px] text-[#64748B] tabular-nums mt-0.5">
+                        <div className="text-xs text-slate-500 font-mono mt-1">
                           {act.durationMs}ms
                         </div>
                       </div>
@@ -219,21 +223,21 @@ export const TraceViewer: React.FC<TraceViewerProps> = ({ isOpen, onClose, run }
 
           {/* Console Section */}
           {activeTab === 'console' && (
-            <div className="space-y-2">
-              <div className="text-[11px] text-[#64748B] uppercase">Browser Console Stream</div>
-              <div className="rounded border border-[#1E293B] bg-[#020617] p-3 space-y-1.5 text-[11px] leading-relaxed">
+            <div className="space-y-3">
+              <div className="text-xs font-bold text-slate-500 uppercase tracking-wider">Browser Console Stream</div>
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 space-y-2 font-mono text-xs leading-relaxed">
                 {consoleLogs.map((log, i) => (
                   <div key={i} className="flex items-start gap-3">
-                    <span className="text-[#64748B] shrink-0 tabular-nums">{log.timestamp}</span>
+                    <span className="text-slate-400 shrink-0">{log.timestamp}</span>
                     <span
-                      className={`uppercase text-[10px] px-1 rounded shrink-0 ${
+                      className={`uppercase text-[10px] font-bold px-1.5 py-0.5 rounded border shrink-0 ${
                         log.level === 'error'
-                          ? 'bg-rose-500/20 text-rose-400'
+                          ? 'bg-rose-50 text-rose-700 border-rose-200'
                           : log.level === 'warn'
-                          ? 'bg-amber-500/20 text-amber-400'
+                          ? 'bg-amber-50 text-amber-800 border-amber-200'
                           : log.level === 'debug'
-                          ? 'bg-blue-500/20 text-blue-400'
-                          : 'bg-slate-800 text-slate-300'
+                          ? 'bg-blue-50 text-blue-700 border-blue-200'
+                          : 'bg-slate-100 text-slate-700 border-slate-200'
                       }`}
                     >
                       {log.level}
@@ -241,10 +245,10 @@ export const TraceViewer: React.FC<TraceViewerProps> = ({ isOpen, onClose, run }
                     <span
                       className={
                         log.level === 'error'
-                          ? 'text-rose-300'
+                          ? 'text-rose-700 font-semibold'
                           : log.level === 'warn'
-                          ? 'text-amber-300'
-                          : 'text-[#94A3B8]'
+                          ? 'text-amber-800 font-semibold'
+                          : 'text-slate-700'
                       }
                     >
                       {log.message}
@@ -257,33 +261,33 @@ export const TraceViewer: React.FC<TraceViewerProps> = ({ isOpen, onClose, run }
 
           {/* Network Section */}
           {activeTab === 'network' && (
-            <div className="space-y-2">
-              <div className="text-[11px] text-[#64748B] uppercase">HTTP Network Har</div>
-              <div className="rounded border border-[#1E293B] bg-[#020617] overflow-hidden">
-                <table className="w-full text-left text-[11px]">
+            <div className="space-y-3">
+              <div className="text-xs font-bold text-slate-500 uppercase tracking-wider">HTTP Network Activity</div>
+              <div className="rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-2xs">
+                <table className="w-full text-left text-xs">
                   <thead>
-                    <tr className="border-b border-[#1E293B] bg-[#0A0F1D] text-[#64748B] uppercase">
-                      <th className="py-2 px-3">Method</th>
-                      <th className="py-2 px-3">URL</th>
-                      <th className="py-2 px-3">Status</th>
-                      <th className="py-2 px-3">Type</th>
-                      <th className="py-2 px-3">Size</th>
-                      <th className="py-2 px-3 text-right">Time</th>
+                    <tr className="border-b border-slate-200 bg-slate-50 text-slate-500 font-bold uppercase">
+                      <th className="py-2.5 px-4">Method</th>
+                      <th className="py-2.5 px-4">URL</th>
+                      <th className="py-2.5 px-4">Status</th>
+                      <th className="py-2.5 px-4">Type</th>
+                      <th className="py-2.5 px-4">Size</th>
+                      <th className="py-2.5 px-4 text-right">Duration</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#1E293B]/60">
+                  <tbody className="divide-y divide-slate-100">
                     {networkRequests.map((req, i) => (
-                      <tr key={i} className="hover:bg-[#111827]/40">
-                        <td className="py-2 px-3 text-cyan-400 font-bold">{req.method}</td>
-                        <td className="py-2 px-3 text-[#F8FAFC] truncate max-w-md">{req.url}</td>
-                        <td className="py-2 px-3">
-                          <span className={req.status >= 400 ? 'text-rose-400' : 'text-emerald-400'}>
+                      <tr key={i} className="hover:bg-slate-50">
+                        <td className="py-2.5 px-4 font-mono font-bold text-indigo-700">{req.method}</td>
+                        <td className="py-2.5 px-4 text-slate-800 font-mono truncate max-w-md">{req.url}</td>
+                        <td className="py-2.5 px-4">
+                          <span className={`font-mono font-bold ${req.status >= 400 ? 'text-rose-600' : 'text-emerald-600'}`}>
                             {req.status}
                           </span>
                         </td>
-                        <td className="py-2 px-3 text-[#94A3B8]">{req.type}</td>
-                        <td className="py-2 px-3 text-[#64748B]">{req.size}</td>
-                        <td className="py-2 px-3 text-right text-teal-300 tabular-nums">
+                        <td className="py-2.5 px-4 text-slate-500 font-mono">{req.type}</td>
+                        <td className="py-2.5 px-4 text-slate-500 font-mono">{req.size}</td>
+                        <td className="py-2.5 px-4 text-right font-mono text-slate-700">
                           {req.durationMs}ms
                         </td>
                       </tr>
@@ -297,15 +301,15 @@ export const TraceViewer: React.FC<TraceViewerProps> = ({ isOpen, onClose, run }
           {/* Screenshots Section */}
           {activeTab === 'screenshots' && (
             <div className="space-y-4">
-              <div className="text-[11px] text-[#64748B] uppercase">Action Frame Captures</div>
+              <div className="text-xs font-bold text-slate-500 uppercase tracking-wider">Action Frame Captures</div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {screenshots.map((shot, i) => (
-                  <div key={i} className="rounded border border-[#1E293B] bg-[#020617] p-3 space-y-2">
-                    <div className="flex items-center justify-between text-[11px]">
-                      <span className="font-semibold text-[#F8FAFC]">{shot.label}</span>
-                      <span className="text-[#64748B]">{shot.timestamp}</span>
+                  <div key={i} className="rounded-2xl border border-slate-200 bg-white p-4 space-y-2 shadow-2xs">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="font-bold text-slate-900">{shot.label}</span>
+                      <span className="text-slate-400 font-mono">{shot.timestamp}</span>
                     </div>
-                    <div className="w-full h-44 rounded bg-[#0A0F1D] border border-[#1E293B] overflow-hidden flex items-center justify-center">
+                    <div className="w-full h-44 rounded-xl bg-slate-50 border border-slate-200 overflow-hidden flex items-center justify-center">
                       {shot.previewUrl.startsWith('data:image/svg+xml') ? (
                         <div
                           className="w-full h-full flex items-center justify-center"
@@ -315,11 +319,11 @@ export const TraceViewer: React.FC<TraceViewerProps> = ({ isOpen, onClose, run }
                         <img
                           src={shot.previewUrl}
                           alt={shot.label}
-                          className="w-full h-full object-contain bg-[#020617]"
+                          className="w-full h-full object-contain bg-white"
                         />
                       )}
                     </div>
-                    <div className="text-[10px] text-[#64748B]">Action trigger: {shot.action}</div>
+                    <div className="text-xs text-slate-500 font-medium">Trigger: <span className="font-mono text-indigo-700 font-bold">{shot.action}</span></div>
                   </div>
                 ))}
               </div>
@@ -330,12 +334,12 @@ export const TraceViewer: React.FC<TraceViewerProps> = ({ isOpen, onClose, run }
           {activeTab === 'dom' && (
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-[11px] text-[#64748B] uppercase">Inspected DOM Node</span>
-                <span className="text-teal-300 text-xs">
+                <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Inspected DOM Node</span>
+                <span className="text-xs font-mono font-bold text-indigo-700 bg-indigo-50 px-2.5 py-1 rounded-md border border-indigo-200">
                   Target: {domSnapshot?.inspectedSelector || 'button[data-testid="payment-submit"]'}
                 </span>
               </div>
-              <pre className="p-4 rounded border border-[#1E293B] bg-[#020617] text-xs text-[#94A3B8] overflow-x-auto leading-relaxed">
+              <pre className="p-4 rounded-2xl border border-slate-200 bg-slate-50 text-xs font-mono text-slate-800 overflow-x-auto leading-relaxed shadow-2xs">
                 {domSnapshot?.htmlSnippet || '<!-- DOM Snapshot unavailable -->'}
               </pre>
             </div>

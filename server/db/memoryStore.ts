@@ -156,39 +156,17 @@ for (const repo of ACCOUNT_REPOS) {
 
 const DEFAULT_REPO = ACCOUNT_REPOS[0];
 
-// Seed Discovered GitHub Branches
-const SEED_BRANCHES: GitHubBranchRow[] = [
-  ...ACCOUNT_REPOS.map((repo) => ({
-    id: `${repo.id}-main`,
-    repositoryId: repo.id,
-    name: 'main',
-    commitSha: '1c54b15',
-    commitMessage: `chore: update repository ${repo.name}`,
-    isProtected: true,
-    lastCommitAt: new Date('2026-10-05T09:25:00Z'),
-    updatedAt: new Date('2026-10-05T09:25:00Z'),
-  })),
-  {
-    id: `${DEFAULT_REPO.id}-feature-checkout-fix`,
-    repositoryId: DEFAULT_REPO.id,
-    name: 'feature/checkout-fix',
-    commitSha: 'b284c1f',
-    commitMessage: 'fix(checkout): resolve selector instability in payment confirmation',
-    isProtected: false,
-    lastCommitAt: new Date('2026-10-04T16:30:00Z'),
-    updatedAt: new Date('2026-10-04T16:30:00Z'),
-  },
-  {
-    id: `${DEFAULT_REPO.id}-develop`,
-    repositoryId: DEFAULT_REPO.id,
-    name: 'develop',
-    commitSha: '8a94e10',
-    commitMessage: 'chore: sprint 42 integration testing pass',
-    isProtected: false,
-    lastCommitAt: new Date('2026-10-03T11:15:00Z'),
-    updatedAt: new Date('2026-10-03T11:15:00Z'),
-  },
-];
+// Seed Discovered GitHub Branches (Real branches only: main)
+const SEED_BRANCHES: GitHubBranchRow[] = ACCOUNT_REPOS.map((repo) => ({
+  id: `${repo.id}-main`,
+  repositoryId: repo.id,
+  name: 'main',
+  commitSha: '1c54b15',
+  commitMessage: `chore: update repository ${repo.name}`,
+  isProtected: true,
+  lastCommitAt: new Date('2026-10-05T09:25:00Z'),
+  updatedAt: new Date('2026-10-05T09:25:00Z'),
+}));
 SEED_BRANCHES.forEach((b) => branchesMap.set(b.id, b));
 
 // Seed Individual Test Cases
@@ -404,6 +382,168 @@ const INITIAL_DEMO_SUITES: (Partial<SuiteInput> & {
         { id: 'edge-2', sourceId: 'step-2', targetId: 'step-3' },
         { id: 'edge-3', sourceId: 'step-3', targetId: 'step-4' },
         { id: 'edge-4', sourceId: 'step-4', targetId: 'step-5' },
+      ],
+    },
+  },
+  {
+    id: 'pro-suite-login-products',
+    teamId: DEFAULT_TEAM.id,
+    repositoryId: 'gh-repo-aato-pro',
+    branchName: 'main',
+    triggerType: 'push',
+    name: 'SauceDemo E2E Login & Products Verification',
+    description: 'Automated Playwright regression covering Pages/LoginPage.py and Pages/HomePage.py from aato-test/pro.',
+    baseUrl: 'https://www.saucedemo.com',
+    browser: 'chromium',
+    environment: 'production',
+    jiraIssue: 'PRO-101',
+    definition: {
+      nodes: [
+        {
+          id: 'pro-node-1',
+          type: 'navigate',
+          title: 'Navigate to SauceDemo Login',
+          position: { x: 80, y: 140 },
+          data: { url: '/', timeout: 8000, waitUntil: 'domcontentloaded' },
+        },
+        {
+          id: 'pro-node-2',
+          type: 'input',
+          title: 'Enter Username (#user-name)',
+          position: { x: 420, y: 140 },
+          data: { selector: '#user-name', value: 'standard_user', clearFirst: true, maskInput: false, timeout: 5000 },
+        },
+        {
+          id: 'pro-node-3',
+          type: 'input',
+          title: 'Enter Password (#password)',
+          position: { x: 760, y: 140 },
+          data: { selector: '#password', value: 'secret_sauce', clearFirst: true, maskInput: true, timeout: 5000 },
+        },
+        {
+          id: 'pro-node-4',
+          type: 'click',
+          title: 'Click Login Button (#login-button)',
+          position: { x: 1100, y: 140 },
+          data: { selector: '#login-button', clickType: 'single', waitForSelector: true, timeout: 5000 },
+        },
+        {
+          id: 'pro-node-5',
+          type: 'assert',
+          title: 'Assert Products Title (HomePage.py)',
+          position: { x: 1440, y: 140 },
+          data: {
+            selector: "//*[@id='inventory_filter_container']/div",
+            assertionType: 'text_equals',
+            expectedValue: 'Products',
+            failureMessage: 'Expected Products heading but locator was not found in modern DOM',
+            timeout: 6000,
+          },
+        },
+      ],
+      edges: [
+        { id: 'pro-e1', sourceId: 'pro-node-1', targetId: 'pro-node-2' },
+        { id: 'pro-e2', sourceId: 'pro-node-2', targetId: 'pro-node-3' },
+        { id: 'pro-e3', sourceId: 'pro-node-3', targetId: 'pro-node-4' },
+        { id: 'pro-e4', sourceId: 'pro-node-4', targetId: 'pro-node-5' },
+      ],
+    },
+  },
+  {
+    id: 'pro-suite-cart-checkout',
+    teamId: DEFAULT_TEAM.id,
+    repositoryId: 'gh-repo-aato-pro',
+    branchName: 'main',
+    triggerType: 'push',
+    name: 'SauceDemo Cart & Checkout E2E Sequence',
+    description: 'Item selection, cart counter and checkout verification covering Pages/CheckoutPage.py and Pages/HeaderPage.py from aato-test/pro.',
+    baseUrl: 'https://www.saucedemo.com',
+    browser: 'chromium',
+    environment: 'production',
+    jiraIssue: 'PRO-102',
+    definition: {
+      nodes: [
+        {
+          id: 'pro-chk-1',
+          type: 'navigate',
+          title: 'Navigate to Inventory Catalog',
+          position: { x: 80, y: 140 },
+          data: { url: '/inventory.html', timeout: 8000, waitUntil: 'domcontentloaded' },
+        },
+        {
+          id: 'pro-chk-2',
+          type: 'click',
+          title: 'Add Backpack to Cart (.btn_primary)',
+          position: { x: 420, y: 140 },
+          data: { selector: '.inventory_item:nth-child(1) .btn_primary', clickType: 'single', waitForSelector: true, timeout: 5000 },
+        },
+        {
+          id: 'pro-chk-3',
+          type: 'click',
+          title: 'Click Cart Badge (.fa-layers-counter)',
+          position: { x: 760, y: 140 },
+          data: { selector: '.fa-layers-counter', clickType: 'single', waitForSelector: true, timeout: 5000 },
+        },
+        {
+          id: 'pro-chk-4',
+          type: 'click',
+          title: 'Click Checkout Button (CHECKOUT)',
+          position: { x: 1100, y: 140 },
+          data: { selector: 'a:has-text("CHECKOUT")', clickType: 'single', waitForSelector: true, timeout: 5000 },
+        },
+        {
+          id: 'pro-chk-5',
+          type: 'input',
+          title: 'Fill First Name (#first-name)',
+          position: { x: 1440, y: 140 },
+          data: { selector: '#first-name', value: 'Rafael', clearFirst: true, maskInput: false, timeout: 5000 },
+        },
+        {
+          id: 'pro-chk-6',
+          type: 'input',
+          title: 'Fill Last Name (#last-name)',
+          position: { x: 1780, y: 140 },
+          data: { selector: '#last-name', value: 'Elias', clearFirst: true, maskInput: false, timeout: 5000 },
+        },
+        {
+          id: 'pro-chk-7',
+          type: 'input',
+          title: 'Fill Postal Code (#postal-code)',
+          position: { x: 2120, y: 140 },
+          data: { selector: '#postal-code', value: '10001', clearFirst: true, maskInput: false, timeout: 5000 },
+        },
+        {
+          id: 'pro-chk-8',
+          type: 'click',
+          title: 'Click Continue (//input[@value="CONTINUE"])',
+          position: { x: 2460, y: 140 },
+          data: { selector: '//input[@value="CONTINUE"]', clickType: 'single', waitForSelector: true, timeout: 5000 },
+        },
+        {
+          id: 'pro-chk-9',
+          type: 'click',
+          title: 'Click Finish (FINISH)',
+          position: { x: 2800, y: 140 },
+          data: { selector: 'a:has-text("FINISH")', clickType: 'single', waitForSelector: true, timeout: 5000 },
+        },
+        {
+          id: 'pro-chk-10',
+          type: 'assert',
+          title: 'Assert Complete Header',
+          position: { x: 3140, y: 140 },
+          data: { selector: '.complete-header', assertionType: 'text_equals', expectedValue: 'THANK YOU FOR YOUR ORDER', failureMessage: '', timeout: 5000 },
+        },
+      ],
+      edges: [
+        { id: 'pro-ce1', sourceId: 'pro-chk-1', targetId: 'pro-chk-2' },
+        { id: 'pro-ce2', sourceId: 'pro-chk-2', targetId: 'pro-chk-3' },
+        { id: 'pro-ce3', sourceId: 'pro-chk-3', targetId: 'pro-chk-4' },
+        { id: 'pro-ce4', sourceId: 'pro-chk-4', targetId: 'pro-chk-5' },
+        { id: 'pro-ce5', sourceId: 'pro-chk-5', targetId: 'pro-chk-6' },
+        { id: 'pro-ce6', sourceId: 'pro-chk-6', targetId: 'pro-chk-7' },
+        { id: 'pro-ce7', sourceId: 'pro-chk-7', targetId: 'pro-chk-8' },
+        { id: 'pro-ce8', sourceId: 'pro-chk-8', targetId: 'pro-chk-9' },
+        { id: 'pro-ce9', sourceId: 'pro-chk-9', targetId: 'pro-chk-10' },
       ],
     },
   },
@@ -638,61 +778,8 @@ const SEED_ARTIFACT_4: ArtifactRow = {
   createdAt: SEED_RUN_2.createdAt,
 };
 
-// Seed Jira Connection & Issues
-const DEFAULT_JIRA_CONN: JiraConnectionRow = {
-  id: 'jira-conn-1',
-  teamId: DEFAULT_TEAM.id,
-  cloudId: 'cloud-aato-test-01',
-  siteUrl: 'https://aato-team.atlassian.net',
-  siteName: 'aato-team.atlassian.net',
-  status: 'active',
-  createdAt: new Date('2026-09-10T00:00:00Z'),
-  updatedAt: new Date('2026-09-10T00:00:00Z'),
-};
-jiraConnectionsMap.set(DEFAULT_JIRA_CONN.id, DEFAULT_JIRA_CONN);
-
-const DEFAULT_JIRA_PROJECT: JiraProjectRow = {
-  id: 'jira-proj-chk',
-  connectionId: DEFAULT_JIRA_CONN.id,
-  teamId: DEFAULT_TEAM.id,
-  projectKey: 'CHK',
-  name: 'Checkout Core Automation',
-  avatarUrl: null,
-  createdAt: new Date('2026-09-10T00:00:00Z'),
-  updatedAt: new Date('2026-09-10T00:00:00Z'),
-};
-jiraProjectsMap.set(DEFAULT_JIRA_PROJECT.id, DEFAULT_JIRA_PROJECT);
-
-const SEED_JIRA_ISSUES: JiraIssueRow[] = [
-  {
-    id: 'jira-issue-1',
-    teamId: DEFAULT_TEAM.id,
-    projectId: DEFAULT_JIRA_PROJECT.id,
-    issueKey: 'CHK-184',
-    summary: 'Payment submission selector instability in checkout flow',
-    status: 'in_progress',
-    priority: 'high',
-    assigneeName: 'Prakash S.',
-    assigneeAvatar: null,
-    linkedSuiteId: 'suite-checkout-flow',
-    createdAt: new Date('2026-09-28T09:00:00Z'),
-    updatedAt: new Date('2026-10-04T16:00:00Z'),
-  },
-  {
-    id: 'jira-issue-2',
-    teamId: DEFAULT_TEAM.id,
-    projectId: DEFAULT_JIRA_PROJECT.id,
-    issueKey: 'CHK-182',
-    summary: 'Verify Playwright documentation getting-started path',
-    status: 'done',
-    priority: 'medium',
-    assigneeName: 'Elena Rostova',
-    assigneeAvatar: null,
-    linkedSuiteId: 'demo-playwright-docs',
-    createdAt: new Date('2026-09-25T11:00:00Z'),
-    updatedAt: new Date('2026-10-02T15:00:00Z'),
-  },
-];
+// Seed Jira Connection & Issues - Starts completely empty until connected via UI
+const SEED_JIRA_ISSUES: JiraIssueRow[] = [];
 SEED_JIRA_ISSUES.forEach((iss) => jiraIssuesMap.set(iss.id, iss));
 
 runsMap.set(SEED_RUN_1.id, SEED_RUN_1);

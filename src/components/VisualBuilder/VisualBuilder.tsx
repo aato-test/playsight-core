@@ -45,6 +45,9 @@ import {
   Github,
   FolderGit2,
   Plus,
+  CheckCircle2,
+  AlertCircle,
+  Sparkles,
 } from 'lucide-react';
 
 interface VisualBuilderProps {
@@ -654,40 +657,49 @@ export const VisualBuilder: React.FC<VisualBuilderProps> = ({
     }
   };
 
+  const totalSteps = suite.nodes.length;
+  const runningNode = suite.nodes.find((n) => n.status === 'running');
+  const runningIndex = runningNode ? suite.nodes.findIndex((n) => n.id === runningNode.id) + 1 : 0;
+  const failedNode = suite.nodes.find((n) => n.status === 'failed');
+  const failedIndex = failedNode ? suite.nodes.findIndex((n) => n.id === failedNode.id) + 1 : 0;
+  const passedSteps = suite.nodes.filter((n) => n.status === 'success').length;
+  const allPassed =
+    totalSteps > 0 && passedSteps === totalSteps && suite.nodes.every((n) => n.status === 'success');
+
   return (
     <div className="flex-1 flex flex-col h-full overflow-hidden bg-slate-50 font-sans text-slate-800">
       {/* Workflow Editor Header */}
-      <div className="h-14 px-5 border-b border-slate-200 bg-white flex items-center justify-between shrink-0 select-none z-10 shadow-2xs">
+      <div className="h-16 px-6 border-b-2 border-slate-200 bg-white flex items-center justify-between shrink-0 select-none z-10 shadow-sm">
         <div className="flex items-center gap-3">
           <div>
-            <h2 className="text-sm font-bold text-slate-900 tracking-tight flex items-center gap-2">
+            <h2 className="text-base font-bold text-slate-900 tracking-tight flex items-center gap-2.5">
               {suite.name}
               {suite.branchName && (
-                <span className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 flex items-center gap-1 font-normal">
-                  <GitBranch className="w-3 h-3 text-indigo-600" />
+                <span className="text-xs font-mono px-2.5 py-0.5 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 flex items-center gap-1 font-semibold">
+                  <GitBranch className="w-3.5 h-3.5 text-indigo-600" />
                   {suite.branchName}
                 </span>
               )}
               {suite.triggerType && suite.triggerType !== 'manual' && (
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 flex items-center gap-1 font-normal">
-                  <Radio className="w-2.5 h-2.5" />
+                <span className="text-xs font-mono px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 flex items-center gap-1 font-semibold">
+                  <Radio className="w-3 h-3" />
                   Auto: {suite.triggerType}
                 </span>
               )}
             </h2>
-            <div className="text-xs text-slate-500 font-mono mt-0.5">
+            <div className="text-xs text-slate-500 font-mono mt-0.5 font-medium">
               {suite.nodes.length} test steps · <span className="capitalize">{suite.targetBrowser}</span>
             </div>
           </div>
         </div>
 
         {/* Right-side Actions */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2.5">
           {/* Run Button */}
           <button
             onClick={onRunTest}
             disabled={isRunning}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold font-mono tracking-tight transition-all cursor-pointer shadow-xs ${
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold tracking-tight transition-all cursor-pointer shadow-md ${
               isRunning
                 ? 'bg-amber-500 text-white cursor-wait'
                 : 'bg-indigo-600 hover:bg-indigo-700 text-white active:scale-98'
@@ -696,12 +708,12 @@ export const VisualBuilder: React.FC<VisualBuilderProps> = ({
           >
             {isRunning ? (
               <>
-                <RotateCw className="w-3.5 h-3.5 animate-spin" />
+                <RotateCw className="w-4 h-4 animate-spin" />
                 <span>Running...</span>
               </>
             ) : (
               <>
-                <Play className="w-3.5 h-3.5 fill-current" />
+                <Play className="w-4 h-4 fill-current" />
                 <span>Run</span>
               </>
             )}
@@ -710,10 +722,10 @@ export const VisualBuilder: React.FC<VisualBuilderProps> = ({
           {/* Save */}
           <button
             onClick={() => onUpdateSuite({ ...suite, updatedAt: 'Just now' })}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 text-xs font-sans font-medium transition-colors cursor-pointer shadow-2xs"
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 text-sm font-bold transition-colors cursor-pointer shadow-2xs"
             title="Save Workflow (⌘S)"
           >
-            <Save className="w-3.5 h-3.5 text-slate-500" />
+            <Save className="w-4 h-4 text-slate-600" />
             <span>Save</span>
           </button>
 
@@ -721,10 +733,10 @@ export const VisualBuilder: React.FC<VisualBuilderProps> = ({
           {onOpenUploadGithub && (
             <button
               onClick={onOpenUploadGithub}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 text-xs font-sans font-semibold transition-colors cursor-pointer shadow-2xs"
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 text-sm font-bold transition-colors cursor-pointer shadow-2xs"
               title="Push Spec to GitHub Repository"
             >
-              <Github className="w-3.5 h-3.5 text-slate-800" />
+              <Github className="w-4 h-4 text-slate-800" />
               <span className="hidden sm:inline">Push to GitHub</span>
             </button>
           )}
@@ -735,23 +747,130 @@ export const VisualBuilder: React.FC<VisualBuilderProps> = ({
               if (selectedNode) handleDuplicateNode(selectedNode);
             }}
             disabled={!selectedNode}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 border border-slate-200 text-xs font-sans transition-colors cursor-pointer disabled:opacity-40 shadow-2xs"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 border border-slate-300 text-sm font-bold transition-colors cursor-pointer disabled:opacity-40 shadow-2xs"
             title="Duplicate Selected Node"
           >
-            <Copy className="w-3.5 h-3.5" />
+            <Copy className="w-4 h-4" />
             <span className="hidden sm:inline">Duplicate</span>
           </button>
 
           {/* Export JSON Modal */}
           <button
             onClick={onOpenJsonModal}
-            className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 border border-slate-200 transition-colors cursor-pointer shadow-2xs"
+            className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 border border-slate-300 transition-colors cursor-pointer shadow-2xs"
             title="Export JSON & test_executor.py Payload"
           >
-            <Code2 className="w-4 h-4 text-indigo-600" />
+            <Code2 className="w-4.5 h-4.5 text-indigo-600" />
           </button>
         </div>
       </div>
+
+      {/* Real-Time Suite Execution & Result Diagnostic Banner */}
+      {isRunning && (
+        <div className="bg-amber-50 border-b border-amber-200 px-5 py-2.5 flex items-center justify-between shrink-0 z-10 shadow-2xs">
+          <div className="flex items-center gap-3">
+            <div className="w-7 h-7 rounded-lg bg-amber-100 border border-amber-300 flex items-center justify-center text-amber-700 shrink-0">
+              <RotateCw className="w-4 h-4 animate-spin" />
+            </div>
+            <div>
+              <div className="text-xs font-bold text-amber-950 flex items-center gap-2">
+                <span>
+                  Running Step {runningIndex || passedSteps + 1} of {totalSteps}: {runningNode?.title || 'Dispatching Step...'}
+                </span>
+                <span className="font-mono text-[10px] font-semibold px-2 py-0.5 rounded bg-amber-100 border border-amber-200 text-amber-800 uppercase">
+                  Engine: {suite.targetBrowser || 'Chromium'}
+                </span>
+              </div>
+              <div className="text-[11px] text-amber-800 mt-0.5">
+                Executing user journey in browser engine · Evaluating locators & assertions
+              </div>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="w-36 sm:w-52 bg-amber-200 rounded-full h-2 overflow-hidden">
+              <div
+                className="bg-amber-600 h-2 transition-all duration-300 rounded-full"
+                style={{ width: `${Math.max(12, Math.round((passedSteps / (totalSteps || 1)) * 100))}%` }}
+              />
+            </div>
+            <span className="font-mono text-xs font-semibold text-amber-900 min-w-[36px]">
+              {Math.round((passedSteps / (totalSteps || 1)) * 100)}%
+            </span>
+          </div>
+        </div>
+      )}
+
+      {!isRunning && failedNode && (
+        <div className="bg-rose-50 border-b border-rose-200 px-5 py-2.5 flex flex-wrap items-center justify-between gap-3 shrink-0 z-10 shadow-2xs">
+          <div className="flex items-center gap-3">
+            <div className="w-7 h-7 rounded-lg bg-rose-100 border border-rose-300 flex items-center justify-center text-rose-700 shrink-0">
+              <AlertCircle className="w-4 h-4 text-rose-600" />
+            </div>
+            <div>
+              <div className="text-xs font-bold text-rose-950 flex items-center gap-2">
+                <span>Step 0{failedIndex} Failed: {failedNode.title}</span>
+                <span className="text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-rose-100 text-rose-800 border border-rose-200">
+                  DOM Mismatch / Error
+                </span>
+              </div>
+              <div className="text-[11px] text-rose-700 font-mono mt-0.5 max-w-xl truncate">
+                {failedNode.errorMessage || 'Target selector failed to resolve within timeout limit.'}
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setSelectedNodeId(failedNode.id)}
+              className="px-2.5 py-1.5 rounded-lg bg-white hover:bg-slate-50 border border-rose-200 text-rose-800 text-xs font-semibold cursor-pointer shadow-2xs transition-colors"
+            >
+              Inspect Step 0{failedIndex}
+            </button>
+            <button
+              onClick={() => onAutoHealTrigger(failedNode.id)}
+              className="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs transition-colors"
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Auto-Heal Selector</span>
+            </button>
+            <button
+              onClick={onRunTest}
+              className="px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-800 text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition-colors"
+            >
+              <RotateCw className="w-3 h-3" />
+              <span>Re-run Suite</span>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {!isRunning && allPassed && (
+        <div className="bg-emerald-50 border-b border-emerald-200 px-5 py-2 flex items-center justify-between shrink-0 z-10 shadow-2xs">
+          <div className="flex items-center gap-2.5">
+            <div className="w-5 h-5 rounded-lg bg-emerald-100 border border-emerald-300 flex items-center justify-center text-emerald-700">
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+            </div>
+            <div className="text-xs font-bold text-emerald-950 flex items-center gap-2">
+              <span>All {totalSteps} steps passed successfully on {suite.targetBrowser || 'Chromium'}.</span>
+              <span className="text-emerald-700 font-normal text-[11px] hidden md:inline">
+                · Resilient DOM selectors verified · Assertions confirmed
+              </span>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-[11px] font-mono font-semibold text-emerald-800 bg-white border border-emerald-200 px-2 py-0.5 rounded shadow-2xs">
+              100% Passing
+            </span>
+            <button
+              onClick={onRunTest}
+              className="text-xs font-semibold text-emerald-800 hover:text-emerald-950 flex items-center gap-1 cursor-pointer px-2 py-1 rounded hover:bg-emerald-100 transition-colors"
+            >
+              <RotateCw className="w-3 h-3" />
+              <span>Run Again</span>
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Editor Main Canvas with Left Toolbox and Right Inspector */}
       <div className="flex-1 flex overflow-hidden relative">

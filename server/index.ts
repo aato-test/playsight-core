@@ -25,31 +25,53 @@ app.use(
 app.use('/api', api);
 app.use('/artifacts', express.static(env.artifactsDir));
 
+import http from 'node:http';
+
+const server = http.createServer(app);
+
 if (env.isProduction) {
   const dist = path.resolve(process.cwd(), 'dist');
   app.use(express.static(dist, { index: false }));
   app.get(/^(?!\/api).*/, (_req, res) => res.sendFile(path.join(dist, 'index.html')));
 } else {
-  // Single dev process: Vite runs as middleware inside Express, so the API and UI share one port.
-  const { createServer } = await import('vite');
-  const vite = await createServer({ server: { middlewareMode: true }, appType: 'spa' });
-  app.use(vite.middlewares);
+  try {
+    // Single dev process: Vite runs as middleware inside Express, sharing one HTTP server & port.
+    const { createServer: createViteServer } = await import('vite');
+    const vite = await createViteServer({
+      server: { middlewareMode: true, hmr: { server } },
+      appType: 'spa',
+    });
+    app.use(vite.middlewares);
 
-  app.get(/^(?!\/api).*/, async (req, res, next) => {
-    try {
-      const url = req.originalUrl;
-      const indexPath = path.resolve(process.cwd(), 'index.html');
-      let template = fs.readFileSync(indexPath, 'utf-8');
-      template = await vite.transformIndexHtml(url, template);
-      res.status(200).set({ 'Content-Type': 'text/html' }).end(template);
-    } catch (e) {
-      vite.ssrFixStacktrace(e as Error);
-      next(e);
-    }
-  });
+    app.get(/^(?!\/api).*/, async (req, res, next) => {
+      try {
+        const url = req.originalUrl;
+        const indexPath = path.resolve(process.cwd(), 'index.html');
+        let template = fs.readFileSync(indexPath, 'utf-8');
+        template = await vite.transformIndexHtml(url, template);
+        res.status(200).set({ 'Content-Type': 'text/html' }).end(template);
+      } catch (e) {
+        vite.ssrFixStacktrace(e as Error);
+        next(e);
+      }
+    });
+  } catch (viteErr) {
+    console.warn('[vite] Middleware mode failed, falling back to dist static files:', viteErr);
+    const dist = path.resolve(process.cwd(), 'dist');
+    app.use(express.static(dist, { index: false }));
+    app.get(/^(?!\/api).*/, (_req, res) => res.sendFile(path.join(dist, 'index.html')));
+  }
 }
 
-const server = app.listen(env.port, '0.0.0.0', () => {
+// Global error handler to prevent hanging or empty responses
+app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+  console.error('[server error]', err);
+  if (!res.headersSent) {
+    res.status(500).json({ error: err?.message || 'Internal Server Error' });
+  }
+});
+
+server.listen(env.port, '0.0.0.0', () => {
   console.log(`PlaySight Core listening on http://localhost:${env.port}`);
 });
 

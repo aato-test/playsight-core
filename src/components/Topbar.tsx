@@ -4,18 +4,21 @@ import {
   ChevronDown,
   Search,
   Bell,
-  Sparkles,
   Play,
   RotateCw,
   Check,
-  Server,
   FolderGit2,
   Github,
+  Building2,
+  Users,
+  Shield,
+  Layers,
+  Sparkles,
 } from 'lucide-react';
 import { ActiveTab, TestSuite, BranchInfo, TestRunResult } from '../types';
 import { UserAvatar } from './UserAvatar';
 import { useClickOutside } from '../utils/useClickOutside';
-import { BrowserSelector, BrowserEngine } from './BrowserSelector';
+import { BrowserSelector } from './BrowserSelector';
 
 interface TopbarProps {
   activeTab: ActiveTab;
@@ -25,6 +28,7 @@ interface TopbarProps {
   isRunning: boolean;
   onRunTest: () => void;
   onBrowserChange: (browser: 'chromium' | 'firefox' | 'webkit') => void;
+  selectedBrowser?: 'chromium' | 'firefox' | 'webkit';
   branches: BranchInfo[];
   currentBranch: string;
   onSelectBranch: (branch: string) => void;
@@ -32,16 +36,22 @@ interface TopbarProps {
   onSelectRepo?: (repoFullName: string) => void;
   repositories?: Array<{ id: string; fullName: string; defaultBranch: string }>;
   githubConnected?: boolean;
-  onOpenCopilot: () => void;
+  onOpenCopilot?: () => void;
   onOpenCommandPalette: () => void;
-  currentEnvironment: 'local' | 'staging' | 'production';
-  onEnvironmentChange: (env: 'local' | 'staging' | 'production') => void;
+  currentEnvironment?: 'local' | 'staging' | 'production';
+  onEnvironmentChange?: (env: 'local' | 'staging' | 'production') => void;
   hasFailure?: boolean;
   isBackendConnected?: boolean;
   backendMode?: string;
   onNavigateToTab?: (tab: ActiveTab) => void;
   onOpenGoogleAuth?: () => void;
   onOpenUploadGithub?: () => void;
+  onOpenUserSessionModal?: () => void;
+  onOpenLoginModal?: () => void;
+  workspaceName?: string;
+  onSelectWorkspace?: (wsName: string) => void;
+  userName?: string;
+  userRole?: string;
   isGoogleSignedIn?: boolean;
   userEmail?: string;
 }
@@ -52,77 +62,155 @@ export const Topbar: React.FC<TopbarProps> = ({
   isRunning,
   onRunTest,
   onBrowserChange,
+  selectedBrowser = 'chromium',
   branches,
   currentBranch,
   onSelectBranch,
   currentRepo = 'aato-test/playsight-core',
   onSelectRepo,
   repositories = [],
-  githubConnected = true,
-  onOpenCopilot,
   onOpenCommandPalette,
-  currentEnvironment,
-  onEnvironmentChange,
   hasFailure = false,
-  isBackendConnected = false,
-  backendMode = 'in-memory',
   onNavigateToTab,
-  onOpenGoogleAuth,
   onOpenUploadGithub,
-  isGoogleSignedIn = true,
-  userEmail = 'prakashsivakumar27@gmail.com',
+  onOpenUserSessionModal,
+  onOpenLoginModal,
+  workspaceName = 'PlaySight Core Engineering Workspace',
+  onSelectWorkspace,
+  userName = 'Prakash Sivakumar',
+  userRole = 'Lead QA Engineer',
 }) => {
+  const [isWorkspaceMenuOpen, setIsWorkspaceMenuOpen] = useState(false);
   const [isRepoMenuOpen, setIsRepoMenuOpen] = useState(false);
   const [isBranchMenuOpen, setIsBranchMenuOpen] = useState(false);
-  const [isEnvMenuOpen, setIsEnvMenuOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
 
+  const wsRef = useRef<HTMLDivElement>(null);
   const repoRef = useRef<HTMLDivElement>(null);
   const branchRef = useRef<HTMLDivElement>(null);
-  const envRef = useRef<HTMLDivElement>(null);
   const notifRef = useRef<HTMLDivElement>(null);
 
+  useClickOutside(wsRef, () => setIsWorkspaceMenuOpen(false));
   useClickOutside(repoRef, () => setIsRepoMenuOpen(false));
   useClickOutside(branchRef, () => setIsBranchMenuOpen(false));
-  useClickOutside(envRef, () => setIsEnvMenuOpen(false));
   useClickOutside(notifRef, () => setIsNotificationsOpen(false));
 
   const recentRuns = testRuns.slice(0, 4);
 
+  const availableWorkspaces = [
+    'PlaySight Core Engineering Workspace',
+    'Acme QA Automation Workspace',
+    'Staging Pre-Release Hub',
+  ];
+
   return (
     <header
       id="app-topbar"
-      className="h-18 bg-white border-b border-slate-200 px-6 flex items-center justify-between z-20 shrink-0 select-none text-slate-800 font-sans shadow-xs"
+      className="h-20 bg-white border-b border-slate-200 px-6 flex items-center justify-between z-20 shrink-0 select-none text-slate-800 font-sans shadow-xs"
     >
-      {/* Left: Workspace / Repository / Branch Selectors */}
-      <div className="flex items-center gap-3">
-        {/* Workspace Brand / Breadcrumb */}
-        <div className="hidden sm:flex items-center gap-1.5 text-sm">
-          <span className="text-slate-500 font-semibold tracking-tight">PlaySight</span>
-          <span className="text-slate-300">/</span>
+      {/* Left: Brand & Hierarchy Selectors: [ Workspace ▼ ] [ Project ▼ ] [ Branch ▼ ] */}
+      <div className="flex items-center gap-3.5 flex-wrap">
+        {/* Brand Name */}
+        <div className="flex items-center gap-2 pr-2 border-r border-slate-200">
+          <div className="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold shadow-xs">
+            <svg
+              viewBox="0 0 24 24"
+              className="w-5 h-5 stroke-current fill-none stroke-[2.4]"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M7 8l-4 4 4 4" />
+              <path d="M17 8l4 4-4 4" />
+              <circle cx="12" cy="12" r="2" fill="currentColor" />
+            </svg>
+          </div>
+          <span className="font-bold text-lg text-slate-900 tracking-tight hidden md:inline">
+            PlaySight <span className="text-indigo-600">Core</span>
+          </span>
         </div>
 
-        {/* GitHub Repository Dropdown */}
+        {/* 1. Company / Workspace Selector [ Company / Workspace ▼ ] */}
+        <div ref={wsRef} className="relative">
+          <button
+            onClick={() => setIsWorkspaceMenuOpen(!isWorkspaceMenuOpen)}
+            className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-300 text-slate-900 font-bold text-sm transition-all cursor-pointer shadow-2xs hover:border-slate-400"
+            title="Switch Company Workspace"
+          >
+            <Building2 className="w-4.5 h-4.5 text-indigo-600 shrink-0" />
+            <span className="truncate max-w-[160px] lg:max-w-[200px]">
+              {workspaceName}
+            </span>
+            <ChevronDown className="w-4 h-4 text-slate-500 shrink-0" />
+          </button>
+
+          {isWorkspaceMenuOpen && (
+            <div className="absolute left-0 top-full mt-2 w-80 bg-white border border-slate-300 rounded-2xl shadow-xl py-2 z-50 animate-in fade-in zoom-in-95 duration-150">
+              <div className="px-4 py-2 text-xs font-bold text-slate-500 uppercase tracking-wider border-b border-slate-100 flex items-center justify-between">
+                <span>Company Workspaces</span>
+                <span className="text-indigo-600 font-semibold">Active Hub</span>
+              </div>
+              <div className="py-1">
+                {availableWorkspaces.map((ws) => (
+                  <button
+                    key={ws}
+                    onClick={() => {
+                      onSelectWorkspace?.(ws);
+                      setIsWorkspaceMenuOpen(false);
+                    }}
+                    className={`w-full text-left px-4 py-3 flex items-center justify-between hover:bg-slate-50 transition-colors cursor-pointer text-sm ${
+                      ws === workspaceName
+                        ? 'bg-indigo-50/80 text-indigo-700 font-bold'
+                        : 'text-slate-800 font-medium'
+                    }`}
+                  >
+                    <div className="truncate pr-2">
+                      <div className="truncate">{ws}</div>
+                      <div className="text-xs text-slate-500">Shared QA Pod</div>
+                    </div>
+                    {ws === workspaceName && <Check className="w-4.5 h-4.5 text-indigo-600 shrink-0" />}
+                  </button>
+                ))}
+              </div>
+              <div className="p-2 border-t border-slate-100 bg-slate-50/70">
+                <button
+                  onClick={() => {
+                    setIsWorkspaceMenuOpen(false);
+                    onOpenUserSessionModal?.();
+                  }}
+                  className="w-full py-2 px-3 rounded-xl bg-white hover:bg-slate-100 text-indigo-700 border border-slate-300 text-xs font-bold flex items-center justify-center gap-2 cursor-pointer transition-colors"
+                >
+                  <Users className="w-4 h-4" />
+                  <span>Manage Members & Tokens</span>
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* 2. Project / Repository Selector [ Project ▼ ] */}
         <div ref={repoRef} className="relative">
           <button
             onClick={() => setIsRepoMenuOpen(!isRepoMenuOpen)}
-            className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200/70 border border-slate-200 text-xs transition-colors cursor-pointer text-slate-800 font-semibold shadow-2xs"
-            title="Active GitHub Repository"
+            className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-300 text-slate-900 font-bold text-sm transition-all cursor-pointer shadow-2xs hover:border-slate-400"
+            title="Active GitHub Project Repository"
           >
-            <FolderGit2 className="w-4 h-4 text-indigo-600 shrink-0" />
-            <span className="font-sans text-xs font-semibold text-slate-800 truncate max-w-[150px] md:max-w-[200px]">
+            <FolderGit2 className="w-4.5 h-4.5 text-indigo-600 shrink-0" />
+            <span className="truncate max-w-[160px] lg:max-w-[210px]">
               {currentRepo}
             </span>
-            <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+            <ChevronDown className="w-4 h-4 text-slate-500 shrink-0" />
           </button>
 
           {isRepoMenuOpen && (
-            <div className="absolute left-0 top-full mt-2 w-80 bg-white border border-slate-200 rounded-xl shadow-xl py-1 z-50 text-xs">
-              <div className="px-3.5 py-2 text-xs font-sans font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-100 flex items-center justify-between">
-                <span>Connected Repositories</span>
-                <span className="text-indigo-600 font-semibold">GitHub App</span>
+            <div className="absolute left-0 top-full mt-2 w-84 bg-white border border-slate-300 rounded-2xl shadow-xl py-2 z-50 animate-in fade-in zoom-in-95 duration-150">
+              <div className="px-4 py-2 text-xs font-bold text-slate-500 uppercase tracking-wider border-b border-slate-100 flex items-center justify-between">
+                <span>Projects (GitHub Repos)</span>
+                <span className="text-emerald-600 font-bold flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                  Connected
+                </span>
               </div>
-              <div className="max-h-56 overflow-y-auto py-1">
+              <div className="max-h-64 overflow-y-auto py-1">
                 {(repositories.length > 0
                   ? repositories
                   : [{ id: 'default', fullName: currentRepo, defaultBranch: 'main' }]
@@ -133,52 +221,54 @@ export const Topbar: React.FC<TopbarProps> = ({
                       onSelectRepo?.(r.fullName);
                       setIsRepoMenuOpen(false);
                     }}
-                    className={`w-full text-left px-3.5 py-2 flex items-center justify-between hover:bg-slate-50 transition-colors cursor-pointer ${
-                      r.fullName === currentRepo ? 'bg-indigo-50/70 text-indigo-700 font-semibold' : 'text-slate-700'
+                    className={`w-full text-left px-4 py-2.5 flex items-center justify-between hover:bg-slate-50 transition-colors cursor-pointer text-sm ${
+                      r.fullName === currentRepo
+                        ? 'bg-indigo-50/80 text-indigo-700 font-bold'
+                        : 'text-slate-800 font-medium'
                     }`}
                   >
-                    <div className="truncate">
-                      <div className="font-sans text-xs font-semibold">{r.fullName}</div>
-                      <div className="text-[11px] text-slate-500">Default: {r.defaultBranch}</div>
+                    <div className="truncate pr-2">
+                      <div className="truncate font-semibold">{r.fullName}</div>
+                      <div className="text-xs text-slate-500">Default branch: {r.defaultBranch}</div>
                     </div>
-                    {r.fullName === currentRepo && <Check className="w-4 h-4 text-indigo-600 shrink-0" />}
+                    {r.fullName === currentRepo && <Check className="w-4.5 h-4.5 text-indigo-600 shrink-0" />}
                   </button>
                 ))}
               </div>
-              <div className="p-2 border-t border-slate-100 bg-slate-50/80">
+              <div className="p-2 border-t border-slate-100 bg-slate-50/70">
                 <button
                   onClick={() => {
                     setIsRepoMenuOpen(false);
                     onNavigateToTab?.('integrations');
                   }}
-                  className="w-full py-2 px-3 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                  className="w-full py-2 px-3 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer"
                 >
                   <Github className="w-4 h-4 text-indigo-600" />
-                  <span>Connect / Manage GitHub</span>
+                  <span>Configure Repositories</span>
                 </button>
               </div>
             </div>
           )}
         </div>
 
-        {/* Current Branch Dropdown */}
+        {/* 3. Branch Selector [ Branch ▼ ] */}
         <div ref={branchRef} className="relative">
           <button
             onClick={() => setIsBranchMenuOpen(!isBranchMenuOpen)}
-            className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200/70 border border-slate-200 text-xs transition-colors cursor-pointer shadow-2xs font-semibold"
+            className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-300 text-slate-900 font-bold text-sm transition-all cursor-pointer shadow-2xs hover:border-slate-400"
             title="Switch Git Branch"
           >
-            <GitBranch className="w-4 h-4 text-indigo-600 shrink-0" />
-            <span className="font-sans text-xs text-indigo-700 font-semibold truncate max-w-[120px] md:max-w-[160px]">
+            <GitBranch className="w-4.5 h-4.5 text-indigo-600 shrink-0" />
+            <span className="text-indigo-700 font-bold truncate max-w-[120px] lg:max-w-[150px]">
               {currentBranch}
             </span>
-            <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+            <ChevronDown className="w-4 h-4 text-slate-500 shrink-0" />
           </button>
 
           {isBranchMenuOpen && (
-            <div className="absolute left-0 top-full mt-2 w-72 bg-white border border-slate-200 rounded-xl shadow-xl py-1 z-50 text-xs">
-              <div className="px-3.5 py-2 text-xs font-sans font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-100">
-                Discovered Branches
+            <div className="absolute left-0 top-full mt-2 w-72 bg-white border border-slate-300 rounded-2xl shadow-xl py-2 z-50 animate-in fade-in zoom-in-95 duration-150">
+              <div className="px-4 py-2 text-xs font-bold text-slate-500 uppercase tracking-wider border-b border-slate-100">
+                Active Repository Branches
               </div>
               <div className="max-h-60 overflow-y-auto py-1">
                 {branches.map((b) => (
@@ -188,15 +278,15 @@ export const Topbar: React.FC<TopbarProps> = ({
                       onSelectBranch(b.name);
                       setIsBranchMenuOpen(false);
                     }}
-                    className={`w-full text-left px-3.5 py-2 flex items-center justify-between hover:bg-slate-50 transition-colors cursor-pointer ${
+                    className={`w-full text-left px-4 py-2.5 flex items-center justify-between hover:bg-slate-50 transition-colors cursor-pointer text-sm ${
                       b.name === currentBranch
-                        ? 'bg-indigo-50/70 text-indigo-700 font-sans font-semibold'
-                        : 'text-slate-700 font-sans'
+                        ? 'bg-indigo-50/80 text-indigo-700 font-bold'
+                        : 'text-slate-800 font-medium'
                     }`}
                   >
                     <div className="truncate">
                       <div className="truncate font-semibold">{b.name}</div>
-                      <div className="text-[11px] text-slate-500">{b.commit} · {b.lastUpdated}</div>
+                      <div className="text-xs text-slate-500">{b.commit} · {b.lastUpdated}</div>
                     </div>
                     {b.name === currentBranch && <Check className="w-4 h-4 text-indigo-600 shrink-0" />}
                   </button>
@@ -206,97 +296,22 @@ export const Topbar: React.FC<TopbarProps> = ({
           )}
         </div>
 
-        {/* Push to GitHub Button */}
+        {/* Push to GitHub */}
         <button
           onClick={onOpenUploadGithub}
-          className="hidden sm:flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200/80 border border-slate-200 text-xs font-semibold text-slate-800 transition-all cursor-pointer shadow-2xs hover:border-slate-300"
-          title="Upload & Push Test Suite to GitHub"
+          className="hidden xl:flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-300 text-slate-800 text-sm font-bold transition-all cursor-pointer shadow-2xs hover:border-slate-400"
+          title="Push Test Suites to GitHub"
         >
-          <Github className="w-4 h-4 text-slate-800" />
+          <Github className="w-4.5 h-4.5 text-slate-700" />
           <span>Push to GitHub</span>
         </button>
-
-        {/* GitHub Integration Badge */}
-        <button
-          onClick={() => onNavigateToTab?.('integrations')}
-          className="hidden xl:flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-sans select-none cursor-pointer bg-slate-50 border-slate-200 hover:bg-slate-100 text-slate-700 transition-colors"
-          title="View GitHub Integration Status"
-        >
-          <Github className="w-3.5 h-3.5 text-slate-600" />
-          <span>GitHub:</span>
-          <span
-            className={`w-2 h-2 rounded-full ${
-              githubConnected ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'
-            }`}
-          />
-          <span className={githubConnected ? 'text-emerald-700 font-semibold' : 'text-amber-700 font-semibold'}>
-            {githubConnected ? 'Connected' : 'Setup'}
-          </span>
-        </button>
-
-        {/* Backend API Connection status badge */}
-        <div
-          className={`hidden 2xl:flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-sans select-none ${
-            isBackendConnected
-              ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-              : 'bg-slate-100 text-slate-600 border-slate-200'
-          }`}
-          title={
-            isBackendConnected
-              ? `Full-stack API Live (${backendMode === 'postgres' ? 'PostgreSQL' : 'In-Memory Store'})`
-              : 'Running in Standalone Client Mode'
-          }
-        >
-          <span
-            className={`w-2 h-2 rounded-full ${
-              isBackendConnected ? 'bg-emerald-500 animate-pulse' : 'bg-slate-400'
-            }`}
-          />
-          <span>{isBackendConnected ? `API: ${backendMode.toUpperCase()}` : 'STANDALONE'}</span>
-        </div>
       </div>
 
-      {/* Right Controls: Environment, Browser, Search, Notifications, Copilot, Run */}
-      <div className="flex items-center gap-2.5">
-        {/* Environment Selector (Local / Staging / Production) */}
-        <div ref={envRef} className="relative">
-          <button
-            onClick={() => setIsEnvMenuOpen(!isEnvMenuOpen)}
-            className="flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200/70 border border-slate-200 text-xs text-slate-700 transition-colors cursor-pointer shadow-2xs font-medium"
-            title="Active Environment"
-          >
-            <Server className="w-3.5 h-3.5 text-blue-600" />
-            <span className="capitalize text-xs font-sans font-semibold text-slate-800">{currentEnvironment}</span>
-            <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
-          </button>
-
-          {isEnvMenuOpen && (
-            <div className="absolute right-0 top-full mt-2 w-48 bg-white border border-slate-200 rounded-xl shadow-xl py-1 z-50 text-xs font-sans">
-              <div className="px-3.5 py-2 text-xs font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-100">
-                Target Environment
-              </div>
-              {(['local', 'staging', 'production'] as const).map((env) => (
-                <button
-                  key={env}
-                  onClick={() => {
-                    onEnvironmentChange(env);
-                    setIsEnvMenuOpen(false);
-                  }}
-                  className={`w-full text-left px-3.5 py-2 flex items-center justify-between hover:bg-slate-50 cursor-pointer ${
-                    currentEnvironment === env ? 'text-indigo-600 font-semibold bg-indigo-50/50' : 'text-slate-700'
-                  }`}
-                >
-                  <span className="capitalize">{env}</span>
-                  {currentEnvironment === env && <Check className="w-3.5 h-3.5 text-indigo-600" />}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* 3 Browser Engines Logo Selector (Chromium / Firefox / WebKit) */}
+      {/* Right Controls: Browser, Search, Notifications, Run Button, User Session */}
+      <div className="flex items-center gap-3">
+        {/* Browser Selector */}
         <BrowserSelector
-          currentBrowser={(currentSuite?.targetBrowser || 'chromium') as BrowserEngine}
+          currentBrowser={selectedBrowser || 'chromium'}
           onBrowserChange={onBrowserChange}
           showLabels={true}
         />
@@ -304,12 +319,12 @@ export const Topbar: React.FC<TopbarProps> = ({
         {/* Global Search Shortcut (⌘K) */}
         <button
           onClick={onOpenCommandPalette}
-          className="hidden md:flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200/70 border border-slate-200 text-xs text-slate-600 hover:text-slate-900 transition-colors cursor-pointer shadow-2xs font-medium"
+          className="hidden lg:flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-300 text-slate-700 hover:text-slate-950 text-sm font-semibold transition-colors cursor-pointer shadow-2xs"
           title="Open Command Palette (⌘K)"
         >
-          <Search className="w-3.5 h-3.5 text-slate-400" />
+          <Search className="w-4.5 h-4.5 text-slate-500" />
           <span>Search...</span>
-          <kbd className="font-sans text-[11px] font-semibold bg-white text-slate-500 px-1.5 py-0.5 rounded border border-slate-200 shadow-2xs">
+          <kbd className="font-mono text-xs font-bold bg-white text-slate-600 px-2 py-0.5 rounded border border-slate-300 shadow-2xs">
             ⌘K
           </kbd>
         </button>
@@ -318,33 +333,33 @@ export const Topbar: React.FC<TopbarProps> = ({
         <div ref={notifRef} className="relative">
           <button
             onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
-            className="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200/70 border border-slate-200 text-slate-600 hover:text-slate-900 transition-colors cursor-pointer relative shadow-2xs"
-            title="Notifications"
+            className="p-3 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-300 text-slate-700 hover:text-slate-950 transition-colors cursor-pointer relative shadow-2xs"
+            title="Recent Executions & Notifications"
             aria-label="Notifications"
           >
-            <Bell className="w-4 h-4" />
+            <Bell className="w-5 h-5" />
             {hasFailure && (
-              <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-rose-500 ring-2 ring-white" />
+              <span className="absolute top-2.5 right-2.5 w-2.5 h-2.5 rounded-full bg-rose-500 ring-2 ring-white" />
             )}
           </button>
 
           {isNotificationsOpen && (
-            <div className="absolute right-0 top-full mt-2 w-80 bg-white border border-slate-200 rounded-xl shadow-xl p-3 z-50 text-xs">
-              <div className="px-2 py-1.5 text-xs font-semibold text-slate-500 uppercase tracking-wider border-b border-slate-100">
-                Recent Executions
+            <div className="absolute right-0 top-full mt-2 w-96 bg-white border border-slate-300 rounded-2xl shadow-xl p-4 z-50 text-sm">
+              <div className="px-2 py-1.5 text-xs font-bold text-slate-500 uppercase tracking-wider border-b border-slate-100">
+                Recent Test Runs
               </div>
-              <div className="space-y-2 pt-2 max-h-64 overflow-y-auto">
+              <div className="space-y-2.5 pt-2 max-h-72 overflow-y-auto">
                 {recentRuns.map((run) => (
                   <div
                     key={run.id}
-                    className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs"
+                    className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-sm"
                   >
                     <div className="flex items-center justify-between">
-                      <span className="font-semibold text-slate-800 truncate">
+                      <span className="font-bold text-slate-900 truncate">
                         {run.suiteName}
                       </span>
                       <span
-                        className={`text-[11px] px-2 py-0.5 rounded-full font-semibold ${
+                        className={`text-xs px-2.5 py-0.5 rounded-full font-bold ${
                           run.status === 'passed'
                             ? 'bg-emerald-100 text-emerald-800'
                             : 'bg-rose-100 text-rose-800'
@@ -353,7 +368,7 @@ export const Topbar: React.FC<TopbarProps> = ({
                         {run.status.toUpperCase()}
                       </span>
                     </div>
-                    <div className="text-slate-500 font-sans text-xs mt-1">
+                    <div className="text-slate-600 text-xs mt-1 font-medium">
                       {run.passedSteps}/{run.totalSteps} steps · {(run.durationMs / 1000).toFixed(2)}s · {run.timestamp}
                     </div>
                   </div>
@@ -363,86 +378,54 @@ export const Topbar: React.FC<TopbarProps> = ({
           )}
         </div>
 
-        {/* QA Copilot Shortcut Button (⌘J) */}
-        <button
-          onClick={onOpenCopilot}
-          className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 text-xs font-semibold transition-colors cursor-pointer shadow-2xs"
-          title="Open QA Copilot Diagnostics (⌘J)"
-        >
-          <Sparkles className="w-4 h-4 text-indigo-600" />
-          <span className="hidden sm:inline">Copilot</span>
-          <kbd className="font-sans text-[11px] font-semibold bg-white px-1.5 py-0.5 rounded border border-indigo-200 text-indigo-700 shadow-2xs">
-            ⌘J
-          </kbd>
-        </button>
-
-        {/* Topbar Run Button */}
+        {/* Primary Run Test Button */}
         <button
           onClick={onRunTest}
           disabled={isRunning || !currentSuite}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold tracking-tight transition-all cursor-pointer shadow-xs ${
+          className={`flex items-center gap-2.5 px-5 py-2.5 rounded-xl text-sm font-bold tracking-tight transition-all cursor-pointer shadow-md ${
             isRunning
               ? 'bg-amber-500 text-white cursor-wait'
               : !currentSuite
               ? 'bg-slate-200 text-slate-400 cursor-not-allowed shadow-none'
-              : 'bg-indigo-600 hover:bg-indigo-700 text-white active:scale-98'
+              : 'bg-indigo-600 hover:bg-indigo-700 text-white active:scale-98 shadow-indigo-600/25'
           }`}
-          title={!currentSuite ? 'No test suite selected for this repo' : 'Run Sequence (⌘Enter)'}
+          title={!currentSuite ? 'No test suite selected' : 'Run Suite Execution (⌘Enter)'}
         >
           {isRunning ? (
             <>
-              <RotateCw className="w-4 h-4 animate-spin" />
+              <RotateCw className="w-5 h-5 animate-spin" />
               <span>Running...</span>
             </>
           ) : (
             <>
-              <Play className="w-4 h-4 fill-current" />
-              <span>Run</span>
+              <Play className="w-5 h-5 fill-current" />
+              <span>Run Suite</span>
             </>
           )}
         </button>
 
-        {/* Google Account & Import Button */}
+        {/* User Identity & Company Workspace Session */}
         <button
-          onClick={onOpenGoogleAuth}
-          className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 text-xs font-semibold transition-colors cursor-pointer shadow-2xs"
-          title="Google Workspace & Sheets Import"
+          onClick={onOpenUserSessionModal}
+          className="pl-3 border-l border-slate-200 cursor-pointer flex items-center gap-3 hover:opacity-85 transition-opacity"
+          title="Manage User Profile & Company Workspace"
         >
-          {/* Google G SVG */}
-          <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
-            <path
-              fill="#4285F4"
-              d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+          <div className="relative">
+            <UserAvatar name={userName} size="md" />
+            <span
+              className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-500 ring-2 ring-white"
+              title="Active user presence"
             />
-            <path
-              fill="#34A853"
-              d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-            />
-            <path
-              fill="#FBBC05"
-              d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
-            />
-            <path
-              fill="#EA4335"
-              d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
-            />
-          </svg>
-          <span className="hidden md:inline font-sans text-xs text-slate-700">
-            {isGoogleSignedIn ? 'Google' : 'Sign in'}
-          </span>
-          {isGoogleSignedIn && (
-            <span className="w-2 h-2 rounded-full bg-emerald-500" />
-          )}
+          </div>
+          <div className="hidden lg:flex flex-col text-left">
+            <span className="text-sm font-bold text-slate-900 leading-tight truncate max-w-[130px]">
+              {userName}
+            </span>
+            <span className="text-xs font-semibold text-indigo-700 truncate max-w-[130px]">
+              {userRole}
+            </span>
+          </div>
         </button>
-
-        {/* User Avatar */}
-        <div
-          className="pl-1 border-l border-slate-200 cursor-pointer"
-          onClick={onOpenGoogleAuth}
-          title="User Profile & Google Settings"
-        >
-          <UserAvatar name="Prakash S." size="sm" />
-        </div>
       </div>
     </header>
   );

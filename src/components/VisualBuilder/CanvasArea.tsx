@@ -114,8 +114,8 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
   const [hoveredEdgeId, setHoveredEdgeId] = useState<string | null>(null);
 
   // Node dimensions matching Section 13 (280-320px width)
-  const NODE_WIDTH = 290;
-  const NODE_HEIGHT = 140;
+  const NODE_WIDTH = 320;
+  const NODE_HEIGHT = 160;
 
   // Canvas Panning
   const handleCanvasMouseDown = (e: React.MouseEvent) => {
@@ -243,184 +243,206 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
     return map;
   }, [nodes]);
 
-  // Node Type Config
+  // Node Type Config with clear labels, short descriptions, and colored containers
   const getNodeTypeConfig = (type: StepType) => {
     switch (type) {
       case 'navigate':
         return {
           icon: Globe,
-          label: 'Navigate',
+          label: 'Open Page',
+          shortDesc: 'Navigate to target URL',
           badgeText: 'NAV',
-          color: 'text-blue-400',
-          border: 'border-blue-500/30',
+          color: 'text-blue-700',
+          bgContainer: 'bg-blue-100 border-blue-300',
         };
       case 'scroll':
         return {
           icon: ArrowDownUp,
-          label: 'Scroll',
-          badgeText: 'SCRL',
-          color: 'text-sky-400',
-          border: 'border-sky-500/30',
+          label: 'Scroll Page',
+          shortDesc: 'Scroll down or into view',
+          badgeText: 'SCROLL',
+          color: 'text-sky-700',
+          bgContainer: 'bg-sky-100 border-sky-300',
         };
       case 'wait_for':
         return {
           icon: Clock,
           label: 'Wait / Delay',
+          shortDesc: 'Wait for condition or timeout',
           badgeText: 'WAIT',
-          color: 'text-cyan-400',
-          border: 'border-cyan-500/30',
+          color: 'text-blue-700',
+          bgContainer: 'bg-blue-100 border-blue-300',
         };
       case 'screenshot':
         return {
           icon: Camera,
-          label: 'Screenshot',
+          label: 'Take Screenshot',
+          shortDesc: 'Capture visual snapshot',
           badgeText: 'SHOT',
-          color: 'text-indigo-400',
-          border: 'border-indigo-500/30',
+          color: 'text-violet-700',
+          bgContainer: 'bg-violet-100 border-violet-300',
         };
       case 'click':
         return {
           icon: MousePointerClick,
-          label: 'Click',
-          badgeText: 'CLK',
-          color: 'text-indigo-400',
-          border: 'border-indigo-500/30',
+          label: 'Click Element',
+          shortDesc: 'Click button or element',
+          badgeText: 'CLICK',
+          color: 'text-indigo-700',
+          bgContainer: 'bg-indigo-100 border-indigo-300',
         };
       case 'input':
         return {
           icon: Type,
-          label: 'Input',
-          badgeText: 'INP',
-          color: 'text-amber-400',
-          border: 'border-amber-500/30',
+          label: 'Enter Text',
+          shortDesc: 'Type into an input field',
+          badgeText: 'INPUT',
+          color: 'text-amber-800',
+          bgContainer: 'bg-amber-100 border-amber-300',
         };
       case 'select_dropdown':
         return {
           icon: ListFilter,
-          label: 'Dropdown',
-          badgeText: 'DDL',
-          color: 'text-teal-400',
-          border: 'border-teal-500/30',
+          label: 'Select Option',
+          shortDesc: 'Pick option from dropdown',
+          badgeText: 'SELECT',
+          color: 'text-indigo-700',
+          bgContainer: 'bg-indigo-100 border-indigo-300',
         };
       case 'hover':
         return {
           icon: Move,
-          label: 'Hover',
-          badgeText: 'HOV',
-          color: 'text-purple-400',
-          border: 'border-purple-500/30',
+          label: 'Hover Element',
+          shortDesc: 'Hover over target element',
+          badgeText: 'HOVER',
+          color: 'text-purple-700',
+          bgContainer: 'bg-purple-100 border-purple-300',
         };
       case 'press_key':
         return {
           icon: KeyRound,
           label: 'Press Key',
+          shortDesc: 'Send keyboard keystroke',
           badgeText: 'KEY',
-          color: 'text-slate-300',
-          border: 'border-slate-500/30',
+          color: 'text-slate-800',
+          bgContainer: 'bg-slate-200 border-slate-300',
         };
       case 'extract_text':
         return {
           icon: FileText,
           label: 'Extract Text',
-          badgeText: 'TXT',
-          color: 'text-emerald-400',
-          border: 'border-emerald-500/30',
+          shortDesc: 'Scrape visible text content',
+          badgeText: 'TEXT',
+          color: 'text-emerald-700',
+          bgContainer: 'bg-emerald-100 border-emerald-300',
         };
       case 'extract_attribute':
         return {
           icon: Tag,
           label: 'Extract Attr',
+          shortDesc: 'Scrape HTML attribute value',
           badgeText: 'ATTR',
-          color: 'text-teal-400',
-          border: 'border-teal-500/30',
+          color: 'text-blue-700',
+          bgContainer: 'bg-blue-100 border-blue-300',
         };
       case 'extract_table':
         return {
           icon: Table,
           label: 'Extract Table',
-          badgeText: 'TABL',
-          color: 'text-cyan-400',
-          border: 'border-cyan-500/30',
+          shortDesc: 'Scrape table grid rows',
+          badgeText: 'TABLE',
+          color: 'text-blue-700',
+          bgContainer: 'bg-blue-100 border-blue-300',
         };
       case 'extract_list':
         return {
           icon: Layers,
           label: 'Extract List',
+          shortDesc: 'Scrape repeated items',
           badgeText: 'LIST',
-          color: 'text-indigo-400',
-          border: 'border-indigo-500/30',
+          color: 'text-indigo-700',
+          bgContainer: 'bg-indigo-100 border-indigo-300',
         };
       case 'extract_html':
         return {
           icon: Code2,
           label: 'Extract HTML',
+          shortDesc: 'Extract raw HTML snippet',
           badgeText: 'HTML',
-          color: 'text-violet-400',
-          border: 'border-violet-500/30',
+          color: 'text-violet-700',
+          bgContainer: 'bg-violet-100 border-violet-300',
         };
       case 'pagination':
         return {
           icon: FastForward,
           label: 'Paginate',
+          shortDesc: 'Loop through next pages',
           badgeText: 'PAGE',
-          color: 'text-blue-400',
-          border: 'border-blue-500/30',
+          color: 'text-blue-700',
+          bgContainer: 'bg-blue-100 border-blue-300',
         };
       case 'loop_elements':
         return {
           icon: Repeat,
           label: 'Loop Items',
+          shortDesc: 'Iterate over matched items',
           badgeText: 'LOOP',
-          color: 'text-indigo-400',
-          border: 'border-indigo-500/30',
+          color: 'text-indigo-700',
+          bgContainer: 'bg-indigo-100 border-indigo-300',
         };
       case 'export_json':
         return {
           icon: Braces,
           label: 'Export JSON',
+          shortDesc: 'Export dataset to JSON file',
           badgeText: 'JSON',
-          color: 'text-amber-400',
-          border: 'border-amber-500/30',
+          color: 'text-amber-800',
+          bgContainer: 'bg-amber-100 border-amber-300',
         };
       case 'export_csv':
         return {
           icon: FileSpreadsheet,
           label: 'Export CSV',
+          shortDesc: 'Export dataset to CSV file',
           badgeText: 'CSV',
-          color: 'text-emerald-400',
-          border: 'border-emerald-500/30',
+          color: 'text-emerald-700',
+          bgContainer: 'bg-emerald-100 border-emerald-300',
         };
       case 'webhook_push':
         return {
           icon: Send,
           label: 'Push Webhook',
+          shortDesc: 'POST data payload to API',
           badgeText: 'HOOK',
-          color: 'text-rose-400',
-          border: 'border-rose-500/30',
+          color: 'text-rose-700',
+          bgContainer: 'bg-rose-100 border-rose-300',
         };
       case 'assert':
         return {
           icon: CheckCircle2,
-          label: 'Assert',
-          badgeText: 'AST',
-          color: 'text-emerald-400',
-          border: 'border-emerald-500/30',
+          label: 'Verify Result',
+          shortDesc: 'Check an expected condition',
+          badgeText: 'VERIFY',
+          color: 'text-emerald-700',
+          bgContainer: 'bg-emerald-100 border-emerald-300',
         };
       case 'cookie_banner':
         return {
           icon: Cookie,
           label: 'Cookie Banner',
-          badgeText: 'COOK',
-          color: 'text-amber-400',
-          border: 'border-amber-500/30',
+          shortDesc: 'Auto-dismiss consent prompt',
+          badgeText: 'COOKIE',
+          color: 'text-amber-800',
+          bgContainer: 'bg-amber-100 border-amber-300',
         };
       case 'captcha_detect':
         return {
           icon: ShieldAlert,
           label: 'Anti-Bot Check',
+          shortDesc: 'Detect bot challenge barrier',
           badgeText: 'BOT',
-          color: 'text-rose-400',
-          border: 'border-rose-500/30',
+          color: 'text-rose-700',
+          bgContainer: 'bg-rose-100 border-rose-300',
         };
     }
   };
@@ -645,17 +667,17 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
                 top: `${node.position.y}px`,
                 width: `${NODE_WIDTH}px`,
               }}
-              className={`absolute pointer-events-auto rounded-xl bg-white border transition-all cursor-move select-none shadow-sm ${
+              className={`absolute pointer-events-auto rounded-2xl bg-white border-2 transition-all cursor-move select-none shadow-md ${
                 isSelected
-                  ? 'border-indigo-600 ring-2 ring-indigo-500/25 shadow-md shadow-indigo-600/10'
-                  : 'border-slate-200 hover:border-slate-300'
+                  ? 'border-indigo-600 ring-4 ring-indigo-500/25 shadow-xl'
+                  : 'border-slate-300 hover:border-indigo-400 hover:shadow-lg'
               } ${
                 node.status === 'running'
-                  ? 'border-indigo-500 ring-2 ring-indigo-400/40 animate-pulse'
+                  ? 'border-indigo-500 ring-4 ring-indigo-400/40 animate-pulse'
                   : node.status === 'success'
-                  ? 'border-emerald-500/60'
+                  ? 'border-emerald-500 ring-2 ring-emerald-200'
                   : node.status === 'failed'
-                  ? 'border-rose-500/60'
+                  ? 'border-rose-500 ring-2 ring-rose-200'
                   : ''
               }`}
             >
@@ -663,46 +685,51 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
               <div
                 onMouseUp={(e) => handlePortMouseUp(e, node.id)}
                 title="Input Port (drop connection here)"
-                className="absolute -left-2 top-[38px] w-4 h-4 rounded-full bg-white border-2 border-slate-400 hover:border-indigo-600 hover:scale-110 flex items-center justify-center transition-all cursor-crosshair z-30 shadow-2xs"
+                className="absolute -left-3 top-[36px] w-6 h-6 rounded-full bg-white border-2 border-slate-500 hover:border-indigo-600 hover:scale-125 flex items-center justify-center transition-all cursor-crosshair z-30 shadow-xs"
               >
-                <div className="w-1.5 h-1.5 rounded-full bg-slate-400" />
+                <div className="w-2 h-2 rounded-full bg-slate-500" />
               </div>
 
               {/* Output Port (Right side) */}
               <div
                 onMouseDown={(e) => handlePortMouseDown(e, node.id)}
                 title="Output Port (drag to next step)"
-                className="absolute -right-2 top-[38px] w-4 h-4 rounded-full bg-white border-2 border-indigo-600 hover:border-indigo-700 hover:scale-110 flex items-center justify-center transition-all cursor-crosshair z-30 shadow-2xs"
+                className="absolute -right-3 top-[36px] w-6 h-6 rounded-full bg-white border-2 border-indigo-600 hover:border-indigo-700 hover:scale-125 flex items-center justify-center transition-all cursor-crosshair z-30 shadow-xs"
               >
-                <div className="w-1.5 h-1.5 rounded-full bg-indigo-600" />
+                <div className="w-2 h-2 rounded-full bg-indigo-600" />
               </div>
 
               {/* Node Header */}
-              <div className="px-3.5 py-2.5 border-b border-slate-200 rounded-t-xl flex items-center justify-between bg-slate-50/80">
-                <div className="flex items-center gap-2 min-w-0">
-                  <div className={`p-1 rounded-lg bg-white border border-slate-200 ${config.color} shadow-2xs`}>
-                    <Icon className="w-3.5 h-3.5" />
+              <div className="px-4 py-3 border-b border-slate-200 rounded-t-2xl flex items-center justify-between bg-slate-50/90">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div
+                    className={`w-11 h-11 rounded-xl flex items-center justify-center border shrink-0 transition-colors ${config.bgContainer} ${config.color} shadow-xs`}
+                  >
+                    <Icon className="w-5.5 h-5.5 stroke-[2.2]" />
                   </div>
                   <div className="min-w-0">
-                    <span className="text-xs font-semibold text-slate-900 truncate block">
+                    <span className="text-[15px] font-bold text-slate-900 truncate block leading-tight">
                       {node.title}
+                    </span>
+                    <span className="text-xs font-semibold text-slate-500 truncate block mt-0.5">
+                      {config.shortDesc}
                     </span>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-1.5 shrink-0">
-                  <span className="text-[10px] font-mono text-slate-500 bg-white border border-slate-200 px-1.5 py-0.5 rounded font-medium shadow-2xs">
+                <div className="flex items-center gap-1.5 shrink-0 ml-2">
+                  <span className="text-xs font-mono text-slate-600 bg-white border border-slate-300 px-2 py-0.5 rounded-md font-bold shadow-2xs">
                     STEP 0{index + 1}
                   </span>
                 </div>
               </div>
 
               {/* Node Body: Technical Parameter Preview */}
-              <div className="p-3 space-y-1.5 text-xs font-mono">
+              <div className="p-3.5 space-y-2 text-xs font-sans">
                 {node.type === 'navigate' && (
                   <div>
-                    <div className="text-[10px] text-slate-500 uppercase tracking-wider">URL Target</div>
-                    <div className="text-blue-300 truncate font-mono text-xs mt-0.5">
+                    <div className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">URL Target</div>
+                    <div className="text-slate-900 font-mono text-xs mt-0.5 bg-slate-50 border border-slate-200 px-2 py-1 rounded truncate font-medium">
                       {(node.data as NavigateStepData).url || '/checkout'}
                     </div>
                   </div>
@@ -710,8 +737,8 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
 
                 {node.type === 'scroll' && (
                   <div>
-                    <div className="text-[10px] text-slate-500 uppercase tracking-wider">Scroll Action</div>
-                    <div className="text-sky-300 truncate font-mono text-xs mt-0.5">
+                    <div className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Scroll Action</div>
+                    <div className="text-slate-900 font-mono text-xs mt-0.5 bg-slate-50 border border-slate-200 px-2 py-1 rounded truncate font-medium">
                       {(node.data as ScrollStepData).direction === 'to_bottom'
                         ? 'Scroll to bottom'
                         : `${(node.data as ScrollStepData).direction} · ${(node.data as ScrollStepData).distancePx}px`}
@@ -721,8 +748,8 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
 
                 {node.type === 'wait_for' && (
                   <div>
-                    <div className="text-[10px] text-slate-500 uppercase tracking-wider">Wait Condition</div>
-                    <div className="text-cyan-300 truncate font-mono text-xs mt-0.5">
+                    <div className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Wait Condition</div>
+                    <div className="text-slate-900 font-mono text-xs mt-0.5 bg-slate-50 border border-slate-200 px-2 py-1 rounded truncate font-medium">
                       {(node.data as WaitForStepData).waitType === 'timeout'
                         ? `${(node.data as WaitForStepData).durationMs}ms delay`
                         : `${(node.data as WaitForStepData).waitType}: ${(node.data as WaitForStepData).selector || 'networkidle'}`}
@@ -732,8 +759,8 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
 
                 {node.type === 'screenshot' && (
                   <div>
-                    <div className="text-[10px] text-slate-500 uppercase tracking-wider">Screenshot</div>
-                    <div className="text-indigo-300 truncate font-mono text-xs mt-0.5">
+                    <div className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Screenshot</div>
+                    <div className="text-slate-900 font-mono text-xs mt-0.5 bg-slate-50 border border-slate-200 px-2 py-1 rounded truncate font-medium">
                       {(node.data as ScreenshotStepData).captureFullPage ? 'Full page capture' : 'Viewport capture'}
                     </div>
                   </div>
@@ -741,8 +768,8 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
 
                 {node.type === 'click' && (
                   <div>
-                    <div className="text-[10px] text-slate-500 uppercase tracking-wider">Selector</div>
-                    <div className="text-indigo-300 truncate font-mono text-xs mt-0.5">
+                    <div className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Selector</div>
+                    <div className="text-indigo-950 font-mono text-xs mt-0.5 bg-slate-50 border border-slate-200 px-2 py-1 rounded truncate font-medium">
                       {(node.data as ClickStepData).selector || '[data-testid="submit"]'}
                     </div>
                   </div>
@@ -750,20 +777,20 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
 
                 {node.type === 'input' && (
                   <div>
-                    <div className="text-[10px] text-slate-500 uppercase tracking-wider">Input Target & Value</div>
-                    <div className="text-amber-300 truncate font-mono text-xs mt-0.5">
+                    <div className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Input Target & Value</div>
+                    <div className="text-indigo-950 font-mono text-xs mt-0.5 bg-slate-50 border border-slate-200 px-2 py-1 rounded truncate font-medium">
                       {(node.data as InputStepData).selector || '#search-box'}
                     </div>
-                    <div className="text-slate-400 text-[11px] truncate">
-                      Value: {(node.data as InputStepData).maskInput ? '••••••' : `"${(node.data as InputStepData).value}"`}
+                    <div className="text-slate-600 text-[11px] truncate mt-1">
+                      Value: <span className="font-mono font-medium">{(node.data as InputStepData).maskInput ? '••••••' : `"${(node.data as InputStepData).value}"`}</span>
                     </div>
                   </div>
                 )}
 
                 {node.type === 'select_dropdown' && (
                   <div>
-                    <div className="text-[10px] text-slate-500 uppercase tracking-wider">Dropdown Select</div>
-                    <div className="text-teal-300 truncate font-mono text-xs mt-0.5">
+                    <div className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Dropdown Select</div>
+                    <div className="text-slate-900 font-mono text-xs mt-0.5 bg-slate-50 border border-slate-200 px-2 py-1 rounded truncate font-medium">
                       {(node.data as SelectDropdownStepData).selector} → "{(node.data as SelectDropdownStepData).selectValue}"
                     </div>
                   </div>
@@ -771,8 +798,8 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
 
                 {node.type === 'hover' && (
                   <div>
-                    <div className="text-[10px] text-slate-500 uppercase tracking-wider">Hover Element</div>
-                    <div className="text-purple-300 truncate font-mono text-xs mt-0.5">
+                    <div className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Hover Element</div>
+                    <div className="text-slate-900 font-mono text-xs mt-0.5 bg-slate-50 border border-slate-200 px-2 py-1 rounded truncate font-medium">
                       {(node.data as HoverStepData).selector}
                     </div>
                   </div>
@@ -780,65 +807,65 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
 
                 {node.type === 'press_key' && (
                   <div>
-                    <div className="text-[10px] text-slate-500 uppercase tracking-wider">Press Key</div>
-                    <div className="text-slate-300 truncate font-mono text-xs mt-0.5">
-                      Key: <span className="text-amber-300 font-bold">{(node.data as PressKeyStepData).key}</span>
+                    <div className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Press Key</div>
+                    <div className="text-slate-900 font-mono text-xs mt-0.5 bg-slate-50 border border-slate-200 px-2 py-1 rounded truncate font-medium">
+                      Key: <span className="font-bold text-indigo-700">{(node.data as PressKeyStepData).key}</span>
                     </div>
                   </div>
                 )}
 
                 {node.type === 'extract_text' && (
                   <div>
-                    <div className="text-[10px] text-slate-500 uppercase tracking-wider">Scrape Text</div>
-                    <div className="text-emerald-300 truncate font-mono text-xs mt-0.5">
+                    <div className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Scrape Text</div>
+                    <div className="text-slate-900 font-mono text-xs mt-0.5 bg-slate-50 border border-slate-200 px-2 py-1 rounded truncate font-medium">
                       {(node.data as ExtractTextStepData).selector}
                     </div>
-                    <div className="text-slate-400 text-[11px] truncate">
-                      Variable: <span className="text-emerald-400">${(node.data as ExtractTextStepData).variableName}</span>
+                    <div className="text-slate-600 text-[11px] truncate mt-1">
+                      Variable: <span className="text-indigo-700 font-semibold font-mono">${(node.data as ExtractTextStepData).variableName}</span>
                     </div>
                   </div>
                 )}
 
                 {node.type === 'extract_attribute' && (
                   <div>
-                    <div className="text-[10px] text-slate-500 uppercase tracking-wider">Scrape Attribute</div>
-                    <div className="text-teal-300 truncate font-mono text-xs mt-0.5">
+                    <div className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Scrape Attribute</div>
+                    <div className="text-slate-900 font-mono text-xs mt-0.5 bg-slate-50 border border-slate-200 px-2 py-1 rounded truncate font-medium">
                       [{(node.data as ExtractAttributeStepData).attribute}] of {(node.data as ExtractAttributeStepData).selector}
                     </div>
-                    <div className="text-slate-400 text-[11px] truncate">
-                      Variable: <span className="text-teal-400">${(node.data as ExtractAttributeStepData).variableName}</span>
+                    <div className="text-slate-600 text-[11px] truncate mt-1">
+                      Variable: <span className="text-indigo-700 font-semibold font-mono">${(node.data as ExtractAttributeStepData).variableName}</span>
                     </div>
                   </div>
                 )}
 
                 {node.type === 'extract_table' && (
                   <div>
-                    <div className="text-[10px] text-slate-500 uppercase tracking-wider">Table Parser</div>
-                    <div className="text-cyan-300 truncate font-mono text-xs mt-0.5">
+                    <div className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Table Parser</div>
+                    <div className="text-slate-900 font-mono text-xs mt-0.5 bg-slate-50 border border-slate-200 px-2 py-1 rounded truncate font-medium">
                       {(node.data as ExtractTableStepData).selector || 'table'}
                     </div>
-                    <div className="text-slate-400 text-[11px] truncate">
-                      Output: <span className="text-cyan-400">${(node.data as ExtractTableStepData).variableName}</span>
+                    <div className="text-slate-600 text-[11px] truncate mt-1">
+                      Output: <span className="text-indigo-700 font-semibold font-mono">${(node.data as ExtractTableStepData).variableName}</span>
                     </div>
                   </div>
                 )}
 
                 {node.type === 'extract_list' && (
                   <div>
-                    <div className="text-[10px] text-slate-500 uppercase tracking-wider">List Extractor</div>
-                    <div className="text-indigo-300 truncate font-mono text-xs mt-0.5">
+                    <div className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">List Extractor</div>
+                    <div className="text-slate-900 font-mono text-xs mt-0.5 bg-slate-50 border border-slate-200 px-2 py-1 rounded truncate font-medium">
                       {(node.data as ExtractListStepData).parentSelector} → {(node.data as ExtractListStepData).itemSelector}
                     </div>
-                    <div className="text-slate-400 text-[11px] truncate">
-                      Output: <span className="text-indigo-400">${(node.data as ExtractListStepData).variableName}</span>
+                    <div className="text-slate-600 text-[11px] truncate mt-1">
+                      Output: <span className="text-indigo-700 font-semibold font-mono">${(node.data as ExtractListStepData).variableName}</span>
                     </div>
                   </div>
                 )}
 
                 {node.type === 'extract_html' && (
                   <div>
-                    <div className="text-[10px] text-slate-500 uppercase tracking-wider">Raw HTML</div>
-                    <div className="text-violet-300 truncate font-mono text-xs mt-0.5">
+                    <div className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Raw HTML</div>
+                    <div className="text-slate-900 font-mono text-xs mt-0.5 bg-slate-50 border border-slate-200 px-2 py-1 rounded truncate font-medium">
                       {(node.data as ExtractHtmlStepData).htmlType}: {(node.data as ExtractHtmlStepData).selector}
                     </div>
                   </div>
@@ -846,20 +873,20 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
 
                 {node.type === 'pagination' && (
                   <div>
-                    <div className="text-[10px] text-slate-500 uppercase tracking-wider">Pagination Loop</div>
-                    <div className="text-blue-300 truncate font-mono text-xs mt-0.5">
+                    <div className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Pagination Loop</div>
+                    <div className="text-slate-900 font-mono text-xs mt-0.5 bg-slate-50 border border-slate-200 px-2 py-1 rounded truncate font-medium">
                       Button: {(node.data as PaginationStepData).nextButtonSelector}
                     </div>
-                    <div className="text-slate-400 text-[11px]">
-                      Max pages: {(node.data as PaginationStepData).maxPages}
+                    <div className="text-slate-600 text-[11px] mt-1">
+                      Max pages: <span className="font-mono font-medium">{(node.data as PaginationStepData).maxPages}</span>
                     </div>
                   </div>
                 )}
 
                 {node.type === 'loop_elements' && (
                   <div>
-                    <div className="text-[10px] text-slate-500 uppercase tracking-wider">Element Loop</div>
-                    <div className="text-indigo-300 truncate font-mono text-xs mt-0.5">
+                    <div className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Element Loop</div>
+                    <div className="text-slate-900 font-mono text-xs mt-0.5 bg-slate-50 border border-slate-200 px-2 py-1 rounded truncate font-medium">
                       Target: {(node.data as LoopElementsStepData).itemSelector}
                     </div>
                   </div>
@@ -867,8 +894,8 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
 
                 {node.type === 'export_json' && (
                   <div>
-                    <div className="text-[10px] text-slate-500 uppercase tracking-wider">Export JSON</div>
-                    <div className="text-amber-300 truncate font-mono text-xs mt-0.5">
+                    <div className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Export JSON</div>
+                    <div className="text-slate-900 font-mono text-xs mt-0.5 bg-slate-50 border border-slate-200 px-2 py-1 rounded truncate font-medium">
                       File: {(node.data as ExportJsonStepData).fileName}
                     </div>
                   </div>
@@ -876,8 +903,8 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
 
                 {node.type === 'export_csv' && (
                   <div>
-                    <div className="text-[10px] text-slate-500 uppercase tracking-wider">Export CSV</div>
-                    <div className="text-emerald-300 truncate font-mono text-xs mt-0.5">
+                    <div className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Export CSV</div>
+                    <div className="text-slate-900 font-mono text-xs mt-0.5 bg-slate-50 border border-slate-200 px-2 py-1 rounded truncate font-medium">
                       File: {(node.data as ExportCsvStepData).fileName}
                     </div>
                   </div>
@@ -885,8 +912,8 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
 
                 {node.type === 'webhook_push' && (
                   <div>
-                    <div className="text-[10px] text-slate-500 uppercase tracking-wider">Webhook Post</div>
-                    <div className="text-rose-300 truncate font-mono text-xs mt-0.5">
+                    <div className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Webhook Post</div>
+                    <div className="text-slate-900 font-mono text-xs mt-0.5 bg-slate-50 border border-slate-200 px-2 py-1 rounded truncate font-medium">
                       {(node.data as WebhookPushStepData).endpointUrl}
                     </div>
                   </div>
@@ -894,8 +921,8 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
 
                 {node.type === 'cookie_banner' && (
                   <div>
-                    <div className="text-[10px] text-slate-500 uppercase tracking-wider">Auto Cookie Banner</div>
-                    <div className="text-amber-300 truncate font-mono text-xs mt-0.5">
+                    <div className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Auto Cookie Banner</div>
+                    <div className="text-slate-900 font-mono text-xs mt-0.5 bg-slate-50 border border-slate-200 px-2 py-1 rounded truncate font-medium">
                       Auto-clicks accept button
                     </div>
                   </div>
@@ -903,8 +930,8 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
 
                 {node.type === 'captcha_detect' && (
                   <div>
-                    <div className="text-[10px] text-slate-500 uppercase tracking-wider">Anti-Bot Shield</div>
-                    <div className="text-rose-300 truncate font-mono text-xs mt-0.5">
+                    <div className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Anti-Bot Shield</div>
+                    <div className="text-slate-900 font-mono text-xs mt-0.5 bg-slate-50 border border-slate-200 px-2 py-1 rounded truncate font-medium">
                       Cloudflare / CAPTCHA guard
                     </div>
                   </div>
@@ -912,38 +939,51 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
 
                 {node.type === 'assert' && (
                   <div>
-                    <div className="text-[10px] text-slate-500 uppercase tracking-wider">Condition</div>
-                    <div className="text-emerald-300 truncate font-mono text-xs mt-0.5">
+                    <div className="text-[10px] font-bold text-slate-600 uppercase tracking-wider">Expected Condition</div>
+                    <div className="text-emerald-950 font-mono text-xs mt-0.5 bg-emerald-50 border border-emerald-300 px-2.5 py-1.5 rounded-lg truncate font-bold">
                       {(node.data as AssertStepData).expectedValue || 'payment.status === "success"'}
+                    </div>
+                  </div>
+                )}
+
+                {/* Prominent Execution Error Callout */}
+                {node.errorMessage && (
+                  <div className="p-3 rounded-xl bg-rose-50 border border-rose-300 text-rose-900 text-xs mt-2 space-y-1">
+                    <div className="flex items-center gap-1.5 font-bold text-rose-700">
+                      <AlertCircle className="w-4 h-4 shrink-0" />
+                      <span>Failure Diagnostic</span>
+                    </div>
+                    <div className="text-xs text-rose-800 font-mono leading-relaxed line-clamp-3">
+                      {node.errorMessage}
                     </div>
                   </div>
                 )}
               </div>
 
               {/* Node Footer: Execution State & Metadata */}
-              <div className="px-3 py-1.5 border-t border-[#1E293B] bg-[#020617]/60 flex items-center justify-between text-[11px] font-mono">
-                <span className="text-[#64748B] text-[10px]">{node.id}</span>
+              <div className="px-4 py-2.5 border-t border-slate-200 bg-slate-50/90 rounded-b-2xl flex items-center justify-between text-xs font-sans">
+                <span className="text-slate-500 font-mono font-semibold">{node.id}</span>
 
                 {node.status === 'running' && (
-                  <span className="text-teal-400 flex items-center gap-1 text-[11px]">
-                    <span className="w-1.5 h-1.5 rounded-xs bg-teal-400 animate-pulse" />
-                    Running
+                  <span className="text-indigo-800 bg-indigo-50 border border-indigo-200 px-2.5 py-0.5 rounded-full flex items-center gap-1.5 font-bold">
+                    <span className="w-2 h-2 rounded-full bg-indigo-600 animate-ping" />
+                    Running...
                   </span>
                 )}
                 {node.status === 'success' && (
-                  <span className="text-emerald-400 flex items-center gap-1 text-[11px]">
-                    <Check className="w-3 h-3" />
-                    Passed
+                  <span className="text-emerald-800 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full flex items-center gap-1 font-bold">
+                    <Check className="w-3.5 h-3.5 text-emerald-600" />
+                    {node.lastExecution || 'Passed · 380ms'}
                   </span>
                 )}
                 {node.status === 'failed' && (
-                  <span className="text-rose-400 flex items-center gap-1 text-[11px]">
-                    <AlertCircle className="w-3 h-3" />
+                  <span className="text-rose-800 bg-rose-50 border border-rose-200 px-2.5 py-0.5 rounded-full flex items-center gap-1 font-bold">
+                    <AlertCircle className="w-3.5 h-3.5 text-rose-600" />
                     Failed
                   </span>
                 )}
                 {(!node.status || node.status === 'idle') && (
-                  <span className="text-[#64748B]">Ready</span>
+                  <span className="text-slate-600 font-bold bg-white border border-slate-200 px-2 py-0.5 rounded-md">Ready</span>
                 )}
               </div>
             </div>
@@ -954,33 +994,33 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
       {/* Quick Add Floating Button (Section 17) */}
       <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center">
         {isQuickAddOpen && (
-          <div className="mb-2 p-1.5 bg-[#0F172A] border border-[#1E293B] rounded shadow-2xl flex items-center gap-1 text-xs">
+          <div className="mb-2 p-1.5 bg-white border border-slate-200 rounded-xl shadow-xl flex items-center gap-1 text-xs">
             <button
               onClick={() => handleQuickAdd('navigate')}
-              className="px-2.5 py-1.5 rounded bg-[#111827] hover:bg-[#1E293B] text-[#F8FAFC] hover:text-cyan-300 flex items-center gap-1.5 cursor-pointer font-mono"
+              className="px-2.5 py-1.5 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-700 hover:text-slate-900 border border-slate-200 flex items-center gap-1.5 cursor-pointer font-sans font-medium"
             >
-              <Globe className="w-3 h-3 text-cyan-400" />
+              <Globe className="w-3.5 h-3.5 text-blue-600" />
               <span>Navigate</span>
             </button>
             <button
               onClick={() => handleQuickAdd('click')}
-              className="px-2.5 py-1.5 rounded bg-[#111827] hover:bg-[#1E293B] text-[#F8FAFC] hover:text-emerald-300 flex items-center gap-1.5 cursor-pointer font-mono"
+              className="px-2.5 py-1.5 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-700 hover:text-slate-900 border border-slate-200 flex items-center gap-1.5 cursor-pointer font-sans font-medium"
             >
-              <MousePointerClick className="w-3 h-3 text-emerald-400" />
+              <MousePointerClick className="w-3.5 h-3.5 text-emerald-600" />
               <span>Click</span>
             </button>
             <button
               onClick={() => handleQuickAdd('input')}
-              className="px-2.5 py-1.5 rounded bg-[#111827] hover:bg-[#1E293B] text-[#F8FAFC] hover:text-amber-300 flex items-center gap-1.5 cursor-pointer font-mono"
+              className="px-2.5 py-1.5 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-700 hover:text-slate-900 border border-slate-200 flex items-center gap-1.5 cursor-pointer font-sans font-medium"
             >
-              <Type className="w-3 h-3 text-amber-400" />
+              <Type className="w-3.5 h-3.5 text-amber-600" />
               <span>Input</span>
             </button>
             <button
               onClick={() => handleQuickAdd('assert')}
-              className="px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 hover:text-slate-900 flex items-center gap-1.5 cursor-pointer font-mono"
+              className="px-2.5 py-1.5 rounded-lg bg-slate-50 hover:bg-slate-100 text-slate-700 hover:text-slate-900 border border-slate-200 flex items-center gap-1.5 cursor-pointer font-sans font-medium"
             >
-              <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
               <span>Assert</span>
             </button>
           </div>

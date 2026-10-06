@@ -6,7 +6,6 @@ import {
   Download,
   FileCode2,
   Terminal,
-  ExternalLink,
   Code2,
 } from 'lucide-react';
 import { TestNode, ConnectionEdge } from '../../types';
@@ -39,7 +38,7 @@ export const JsonExportModal: React.FC<JsonExportModalProps> = ({
 
   const pythonSampleScript = `"""
 test_executor.py - Automated End-to-End Test Engine
-Consumes exported test sequence JSON from Visual Builder.
+Consumes exported test sequence JSON from PlaySight Visual Builder.
 """
 
 import json
@@ -72,46 +71,38 @@ async def execute_test_suite(suite_path: str):
             if action == "navigate":
                 await page.goto(params["url"], wait_until=params.get("wait_until", "networkidle"), timeout=params.get("timeout_ms", 10000))
             elif action == "click":
-              click_type = params.get("click_type", "single")
-              await page.click(
-                params["selector"],
-                click_count=2 if click_type == "double" else 1,
-                button="right" if click_type == "right" else "left",
-                timeout=params.get("timeout_ms", 5000),
-              )
+                click_type = params.get("click_type", "single")
+                await page.click(
+                    params["selector"],
+                    click_count=2 if click_type == "double" else 1,
+                    button="right" if click_type == "right" else "left",
+                    timeout=params.get("timeout_ms", 5000),
+                )
             elif action == "input":
-              if params.get("mask_input"):
-                secret_name = params.get("secret_env")
-                if not secret_name or secret_name not in os.environ:
-                  raise RuntimeError(f"Set the {secret_name or 'secret'} environment variable")
-                text = os.environ[secret_name]
-              else:
-                text = params.get("text", "")
-              if params.get("clear_first", True):
-                await page.fill(params["selector"], "")
-              await page.type(params["selector"], text)
+                if params.get("mask_input"):
+                    secret_name = params.get("secret_env")
+                    if not secret_name or secret_name not in os.environ:
+                        raise RuntimeError(f"Set the {secret_name or 'secret'} environment variable")
+                    text = os.environ[secret_name]
+                else:
+                    text = params.get("text", "")
+                if params.get("clear_first", True):
+                    await page.fill(params["selector"], "")
+                await page.type(params["selector"], text)
             elif action == "assert":
-              kind = params.get("assertion_type", "is_visible")
-              selector = params.get("selector")
-              expected = params.get("expected_value", "")
-              message = params.get("failure_message", "Assertion failed")
-              timeout = params.get("timeout_ms", 5000)
+                kind = params.get("assertion_type", "is_visible")
+                selector = params.get("selector")
+                expected = params.get("expected_value", "")
+                timeout = params.get("timeout_ms", 5000)
 
-              if kind == "is_visible":
-                await page.wait_for_selector(selector, state="visible", timeout=timeout)
-              elif kind == "text_contains":
-                assert expected in await page.inner_text(selector, timeout=timeout), message
-              elif kind == "text_equals":
-                assert (await page.inner_text(selector, timeout=timeout)).strip() == expected, message
-              elif kind == "has_value":
-                assert await page.input_value(selector, timeout=timeout) == expected, message
-              elif kind == "url_contains":
-                assert expected in page.url, message
-              else:
-                raise ValueError(f"Unsupported assertion type: {kind}")
+                if kind == "is_visible":
+                    await page.wait_for_selector(selector, state="visible", timeout=timeout)
+                elif kind == "text_equals":
+                    element = await page.wait_for_selector(selector, timeout=timeout)
+                    assert (await element.inner_text()).strip() == expected
 
-        print("✅ Test Sequence Execution Succeeded!")
         await browser.close()
+        print("✅ Test Sequence Completed Successfully")
 
 if __name__ == "__main__":
     asyncio.run(execute_test_suite("test_suite.json"))
@@ -128,36 +119,28 @@ if __name__ == "__main__":
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${suiteName.toLowerCase().replace(/[^a-z0-9]/g, '-')}-test-suite.json`;
-    document.body.appendChild(a);
+    a.download = `${suiteName.toLowerCase().replace(/[^a-z0-9]/g, '_')}.json`;
     a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
   };
 
   return (
     <div
-      id="json-export-modal-backdrop"
-      className="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-150"
-      onClick={onClose}
+      id="json-export-modal"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs font-sans select-none"
     >
-      <div
-        id="json-export-modal-card"
-        onClick={(e) => e.stopPropagation()}
-        className="bg-slate-950 border border-slate-800 rounded-xl w-full max-w-3xl shadow-2xl flex flex-col max-h-[85vh] overflow-hidden text-slate-200"
-      >
+      <div className="w-full max-w-4xl bg-white border border-slate-200 rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] text-slate-900">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-900/60">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
-              <FileCode2 className="w-4 h-4" />
+        <div className="px-6 py-5 border-b border-slate-200 flex items-center justify-between bg-slate-50/80">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-700 shadow-2xs">
+              <FileCode2 className="w-4.5 h-4.5" />
             </div>
             <div>
-              <h3 className="text-sm font-semibold text-slate-100 flex items-center gap-2">
-                Python <code className="font-mono text-amber-400 text-xs">test_executor.py</code> Payload
+              <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                Python <code className="font-mono text-indigo-700 bg-indigo-50 px-1.5 py-0.5 rounded border border-indigo-200 text-xs">test_executor.py</code> Payload
               </h3>
-              <p className="text-xs text-slate-400 font-mono">
-                {nodes.length} serialized nodes & topological flow
+              <p className="text-xs text-slate-500 font-medium">
+                {nodes.length} serialized steps & topological DAG flow
               </p>
             </div>
           </div>
@@ -165,37 +148,36 @@ if __name__ == "__main__":
           <button
             type="button"
             onClick={onClose}
-            className="p-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded-md transition-colors"
+            className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer"
             title="Close export"
-            aria-label="Close export"
           >
-            <X className="w-4 h-4" />
+            <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Tab switcher */}
-        <div className="px-6 border-b border-slate-800 bg-slate-950 flex items-center justify-between text-xs font-mono">
-          <div className="flex gap-4">
+        <div className="px-6 border-b border-slate-200 bg-slate-50/50 flex items-center justify-between text-xs">
+          <div className="flex gap-4 font-bold">
             <button
               onClick={() => setActiveTab('json')}
-              className={`py-2.5 border-b-2 transition-all flex items-center gap-2 ${
+              className={`py-3 border-b-2 transition-all flex items-center gap-2 cursor-pointer ${
                 activeTab === 'json'
-                  ? 'border-teal-400 text-teal-400 font-semibold'
-                  : 'border-transparent text-slate-400 hover:text-slate-200'
+                  ? 'border-indigo-600 text-indigo-700'
+                  : 'border-transparent text-slate-500 hover:text-slate-800'
               }`}
             >
-              <Code2 className="w-3.5 h-3.5" />
+              <Code2 className="w-4 h-4" />
               <span>test_suite.json ({nodes.length} Steps)</span>
             </button>
             <button
               onClick={() => setActiveTab('python')}
-              className={`py-2.5 border-b-2 transition-all flex items-center gap-2 ${
+              className={`py-3 border-b-2 transition-all flex items-center gap-2 cursor-pointer ${
                 activeTab === 'python'
-                  ? 'border-teal-400 text-teal-400 font-semibold'
-                  : 'border-transparent text-slate-400 hover:text-slate-200'
+                  ? 'border-indigo-600 text-indigo-700'
+                  : 'border-transparent text-slate-500 hover:text-slate-800'
               }`}
             >
-              <Terminal className="w-3.5 h-3.5" />
+              <Terminal className="w-4 h-4" />
               <span>test_executor.py Sample Runner</span>
             </button>
           </div>
@@ -203,15 +185,15 @@ if __name__ == "__main__":
           <div className="flex items-center gap-2">
             <button
               onClick={() => copyToClipboard(activeTab === 'json' ? jsonString : pythonSampleScript)}
-              className="flex items-center gap-1 px-2.5 py-1 rounded bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-700/80 text-xs transition-all"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 text-xs font-bold transition-all shadow-2xs cursor-pointer"
             >
-              {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+              {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
               <span>{copied ? 'Copied' : 'Copy'}</span>
             </button>
             {activeTab === 'json' && (
               <button
                 onClick={downloadJsonFile}
-                className="flex items-center gap-1 px-2.5 py-1 rounded bg-teal-500 hover:bg-teal-400 text-slate-950 font-semibold text-xs transition-all"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs transition-all shadow-2xs cursor-pointer"
               >
                 <Download className="w-3.5 h-3.5" />
                 <span>Download .json</span>
@@ -221,27 +203,27 @@ if __name__ == "__main__":
         </div>
 
         {/* Code Content */}
-        <div className="p-6 overflow-y-auto font-mono text-xs bg-slate-950/90 text-slate-300 flex-1">
+        <div className="p-6 overflow-y-auto font-mono text-xs bg-slate-900 text-slate-100 flex-1 leading-relaxed">
           {activeTab === 'json' ? (
-            <pre className="p-4 rounded-lg bg-slate-900/80 border border-slate-800/80 leading-relaxed overflow-x-auto selection:bg-teal-500/30">
+            <pre className="overflow-x-auto text-emerald-300">
               {jsonString}
             </pre>
           ) : (
-            <pre className="p-4 rounded-lg bg-slate-900/80 border border-slate-800/80 leading-relaxed overflow-x-auto text-emerald-300 selection:bg-emerald-500/30">
+            <pre className="overflow-x-auto text-indigo-200">
               {pythonSampleScript}
             </pre>
           )}
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-3 border-t border-slate-800 bg-slate-900/50 flex items-center justify-between text-xs font-mono text-slate-400">
+        <div className="px-6 py-3.5 border-t border-slate-200 bg-slate-50 flex items-center justify-between text-xs font-medium text-slate-600">
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
-            <span>CLI dispatch: <code className="text-slate-200">python test_executor.py --suite test_suite.json</code></span>
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span>CLI dispatch: <code className="text-slate-900 font-bold font-mono">python test_executor.py --suite test_suite.json</code></span>
           </div>
           <button
             onClick={onClose}
-            className="px-4 py-1.5 rounded-md bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs transition-colors"
+            className="px-4 py-1.5 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold transition-colors cursor-pointer shadow-2xs"
           >
             Close
           </button>

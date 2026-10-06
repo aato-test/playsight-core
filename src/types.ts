@@ -320,6 +320,35 @@ export interface GitHubStatusResponse {
   repositoriesCount: number;
 }
 
+export interface DetectedPage {
+  id: string;
+  name: string;
+  repoFullName: string;
+  filePath: string;
+  type: 'page_object' | 'web_page' | 'template' | 'test_spec' | 'entry_route';
+  routeUrl: string;
+  description: string;
+  detectedElements: string[];
+  status: 'not_tested' | 'passed' | 'failed' | 'testing';
+  lastTestedAt?: string;
+  latencyMs?: number;
+  errorMessage?: string;
+  details?: {
+    statusCode?: number;
+    testedBy?: string;
+    domIntegrity?: 'verified' | 'warning' | 'error';
+    elementsCount?: number;
+  };
+}
+
+export interface RepoFileNode {
+  name: string;
+  path: string;
+  type: 'file' | 'dir';
+  size?: number;
+  downloadUrl?: string;
+}
+
 export interface JiraStatusResponse {
   connected: boolean;
   connection: {
@@ -409,6 +438,7 @@ export interface TestRunResult {
 
 export type ActiveTab =
   | 'overview'
+  | 'repo-pages'
   | 'workflows'
   | 'test-runs'
   | 'traceability'

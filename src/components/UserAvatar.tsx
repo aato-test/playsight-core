@@ -7,30 +7,29 @@ interface UserAvatarProps {
   className?: string;
 }
 
-// Domain-tinted deterministic avatar palette (Section 32)
 const USER_PROFILES: Record<string, { bg: string; text: string; border: string; initials: string }> = {
   'Prakash S.': {
-    bg: 'bg-teal-500/15',
-    text: 'text-teal-300',
-    border: 'border-teal-500/35',
+    bg: 'bg-indigo-100',
+    text: 'text-indigo-700',
+    border: 'border-indigo-300',
     initials: 'PS',
   },
   'Sarah J.': {
-    bg: 'bg-cyan-500/15',
-    text: 'text-cyan-300',
-    border: 'border-cyan-500/35',
+    bg: 'bg-emerald-100',
+    text: 'text-emerald-800',
+    border: 'border-emerald-300',
     initials: 'SJ',
   },
   'Daniel J.': {
-    bg: 'bg-blue-500/15',
-    text: 'text-blue-300',
-    border: 'border-blue-500/35',
+    bg: 'bg-blue-100',
+    text: 'text-blue-700',
+    border: 'border-blue-300',
     initials: 'DJ',
   },
   'Mike T.': {
-    bg: 'bg-amber-500/15',
-    text: 'text-amber-300',
-    border: 'border-amber-500/35',
+    bg: 'bg-amber-100',
+    text: 'text-amber-800',
+    border: 'border-amber-300',
     initials: 'MT',
   },
 };
@@ -41,9 +40,9 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
   className = '',
 }) => {
   const profile = USER_PROFILES[name] || {
-    bg: 'bg-slate-800',
-    text: 'text-slate-200',
-    border: 'border-slate-700',
+    bg: 'bg-slate-100',
+    text: 'text-slate-700',
+    border: 'border-slate-300',
     initials: name
       .split(' ')
       .map((n) => n[0])
@@ -62,7 +61,7 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
   return (
     <div
       title={name}
-      className={`rounded-md shrink-0 flex items-center justify-center font-mono font-semibold select-none border transition-colors ${profile.bg} ${profile.text} ${profile.border} ${sizeClasses} ${className}`}
+      className={`rounded-xl shrink-0 flex items-center justify-center font-sans font-bold select-none border transition-colors shadow-2xs ${profile.bg} ${profile.text} ${profile.border} ${sizeClasses} ${className}`}
     >
       {profile.initials}
     </div>

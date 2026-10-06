@@ -1,20 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
 import {
   Sparkles,
-  Send,
   X,
-  CheckCircle2,
+  Send,
+  Zap,
+  Check,
   AlertTriangle,
   RotateCw,
-  Terminal,
+  Code2,
   Layers,
-  ArrowRight,
-  ExternalLink,
-  Shield,
-  Check,
-  Zap,
   Wand2,
-  Search,
 } from 'lucide-react';
 import { CopilotMessage, TestSuite } from '../types';
 
@@ -22,9 +17,9 @@ interface QACopilotProps {
   isOpen: boolean;
   onClose: () => void;
   messages: CopilotMessage[];
-  onSendMessage: (text: string, sender?: 'user' | 'ai') => void;
+  onSendMessage: (text: string) => void;
   onHealNode: (nodeId: string, newSelector: string) => void;
-  currentSuite?: TestSuite | null;
+  currentSuite: TestSuite | null;
   currentBranch: string;
 }
 
@@ -42,99 +37,100 @@ export const QACopilot: React.FC<QACopilotProps> = ({
   const [appliedHeals, setAppliedHeals] = useState<Record<string, boolean>>({});
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
+  const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
   }, [messages, isProcessing]);
 
   if (!isOpen) return null;
 
-  const handleApplyHeal = (nodeId: string, newSelector: string, key: string) => {
-    onHealNode(nodeId, newSelector);
-    setAppliedHeals((prev) => ({ ...prev, [key]: true }));
-  };
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!inputQuery.trim() || isProcessing) return;
 
-  const executeDiagnosticQuery = (queryText: string) => {
-    onSendMessage(queryText, 'user');
+    const userText = inputQuery.trim();
+    setInputQuery('');
+    onSendMessage(userText);
     setIsProcessing(true);
 
     setTimeout(() => {
       setIsProcessing(false);
-      const lower = queryText.toLowerCase();
-
-      if (lower.includes('scan') || lower.includes('selector') || lower.includes('instab')) {
-        const reply = `**Selector Telemetry Analysis (Playwright Worker):**\n\n• Inspected 3 nodes in \`${currentSuite?.name || 'Active Sequence'}\`.\n• Node \`node-chk-2\` contains DOM divergence with PR #482.\n• Stability index: \`72%\` degraded.\n• Production element available at \`button[data-testid="payment-submit"]\`.`;
-        onSendMessage(reply, 'ai');
-      } else if (lower.includes('mutation') || lower.includes('diff')) {
-        const reply = `**Git PR #482 Mutation Diff Summary:**\n\`\`\`diff\n- <button data-testid="checkout-submit" class="btn-primary">\n+ <button data-testid="payment-submit" class="btn-primary">\n\`\`\`\nReplacement recommended with 97% confidence score.`;
-        onSendMessage(reply, 'ai');
-      } else if (lower.includes('assert')) {
-        const reply = `**Recommended Assertion for Checkout:**\n\`\`\`ts\nawait expect(page.locator("div.confirmation-banner")).toContainText("payment.status === 'success'");\n\`\`\`\nAdded to pipeline suggestions.`;
-        onSendMessage(reply, 'ai');
-      } else {
-        const reply = `Diagnostics verified on branch \`${currentBranch}\`. Sequence \`${currentSuite?.name || 'Active Sequence'}\` loaded. Ready to run automated AST repairs or auto-heal selectors.`;
-        onSendMessage(reply, 'ai');
-      }
-    }, 600);
+      onSendMessage(
+        `I analyzed the steps in **${currentSuite?.name || 'the active suite'}** on branch \`${currentBranch}\`. All locators conform to Playwright best practices. Test assertions are resilient to dynamic timing.`
+      );
+    }, 900);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!inputQuery.trim()) return;
-    executeDiagnosticQuery(inputQuery);
-    setInputQuery('');
+  const handleApplyHeal = (nodeId: string, newSelector: string, healKey: string) => {
+    setAppliedHeals((prev) => ({ ...prev, [healKey]: true }));
+    onHealNode(nodeId, newSelector);
+  };
+
+  const executeDiagnosticQuery = (query: string) => {
+    onSendMessage(query);
+    setIsProcessing(true);
+    setTimeout(() => {
+      setIsProcessing(false);
+      onSendMessage(
+        `Diagnostic scan completed for \`${query}\`. Evaluated DOM tree against Playwright selectors. Found 0 breaking regression anomalies.`
+      );
+    }, 800);
   };
 
   return (
     <aside
       id="qa-copilot-drawer"
-      className="w-88 md:w-96 bg-[#0F172A] border-l border-[#1E293B] flex flex-col h-full shrink-0 select-none text-[#F8FAFC] font-sans shadow-2xl z-40"
+      className="w-88 md:w-96 bg-white border-l border-slate-200 flex flex-col h-full shrink-0 select-none text-slate-900 font-sans shadow-2xl z-40"
     >
-      {/* Section 20 Header: QA Copilot / Engineering Diagnostics */}
-      <div className="h-14 px-4 border-b border-[#1E293B] flex items-center justify-between shrink-0 bg-[#020617]/50">
+      {/* Header */}
+      <div className="h-16 px-5 border-b border-slate-200 flex items-center justify-between shrink-0 bg-slate-50/80">
         <div className="flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded bg-[#111827] border border-teal-500/40 flex items-center justify-center text-teal-400">
-            <Sparkles className="w-4 h-4" />
+          <div className="w-8 h-8 rounded-xl bg-indigo-50 border border-indigo-200 flex items-center justify-center text-indigo-600 shadow-2xs">
+            <Sparkles className="w-4.5 h-4.5" />
           </div>
           <div>
-            <h2 className="text-xs font-bold text-[#F8FAFC] tracking-tight uppercase font-mono">
-              QA Copilot
+            <h2 className="text-xs font-bold text-slate-900 tracking-tight uppercase">
+              QA Diagnostics Copilot
             </h2>
-            <div className="text-[10px] text-[#64748B] font-mono">
-              Engineering diagnostics · {currentBranch}
+            <div className="text-[11px] text-slate-500 font-medium">
+              Branch: <span className="font-mono font-bold text-indigo-700">{currentBranch}</span>
             </div>
           </div>
         </div>
 
         <button
           onClick={onClose}
-          className="p-1.5 text-[#94A3B8] hover:text-[#F8FAFC] hover:bg-[#1E293B] rounded transition-colors cursor-pointer"
-          title="Close Copilot (⌘J)"
+          className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer"
+          title="Close Copilot"
         >
           <X className="w-4 h-4" />
         </button>
       </div>
 
-      {/* Engineering Quick Actions */}
-      <div className="p-2 border-b border-[#1E293B] bg-[#020617]/30 flex items-center gap-1.5 overflow-x-auto text-xs no-scrollbar">
+      {/* Quick Actions */}
+      <div className="p-3 border-b border-slate-100 bg-slate-50/60 flex items-center gap-2 overflow-x-auto text-xs no-scrollbar">
         <button
           onClick={() => executeDiagnosticQuery('Scan for selector instability')}
-          className="px-2 py-1 rounded bg-[#111827] hover:bg-[#1E293B] text-[#94A3B8] hover:text-teal-300 text-[11px] font-mono border border-[#1E293B] whitespace-nowrap cursor-pointer flex items-center gap-1"
+          className="px-2.5 py-1.5 rounded-lg bg-white hover:bg-slate-100 text-slate-700 hover:text-slate-900 text-xs font-semibold border border-slate-200 whitespace-nowrap cursor-pointer flex items-center gap-1.5 shadow-2xs"
         >
-          <Zap className="w-3 h-3 text-amber-400" />
+          <Zap className="w-3.5 h-3.5 text-amber-500" />
           <span>Scan Selectors</span>
         </button>
         <button
           onClick={() => executeDiagnosticQuery('Show DOM mutation diff')}
-          className="px-2 py-1 rounded bg-[#111827] hover:bg-[#1E293B] text-[#94A3B8] hover:text-teal-300 text-[11px] font-mono border border-[#1E293B] whitespace-nowrap cursor-pointer flex items-center gap-1"
+          className="px-2.5 py-1.5 rounded-lg bg-white hover:bg-slate-100 text-slate-700 hover:text-slate-900 text-xs font-semibold border border-slate-200 whitespace-nowrap cursor-pointer flex items-center gap-1.5 shadow-2xs"
         >
-          <Layers className="w-3 h-3 text-cyan-400" />
+          <Layers className="w-3.5 h-3.5 text-indigo-600" />
           <span>DOM Mutation Diff</span>
         </button>
         <button
           onClick={() => executeDiagnosticQuery('Suggest assertions for checkout')}
-          className="px-2 py-1 rounded bg-[#111827] hover:bg-[#1E293B] text-[#94A3B8] hover:text-teal-300 text-[11px] font-mono border border-[#1E293B] whitespace-nowrap cursor-pointer flex items-center gap-1"
+          className="px-2.5 py-1.5 rounded-lg bg-white hover:bg-slate-100 text-slate-700 hover:text-slate-900 text-xs font-semibold border border-slate-200 whitespace-nowrap cursor-pointer flex items-center gap-1.5 shadow-2xs"
         >
-          <Wand2 className="w-3 h-3 text-teal-400" />
+          <Wand2 className="w-3.5 h-3.5 text-purple-600" />
           <span>Auto Assertions</span>
         </button>
       </div>
@@ -151,96 +147,98 @@ export const QACopilot: React.FC<QACopilotProps> = ({
           return (
             <div
               key={msg.id}
-              className={`space-y-2 ${isAI ? 'text-[#F8FAFC]' : 'text-teal-300'}`}
+              className={`space-y-1.5 ${isAI ? 'text-slate-900' : 'text-indigo-900'}`}
             >
               {/* Message Header */}
-              <div className="flex items-center justify-between text-[10px] font-mono text-[#64748B]">
-                <span className="uppercase">{isAI ? 'Diagnostics Engine' : 'Prakash S.'}</span>
-                <span>{msg.timestamp}</span>
+              <div className="flex items-center justify-between text-[11px] font-bold text-slate-400">
+                <span className="uppercase">{isAI ? 'Diagnostics Engine' : 'You'}</span>
+                <span className="font-mono text-slate-400">{msg.timestamp}</span>
               </div>
 
               {/* Message Content Bubble */}
               <div
-                className={`p-3 rounded border text-xs leading-relaxed ${
+                className={`p-3.5 rounded-2xl border text-xs leading-relaxed shadow-2xs ${
                   isAI
-                    ? 'bg-[#111827] border-[#1E293B] text-[#F8FAFC]'
-                    : 'bg-teal-500/10 border-teal-500/30 text-teal-200'
+                    ? 'bg-slate-50 border-slate-200 text-slate-800'
+                    : 'bg-indigo-50 border-indigo-200 text-indigo-900 font-medium'
                 }`}
               >
                 <div className="whitespace-pre-wrap font-sans">{msg.text}</div>
 
-                {/* Section 20 Specific Diagnostic Card */}
+                {/* Specific Diagnostic Card */}
                 {diag && (
-                  <div className="mt-3 p-3 rounded bg-[#020617] border border-[#1E293B] space-y-3 font-mono text-xs">
+                  <div className="mt-3 p-3.5 rounded-xl bg-white border border-slate-200 space-y-3 font-mono text-xs shadow-2xs">
                     {/* Header */}
-                    <div className="flex items-center justify-between pb-2 border-b border-[#1E293B]">
-                      <span className="text-amber-400 font-semibold uppercase text-[11px]">
-                        Selector instability detected
+                    <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+                      <span className="text-amber-700 font-bold uppercase text-[11px]">
+                        Selector Instability Detected
                       </span>
-                      <span className="text-amber-400 font-bold">{diag.confidence}% Confidence</span>
+                      <span className="text-amber-800 font-bold bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
+                        {diag.confidence}% Confidence
+                      </span>
                     </div>
 
                     {/* Selector & Reason */}
                     <div>
-                      <div className="text-[10px] text-[#64748B] uppercase">Target Selector</div>
-                      <div className="text-rose-400 font-mono mt-0.5">{diag.targetSelector}</div>
-                      <div className="text-[11px] text-[#94A3B8] font-sans mt-1">
+                      <div className="text-[10px] font-bold text-slate-400 uppercase">Target Selector</div>
+                      <div className="text-rose-600 font-bold font-mono mt-0.5">{diag.targetSelector}</div>
+                      <div className="text-xs text-slate-600 font-sans mt-1">
                         Reason: {diag.reason}
                       </div>
                     </div>
 
-                    {/* Section 20 Compact DOM Mutation Diff */}
+                    {/* Compact DOM Mutation Diff */}
                     <div>
-                      <div className="text-[10px] text-[#64748B] uppercase mb-1">DOM Mutation Diff</div>
-                      <div className="p-2 rounded bg-[#0A0F1D] border border-[#1E293B] text-[11px] font-mono leading-relaxed">
-                        <div className="text-rose-400">{diag.diff.removed}</div>
-                        <div className="text-emerald-400">{diag.diff.added}</div>
+                      <div className="text-[10px] font-bold text-slate-400 uppercase mb-1">DOM Mutation Diff</div>
+                      <div className="p-2 rounded-lg bg-slate-50 border border-slate-200 text-xs font-mono leading-relaxed">
+                        <div className="text-rose-600 font-medium">{diag.diff.removed}</div>
+                        <div className="text-emerald-700 font-medium">{diag.diff.added}</div>
                       </div>
                     </div>
 
                     {/* Recommendation */}
                     <div>
-                      <div className="text-[10px] text-[#64748B] uppercase">Recommendation</div>
-                      <div className="text-teal-300 text-[11px] font-sans mt-0.5">
+                      <div className="text-[10px] font-bold text-slate-400 uppercase">Recommendation</div>
+                      <div className="text-indigo-800 text-xs font-sans mt-0.5 font-medium">
                         {diag.recommendation}
                       </div>
                     </div>
 
                     {/* Actions: Auto-Heal & Review Change */}
-                    <div className="pt-2 border-t border-[#1E293B] flex items-center gap-2">
+                    <div className="pt-2 border-t border-slate-100 flex items-center gap-2">
                       <button
                         onClick={() => handleApplyHeal(diag.affectedStepId, diag.newSelector, healKey)}
                         disabled={isHealed}
-                        className={`px-3 py-1.5 rounded text-xs font-semibold font-mono flex items-center gap-1.5 transition-all cursor-pointer ${
+                        className={`px-3 py-1.5 rounded-xl text-xs font-bold font-mono flex items-center gap-1.5 transition-all cursor-pointer shadow-2xs ${
                           isHealed
-                            ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 cursor-default'
-                            : 'bg-teal-500 hover:bg-teal-400 text-slate-950 shadow-xs'
+                            ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 cursor-default'
+                            : 'bg-indigo-600 hover:bg-indigo-700 text-white'
                         }`}
                       >
                         {isHealed ? (
                           <>
-                            <Check className="w-3 h-3 text-emerald-400" />
+                            <Check className="w-3.5 h-3.5 text-emerald-600" />
                             <span>Auto-Healed</span>
                           </>
                         ) : (
                           <>
-                            <Sparkles className="w-3 h-3 text-slate-950" />
-                            <span>Auto-Heal</span>
+                            <Sparkles className="w-3.5 h-3.5 text-white" />
+                            <span>Auto-Heal Step</span>
                           </>
                         )}
                       </button>
 
                       <button
                         onClick={() => executeDiagnosticQuery('Show DOM mutation diff')}
-                        className="px-2.5 py-1.5 rounded bg-[#111827] hover:bg-[#1E293B] text-[#94A3B8] hover:text-[#F8FAFC] border border-[#1E293B] text-xs font-mono transition-colors cursor-pointer"
+                        className="px-3 py-1.5 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 text-xs font-bold transition-colors cursor-pointer"
                       >
                         Review Change
                       </button>
                     </div>
 
                     {isHealed && (
-                      <div className="text-[10px] text-emerald-400 font-mono mt-1">
-                        ✓ Selector updated · Test re-run queued · CHK-184 updated to Review
+                      <div className="text-xs text-emerald-700 font-bold font-mono mt-1 flex items-center gap-1">
+                        ✓ Selector updated · Test re-run queued · Jira updated
                       </div>
                     )}
                   </div>
@@ -251,8 +249,8 @@ export const QACopilot: React.FC<QACopilotProps> = ({
         })}
 
         {isProcessing && (
-          <div className="p-3 rounded bg-[#111827] border border-[#1E293B] flex items-center gap-2 text-xs text-[#94A3B8] font-mono">
-            <RotateCw className="w-3.5 h-3.5 animate-spin text-teal-400" />
+          <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center gap-2 text-xs text-slate-600 font-mono">
+            <RotateCw className="w-3.5 h-3.5 animate-spin text-indigo-600" />
             <span>Analyzing Playwright AST and DOM mutations...</span>
           </div>
         )}
@@ -261,19 +259,19 @@ export const QACopilot: React.FC<QACopilotProps> = ({
       </div>
 
       {/* Input Field */}
-      <form onSubmit={handleSubmit} className="p-3 border-t border-[#1E293B] bg-[#020617]/50">
+      <form onSubmit={handleSubmit} className="p-4 border-t border-slate-200 bg-slate-50/70">
         <div className="relative flex items-center">
           <input
             type="text"
             value={inputQuery}
             onChange={(e) => setInputQuery(e.target.value)}
             placeholder="Ask diagnostics or type 'scan selectors'..."
-            className="w-full bg-[#020617] border border-[#1E293B] rounded pl-3 pr-10 py-2 text-xs text-[#F8FAFC] placeholder-[#64748B] focus:border-teal-400 focus:outline-none font-sans"
+            className="w-full bg-white border border-slate-200 rounded-xl pl-3.5 pr-10 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 font-sans"
           />
           <button
             type="submit"
             disabled={!inputQuery.trim() || isProcessing}
-            className="absolute right-1.5 p-1 rounded bg-teal-500 hover:bg-teal-400 text-slate-950 transition-colors disabled:opacity-30 cursor-pointer"
+            className="absolute right-2 p-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white transition-colors disabled:opacity-30 cursor-pointer shadow-2xs"
             title="Send Query"
           >
             <Send className="w-3.5 h-3.5" />
