@@ -76,7 +76,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
         <div className="w-14 h-14 rounded-2xl bg-indigo-50 border border-indigo-200 flex items-center justify-center text-indigo-600 mb-3.5 shadow-2xs">
           <Sliders className="w-6 h-6" />
         </div>
-        <h4 className="text-base font-bold text-slate-900 tracking-tight font-sans">
+        <h4 className="text-base font-semibold text-slate-900 tracking-tight font-sans">
           Step Inspector
         </h4>
         <p className="text-sm text-slate-600 mt-1.5 max-w-[260px] leading-relaxed">
@@ -133,11 +133,11 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
       {/* Header */}
       <div className="h-16 px-5 border-b-2 border-slate-200 flex items-center justify-between shrink-0 bg-slate-50/80">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-xl bg-indigo-50 border border-indigo-200 flex items-center justify-center text-indigo-700 font-sans text-xs font-extrabold shadow-2xs">
+          <div className="w-8 h-8 rounded-xl bg-indigo-50 border border-indigo-200 flex items-center justify-center text-indigo-700 font-sans text-xs font-semibold shadow-2xs">
             0{stepIndex}
           </div>
           <div>
-            <h3 className="text-sm font-bold text-slate-900 tracking-tight uppercase font-sans">
+            <h3 className="text-sm font-semibold text-slate-900 tracking-tight uppercase font-sans">
               Step 0{stepIndex} — {selectedNode.type}
             </h3>
           </div>
@@ -172,7 +172,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
       <div className="px-5 py-2.5 border-b border-slate-200 bg-slate-50 flex items-center gap-2">
         <button
           onClick={() => setActiveTab('inspector')}
-          className={`px-3.5 py-1.5 rounded-xl text-xs font-bold font-sans transition-colors cursor-pointer ${
+          className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold font-sans transition-colors cursor-pointer ${
             activeTab === 'inspector'
               ? 'bg-white text-indigo-700 shadow-2xs border border-slate-300'
               : 'text-slate-600 hover:text-slate-900'
@@ -182,7 +182,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
         </button>
         <button
           onClick={() => setActiveTab('json')}
-          className={`px-3.5 py-1.5 rounded-xl text-xs font-bold font-sans transition-colors cursor-pointer ${
+          className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold font-sans transition-colors cursor-pointer ${
             activeTab === 'json'
               ? 'bg-white text-indigo-700 shadow-2xs border border-slate-300'
               : 'text-slate-600 hover:text-slate-900'
@@ -214,29 +214,29 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
           <div className="space-y-4 font-sans">
             {/* Step Title */}
             <div>
-              <label className="block text-[11px] font-sans font-semibold text-slate-700 uppercase tracking-wider mb-1">
+              <label className="block text-[11px] font-sans font-medium text-slate-700 mb-1">
                 Step Title
               </label>
               <input
                 type="text"
                 value={selectedNode.title}
                 onChange={(e) => onUpdateNode(selectedNode.id, { title: e.target.value })}
-                className="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 focus:outline-none font-semibold shadow-2xs"
+                className="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 focus:outline-none font-medium shadow-2xs"
               />
             </div>
 
             {/* Action and Source Summary */}
             <div className="grid grid-cols-2 gap-2">
               <div>
-                <span className="block text-[10px] font-sans font-semibold text-slate-500 uppercase tracking-wider">
+                <span className="block text-[10px] font-sans font-medium text-slate-500">
                   Type
                 </span>
-                <span className="font-mono text-xs text-slate-900 capitalize font-bold">
+                <span className="font-mono text-xs text-slate-900 capitalize font-semibold">
                   {selectedNode.type}
                 </span>
               </div>
               <div>
-                <span className="block text-[10px] font-sans font-semibold text-slate-500 uppercase tracking-wider">
+                <span className="block text-[10px] font-sans font-medium text-slate-500">
                   Origin
                 </span>
                 <span className="font-mono text-xs text-indigo-700 font-medium">
@@ -253,7 +253,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
             {selectedNode.type === 'navigate' && (
               <div className="space-y-3">
                 <div>
-                  <label className="block text-[11px] font-sans font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                  <label className="block text-[11px] font-sans font-medium text-slate-700 mb-1">
                     Target URL
                   </label>
                   <input
@@ -265,7 +265,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-sans font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                  <label className="block text-[11px] font-sans font-medium text-slate-700 mb-1">
                     Wait Until
                   </label>
                   <select
@@ -285,7 +285,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
             {selectedNode.type === 'scroll' && (
               <div className="space-y-3">
                 <div>
-                  <label className="block text-[11px] font-sans font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                  <label className="block text-[11px] font-sans font-medium text-slate-700 mb-1">
                     Scroll Direction
                   </label>
                   <select
@@ -301,7 +301,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                 </div>
                 {(selectedNode.data as ScrollStepData).direction === 'to_selector' ? (
                   <div>
-                    <label className="block text-[11px] font-sans font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                    <label className="block text-[11px] font-sans font-medium text-slate-700 mb-1">
                       Element Selector
                     </label>
                     <input
@@ -314,7 +314,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                   </div>
                 ) : (
                   <div>
-                    <label className="block text-[11px] font-sans font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                    <label className="block text-[11px] font-sans font-medium text-slate-700 mb-1">
                       Distance (Pixels)
                     </label>
                     <input
@@ -332,7 +332,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
             {selectedNode.type === 'wait_for' && (
               <div className="space-y-3">
                 <div>
-                  <label className="block text-[11px] font-sans font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                  <label className="block text-[11px] font-sans font-medium text-slate-700 mb-1">
                     Wait Condition Type
                   </label>
                   <select
@@ -347,7 +347,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                 </div>
                 {(selectedNode.data as WaitForStepData).waitType === 'timeout' && (
                   <div>
-                    <label className="block text-[11px] font-sans font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                    <label className="block text-[11px] font-sans font-medium text-slate-700 mb-1">
                       Duration (ms)
                     </label>
                     <input
@@ -360,7 +360,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                 )}
                 {(selectedNode.data as WaitForStepData).waitType === 'selector' && (
                   <div>
-                    <label className="block text-[11px] font-sans font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                    <label className="block text-[11px] font-sans font-medium text-slate-700 mb-1">
                       Selector to Wait For
                     </label>
                     <input
@@ -379,7 +379,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
             {selectedNode.type === 'click' && (
               <div className="space-y-3">
                 <div>
-                  <label className="block text-[11px] font-sans font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                  <label className="block text-[11px] font-sans font-medium text-slate-700 mb-1">
                     CSS / XPath Selector
                   </label>
                   <input
@@ -391,7 +391,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-sans font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                  <label className="block text-[11px] font-sans font-medium text-slate-700 mb-1">
                     Click Type
                   </label>
                   <select
@@ -411,7 +411,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
             {selectedNode.type === 'input' && (
               <div className="space-y-3">
                 <div>
-                  <label className="block text-[11px] font-sans font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                  <label className="block text-[11px] font-sans font-medium text-slate-700 mb-1">
                     Input Selector
                   </label>
                   <input
@@ -423,7 +423,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-sans font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                  <label className="block text-[11px] font-sans font-medium text-slate-700 mb-1">
                     Input Text Value
                   </label>
                   <input
@@ -453,7 +453,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
             {selectedNode.type === 'extract_text' && (
               <div className="space-y-3">
                 <div>
-                  <label className="block text-[11px] font-sans font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                  <label className="block text-[11px] font-sans font-medium text-slate-700 mb-1">
                     Target Selector
                   </label>
                   <input
@@ -465,7 +465,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-sans font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                  <label className="block text-[11px] font-sans font-medium text-slate-700 mb-1">
                     Dataset Variable Name
                   </label>
                   <input
@@ -495,7 +495,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
             {selectedNode.type === 'extract_attribute' && (
               <div className="space-y-3">
                 <div>
-                  <label className="block text-[11px] font-sans font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                  <label className="block text-[11px] font-sans font-medium text-slate-700 mb-1">
                     Target Selector
                   </label>
                   <input
@@ -507,7 +507,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-sans font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                  <label className="block text-[11px] font-sans font-medium text-slate-700 mb-1">
                     Attribute to Extract
                   </label>
                   <input
@@ -519,7 +519,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-sans font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                  <label className="block text-[11px] font-sans font-medium text-slate-700 mb-1">
                     Dataset Variable Name
                   </label>
                   <input
@@ -536,7 +536,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
             {selectedNode.type === 'extract_table' && (
               <div className="space-y-3">
                 <div>
-                  <label className="block text-[11px] font-sans font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                  <label className="block text-[11px] font-sans font-medium text-slate-700 mb-1">
                     Table Selector
                   </label>
                   <input
@@ -548,7 +548,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-sans font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                  <label className="block text-[11px] font-sans font-medium text-slate-700 mb-1">
                     Output Variable Name
                   </label>
                   <input
@@ -577,7 +577,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
             {selectedNode.type === 'pagination' && (
               <div className="space-y-3">
                 <div>
-                  <label className="block text-[11px] font-sans font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                  <label className="block text-[11px] font-sans font-medium text-slate-700 mb-1">
                     Next Page Button Selector
                   </label>
                   <input
@@ -590,7 +590,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <label className="block text-[11px] font-sans font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                    <label className="block text-[11px] font-sans font-medium text-slate-700 mb-1">
                       Max Pages
                     </label>
                     <input
@@ -601,7 +601,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                     />
                   </div>
                   <div>
-                    <label className="block text-[11px] font-sans font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                    <label className="block text-[11px] font-sans font-medium text-slate-700 mb-1">
                       Delay Between (ms)
                     </label>
                     <input
@@ -619,7 +619,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
             {(selectedNode.type === 'export_json' || selectedNode.type === 'export_csv') && (
               <div className="space-y-3">
                 <div>
-                  <label className="block text-[11px] font-sans font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                  <label className="block text-[11px] font-sans font-medium text-slate-700 mb-1">
                     Output File Name
                   </label>
                   <input
@@ -635,7 +635,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-sans font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                  <label className="block text-[11px] font-sans font-medium text-slate-700 mb-1">
                     Dataset Variable to Export
                   </label>
                   <input
@@ -657,7 +657,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
             {selectedNode.type === 'assert' && (
               <div className="space-y-3">
                 <div>
-                  <label className="block text-[11px] font-sans font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                  <label className="block text-[11px] font-sans font-medium text-slate-700 mb-1">
                     Assertion Target Selector
                   </label>
                   <input
@@ -669,7 +669,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                   />
                 </div>
                 <div>
-                  <label className="block text-[11px] font-sans font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                  <label className="block text-[11px] font-sans font-medium text-slate-700 mb-1">
                     Assertion Type
                   </label>
                   <select
@@ -686,7 +686,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                   </select>
                 </div>
                 <div>
-                  <label className="block text-[11px] font-sans font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                  <label className="block text-[11px] font-sans font-medium text-slate-700 mb-1">
                     Expected Value
                   </label>
                   <input
@@ -703,7 +703,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
             {selectedNode.type === 'cookie_banner' && (
               <div className="space-y-3">
                 <div>
-                  <label className="block text-[11px] font-sans font-semibold text-slate-700 uppercase tracking-wider mb-1">
+                  <label className="block text-[11px] font-sans font-medium text-slate-700 mb-1">
                     Accept Button Selector
                   </label>
                   <input
@@ -720,7 +720,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
             {/* Element Locator Strategy */}
             <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
               <div className="flex items-center justify-between text-xs">
-                <span className="text-slate-500 font-sans font-semibold text-[11px] uppercase tracking-wider">
+                <span className="text-slate-500 font-sans font-semibold text-[11px]">
                   Locator Engine
                 </span>
                 <span className="font-sans font-semibold text-xs text-indigo-700">
@@ -735,7 +735,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
             {/* Last Execution Info */}
             <div className="grid grid-cols-2 gap-2 p-3 rounded-xl bg-slate-50 border border-slate-200">
               <div>
-                <span className="block text-[11px] font-sans font-semibold text-slate-500 uppercase tracking-wider">
+                <span className="block text-[11px] font-sans font-medium text-slate-500">
                   Last Run
                 </span>
                 <span className="font-sans text-xs text-slate-800 font-semibold">
@@ -743,7 +743,7 @@ export const PropertiesPanel: React.FC<PropertiesPanelProps> = ({
                 </span>
               </div>
               <div>
-                <span className="block text-[11px] font-sans font-semibold text-slate-500 uppercase tracking-wider">
+                <span className="block text-[11px] font-sans font-medium text-slate-500">
                   Jira Issue
                 </span>
                 <span className="font-sans text-xs text-slate-700 font-medium">

@@ -85,7 +85,7 @@ export const ConnectJiraModal: React.FC<ConnectJiraModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs font-sans text-slate-800">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-xs font-sans text-slate-800">
       <div className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden">
         {/* Header */}
         <div className="px-6 py-5 border-b border-slate-200 flex items-center justify-between bg-slate-50/80">
@@ -94,7 +94,7 @@ export const ConnectJiraModal: React.FC<ConnectJiraModalProps> = ({
               <Layers className="w-4 h-4" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-slate-900 tracking-tight">
+              <h2 className="text-base font-semibold text-slate-900 tracking-tight">
                 {isConnected ? 'Jira Cloud Connection' : 'Connect Jira Cloud'}
               </h2>
               <p className="text-xs text-slate-500 font-medium">
@@ -117,12 +117,12 @@ export const ConnectJiraModal: React.FC<ConnectJiraModalProps> = ({
               <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-900 flex items-start gap-3">
                 <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
                 <div>
-                  <div className="font-bold">Jira Instance Connected:</div>
+                  <div className="font-semibold">Jira Instance Connected:</div>
                   <div className="font-mono text-[11px] mt-0.5 text-emerald-800">
                     {jiraStatus?.connection?.siteUrl}
                   </div>
                   <div className="text-[11px] text-emerald-700 mt-1">
-                    Status: <span className="font-bold uppercase">Active</span> · Linked to current team workspace
+                    Status: <span className="font-semibold uppercase">Active</span> · Linked to current team workspace
                   </div>
                 </div>
               </div>
@@ -132,7 +132,7 @@ export const ConnectJiraModal: React.FC<ConnectJiraModalProps> = ({
                   type="button"
                   onClick={handleDisconnect}
                   disabled={isLoading}
-                  className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold transition-all cursor-pointer"
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-semibold transition-all cursor-pointer"
                 >
                   <Unlink className="w-4 h-4" />
                   <span>Disconnect Jira</span>
@@ -153,7 +153,7 @@ export const ConnectJiraModal: React.FC<ConnectJiraModalProps> = ({
               )}
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5 uppercase tracking-wider">
+                <label className="block text-xs font-semibold text-slate-700 mb-1.5">
                   Jira Cloud Instance URL <span className="text-rose-500">*</span>
                 </label>
                 <input
@@ -162,13 +162,13 @@ export const ConnectJiraModal: React.FC<ConnectJiraModalProps> = ({
                   value={siteUrl}
                   onChange={(e) => setSiteUrl(e.target.value)}
                   placeholder="https://your-company.atlassian.net"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-900 focus:outline-blue-600 bg-white"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-medium text-slate-900 focus:outline-blue-600 bg-white"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1.5 uppercase tracking-wider">
+                  <label className="block text-xs font-semibold text-slate-700 mb-1.5">
                     Atlassian Email
                   </label>
                   <input
@@ -176,12 +176,12 @@ export const ConnectJiraModal: React.FC<ConnectJiraModalProps> = ({
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="engineer@company.com"
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-900 focus:outline-blue-600 bg-white"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-medium text-slate-900 focus:outline-blue-600 bg-white"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1.5 uppercase tracking-wider">
+                  <label className="block text-xs font-semibold text-slate-700 mb-1.5">
                     Default Project Key
                   </label>
                   <input
@@ -189,13 +189,13 @@ export const ConnectJiraModal: React.FC<ConnectJiraModalProps> = ({
                     value={projectKey}
                     onChange={(e) => setProjectKey(e.target.value)}
                     placeholder="e.g. QA or PROJ"
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-900 focus:outline-blue-600 bg-white"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-medium text-slate-900 focus:outline-blue-600 bg-white"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5 uppercase tracking-wider">
+                <label className="block text-xs font-semibold text-slate-700 mb-1.5">
                   API Token / OAuth Client Secret
                 </label>
                 <input
@@ -203,7 +203,7 @@ export const ConnectJiraModal: React.FC<ConnectJiraModalProps> = ({
                   value={apiToken}
                   onChange={(e) => setApiToken(e.target.value)}
                   placeholder="Atlassian User API Token"
-                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-900 focus:outline-blue-600 bg-white"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-xs font-medium text-slate-900 focus:outline-blue-600 bg-white"
                 />
                 <span className="text-[11px] text-slate-400 mt-1 block">
                   Managed server-side; credentials are never exposed to client browsers.
@@ -214,14 +214,14 @@ export const ConnectJiraModal: React.FC<ConnectJiraModalProps> = ({
                 <button
                   type="button"
                   onClick={onClose}
-                  className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
+                  className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all shadow-xs cursor-pointer flex items-center gap-1.5"
+                  className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold transition-all shadow-xs cursor-pointer flex items-center gap-1.5"
                 >
                   <Radio className="w-3.5 h-3.5" />
                   <span>{isLoading ? 'Connecting...' : 'Connect Jira'}</span>

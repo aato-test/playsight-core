@@ -61,7 +61,7 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
   return (
     <div
       title={name}
-      className={`rounded-xl shrink-0 flex items-center justify-center font-sans font-bold select-none border transition-colors shadow-2xs ${profile.bg} ${profile.text} ${profile.border} ${sizeClasses} ${className}`}
+      className={`rounded-xl shrink-0 flex items-center justify-center font-sans font-semibold select-none border transition-colors shadow-2xs ${profile.bg} ${profile.text} ${profile.border} ${sizeClasses} ${className}`}
     >
       {profile.initials}
     </div>

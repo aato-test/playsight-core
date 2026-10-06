@@ -250,7 +250,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
             placeholder="Type a command, navigate views, or jump to suites..."
             className="w-full bg-transparent border-none text-xs text-slate-900 placeholder-slate-400 focus:outline-none font-medium"
           />
-          <kbd className="text-[10px] font-sans font-bold text-slate-500 bg-white px-2 py-0.5 rounded-md border border-slate-200 shadow-2xs">
+          <kbd className="text-[10px] font-sans font-semibold text-slate-500 bg-white px-2 py-0.5 rounded-md border border-slate-200 shadow-2xs">
             ESC
           </kbd>
         </div>
@@ -272,7 +272,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                   onMouseEnter={() => setSelectedIndex(index)}
                   className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs transition-colors cursor-pointer text-left ${
                     isSelected
-                      ? 'bg-indigo-50 text-indigo-900 border border-indigo-200 shadow-2xs font-semibold'
+                      ? 'bg-indigo-50 text-indigo-900 border border-indigo-200 shadow-2xs font-medium'
                       : 'text-slate-700 hover:bg-slate-50 hover:text-slate-900 border border-transparent'
                   }`}
                 >
@@ -285,7 +285,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                     <span className="truncate">{item.title}</span>
                   </div>
                   <div className="flex items-center gap-2 shrink-0 ml-2">
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                    <span className="text-[10px] font-semibold text-slate-400">
                       {item.category}
                     </span>
                     {item.shortcut && (

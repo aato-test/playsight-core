@@ -174,7 +174,7 @@ export const IntegrationsView: React.FC<IntegrationsViewProps> = ({
             <div className="w-9 h-9 rounded-xl bg-indigo-50 border border-indigo-200 flex items-center justify-center text-indigo-600">
               <Layers className="w-5 h-5" />
             </div>
-            <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-slate-900">
+            <h1 className="text-2xl md:text-3xl font-semibold tracking-tight text-slate-900">
               Integrations & Quality Pipelines
             </h1>
           </div>
@@ -186,7 +186,7 @@ export const IntegrationsView: React.FC<IntegrationsViewProps> = ({
         <button
           onClick={loadData}
           disabled={isLoading}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white border border-slate-300 hover:border-slate-400 hover:bg-slate-50 text-sm font-bold text-slate-700 transition-all shadow-xs cursor-pointer"
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white border border-slate-300 hover:border-slate-400 hover:bg-slate-50 text-sm font-semibold text-slate-700 transition-all shadow-xs cursor-pointer"
         >
           <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin text-indigo-600' : ''}`} />
           Refresh Status
@@ -212,7 +212,7 @@ export const IntegrationsView: React.FC<IntegrationsViewProps> = ({
           </div>
           <button
             onClick={() => setNotice(null)}
-            className="text-slate-500 hover:text-slate-800 text-xs font-bold px-2 py-0.5 cursor-pointer"
+            className="text-slate-500 hover:text-slate-800 text-xs font-semibold px-2 py-0.5 cursor-pointer"
           >
             Dismiss
           </button>
@@ -232,7 +232,7 @@ export const IntegrationsView: React.FC<IntegrationsViewProps> = ({
                   <Github className="w-6 h-6" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2">
+                  <h3 className="text-lg font-semibold text-slate-900 tracking-tight flex items-center gap-2">
                     GitHub App
                     <span className="text-xs font-mono px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-300 font-semibold">
                       Official App
@@ -244,7 +244,7 @@ export const IntegrationsView: React.FC<IntegrationsViewProps> = ({
 
               {/* Status Badge */}
               <span
-                className={`inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-full border ${
+                className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full border ${
                   isGitHubConnected
                     ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
                     : 'bg-slate-100 text-slate-600 border-slate-300'
@@ -263,8 +263,8 @@ export const IntegrationsView: React.FC<IntegrationsViewProps> = ({
             {isGitHubConnected && githubStatus?.installation ? (
               <div className="p-4.5 rounded-xl bg-slate-50 border border-slate-200 space-y-3 text-sm">
                 <div className="flex items-center justify-between text-slate-600">
-                  <span className="font-semibold text-slate-500">Target Account:</span>
-                  <span className="font-bold text-slate-900 flex items-center gap-1.5">
+                  <span className="font-medium text-slate-500">Target Account:</span>
+                  <span className="font-semibold text-slate-900 flex items-center gap-1.5">
                     {githubStatus.installation.accountLogin}
                     <span className="text-xs px-2 py-0.5 rounded bg-white text-slate-700 border border-slate-300 font-mono">
                       {githubStatus.installation.accountType}
@@ -272,16 +272,16 @@ export const IntegrationsView: React.FC<IntegrationsViewProps> = ({
                   </span>
                 </div>
                 <div className="flex items-center justify-between text-slate-600">
-                  <span className="font-semibold text-slate-500">Installation ID:</span>
+                  <span className="font-medium text-slate-500">Installation ID:</span>
                   <span className="font-mono font-medium text-slate-900">#{githubStatus.installation.installationId}</span>
                 </div>
                 <div className="flex items-center justify-between text-slate-600">
-                  <span className="font-semibold text-slate-500">Accessible Repositories:</span>
-                  <span className="font-bold text-indigo-700">{repositories.length} synced</span>
+                  <span className="font-medium text-slate-500">Accessible Repositories:</span>
+                  <span className="font-semibold text-indigo-700">{repositories.length} synced</span>
                 </div>
                 <div className="flex items-center justify-between text-slate-600">
-                  <span className="font-semibold text-slate-500">Webhooks:</span>
-                  <span className="text-emerald-700 flex items-center gap-1 font-mono text-xs font-bold">
+                  <span className="font-medium text-slate-500">Webhooks:</span>
+                  <span className="text-emerald-700 flex items-center gap-1 font-mono text-xs font-semibold">
                     <ShieldCheck className="w-4 h-4" />
                     HMAC Verified (push, PR)
                   </span>
@@ -289,12 +289,12 @@ export const IntegrationsView: React.FC<IntegrationsViewProps> = ({
               </div>
             ) : (
               <div className="p-4.5 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-700 space-y-2 leading-relaxed">
-                <p className="font-semibold text-slate-900">
+                <p className="font-medium text-slate-900">
                   Connect PlaySight with your GitHub account or organization via the official GitHub App.
                 </p>
                 <ul className="list-disc list-inside text-slate-600 text-sm space-y-1.5">
                   <li>Automatic discovery of accessible repositories and branches</li>
-                  <li>Automated test execution on <code className="text-slate-900 font-bold bg-white px-1.5 py-0.5 rounded border border-slate-300">push</code> and <code className="text-slate-900 font-bold bg-white px-1.5 py-0.5 rounded border border-slate-300">pull_request</code></li>
+                  <li>Automated test execution on <code className="text-slate-900 font-semibold bg-white px-1.5 py-0.5 rounded border border-slate-300">push</code> and <code className="text-slate-900 font-semibold bg-white px-1.5 py-0.5 rounded border border-slate-300">pull_request</code></li>
                   <li>Secure server-side token management (zero client credentials stored)</li>
                 </ul>
               </div>
@@ -307,7 +307,7 @@ export const IntegrationsView: React.FC<IntegrationsViewProps> = ({
               <>
                 <button
                   onClick={handleConnectGitHub}
-                  className="inline-flex items-center gap-1.5 text-sm font-bold text-indigo-600 hover:text-indigo-800 transition-colors cursor-pointer"
+                  className="inline-flex items-center gap-1.5 text-sm font-semibold text-indigo-600 hover:text-indigo-800 transition-colors cursor-pointer"
                 >
                   <ExternalLink className="w-4 h-4" />
                   Configure App Permissions
@@ -315,7 +315,7 @@ export const IntegrationsView: React.FC<IntegrationsViewProps> = ({
                 <button
                   onClick={handleDisconnectGitHub}
                   disabled={isLoading}
-                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-300 text-sm font-bold transition-colors cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-300 text-sm font-semibold transition-colors cursor-pointer"
                 >
                   <Unlink className="w-4 h-4" />
                   Disconnect
@@ -325,7 +325,7 @@ export const IntegrationsView: React.FC<IntegrationsViewProps> = ({
               <button
                 onClick={handleConnectGitHub}
                 disabled={isLoading}
-                className="w-full flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm shadow-sm transition-all cursor-pointer"
+                className="w-full flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold text-sm shadow-sm transition-all cursor-pointer"
               >
                 <Github className="w-4.5 h-4.5" />
                 Connect GitHub App
@@ -345,7 +345,7 @@ export const IntegrationsView: React.FC<IntegrationsViewProps> = ({
                   <Radio className="w-6 h-6" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2">
+                  <h3 className="text-lg font-semibold text-slate-900 tracking-tight flex items-center gap-2">
                     Atlassian Jira Cloud
                     <span className="text-xs font-mono px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-300 font-semibold">
                       OAuth 2.0 / API
@@ -357,7 +357,7 @@ export const IntegrationsView: React.FC<IntegrationsViewProps> = ({
 
               {/* Status Badge */}
               <span
-                className={`inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-full border ${
+                className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full border ${
                   isJiraConnected
                     ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
                     : 'bg-slate-100 text-slate-600 border-slate-300'
@@ -376,31 +376,31 @@ export const IntegrationsView: React.FC<IntegrationsViewProps> = ({
             {isJiraConnected && jiraStatus?.connection ? (
               <div className="p-4.5 rounded-xl bg-slate-50 border border-slate-200 space-y-3 text-sm">
                 <div className="flex items-center justify-between text-slate-600">
-                  <span className="font-semibold text-slate-500">Connected Site:</span>
-                  <span className="font-bold text-slate-900">{jiraStatus.connection.siteName}</span>
+                  <span className="font-medium text-slate-500">Connected Site:</span>
+                  <span className="font-semibold text-slate-900">{jiraStatus.connection.siteName}</span>
                 </div>
                 <div className="flex items-center justify-between text-slate-600">
-                  <span className="font-semibold text-slate-500">Site URL:</span>
-                  <span className="font-mono text-blue-700 text-xs truncate max-w-[240px] font-bold">
+                  <span className="font-medium text-slate-500">Site URL:</span>
+                  <span className="font-mono text-blue-700 text-xs truncate max-w-[240px] font-semibold">
                     {jiraStatus.connection.siteUrl}
                   </span>
                 </div>
                 <div className="flex items-center justify-between text-slate-600">
-                  <span className="font-semibold text-slate-500">Linked Issues:</span>
-                  <span className="font-bold text-emerald-700">{jiraStatus.issuesCount} active issues</span>
+                  <span className="font-medium text-slate-500">Linked Issues:</span>
+                  <span className="font-semibold text-emerald-700">{jiraStatus.issuesCount} active issues</span>
                 </div>
                 <div className="flex items-center justify-between text-slate-600">
-                  <span className="font-semibold text-slate-500">Sync Pipeline:</span>
-                  <span className="text-slate-900 font-mono text-xs font-bold">Real-time Bi-directional</span>
+                  <span className="font-medium text-slate-500">Sync Pipeline:</span>
+                  <span className="text-slate-900 font-mono text-xs font-semibold">Real-time Bi-directional</span>
                 </div>
               </div>
             ) : (
               <div className="p-4.5 rounded-xl bg-slate-50 border border-slate-200 text-sm text-slate-700 space-y-2 leading-relaxed">
-                <p className="font-semibold text-slate-900">
+                <p className="font-medium text-slate-900">
                   Connect PlaySight with your Jira Cloud instance to attach PlaySight test suites and test runs directly to Jira user stories and bugs.
                 </p>
                 <ul className="list-disc list-inside text-slate-600 text-sm space-y-1.5">
-                  <li>Link individual test cases to Jira issue keys (e.g. <code className="text-slate-900 font-bold bg-white px-1.5 py-0.5 rounded border border-slate-300">CHK-184</code>)</li>
+                  <li>Link individual test cases to Jira issue keys (e.g. <code className="text-slate-900 font-semibold bg-white px-1.5 py-0.5 rounded border border-slate-300">CHK-184</code>)</li>
                   <li>View release gate status and test passes directly on Jira Kanban cards</li>
                   <li>Auto-heal failing selectors with conflict resolution</li>
                 </ul>
@@ -411,14 +411,14 @@ export const IntegrationsView: React.FC<IntegrationsViewProps> = ({
           {/* Action Footer */}
           <div className="pt-4 border-t border-slate-200 flex items-center justify-between gap-3">
             {isJiraConnected ? (
-              <span className="text-sm font-bold text-emerald-700 flex items-center gap-1.5">
+              <span className="text-sm font-semibold text-emerald-700 flex items-center gap-1.5">
                 <CheckCircle2 className="w-4.5 h-4.5 text-emerald-600" />
                 Active Jira Cloud Session
               </span>
             ) : (
               <button
                 onClick={loadData}
-                className="w-full flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-sm shadow-blue-600/20 transition-all cursor-pointer"
+                className="w-full flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm shadow-sm shadow-blue-600/20 transition-all cursor-pointer"
               >
                 <Radio className="w-4.5 h-4.5" />
                 Configure Jira Cloud Connection
@@ -436,7 +436,7 @@ export const IntegrationsView: React.FC<IntegrationsViewProps> = ({
               <div className="w-8 h-8 rounded-lg bg-indigo-50 border border-indigo-200 flex items-center justify-center text-indigo-600">
                 <FolderGit2 className="w-5 h-5" />
               </div>
-              <h3 className="text-base font-bold text-slate-900 tracking-tight">
+              <h3 className="text-base font-semibold text-slate-900 tracking-tight">
                 Discovered GitHub Repositories & Branches
               </h3>
             </div>
@@ -444,7 +444,7 @@ export const IntegrationsView: React.FC<IntegrationsViewProps> = ({
               <button
                 onClick={() => handleSyncBranches(selectedRepoId)}
                 disabled={isSyncing}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-700 transition-colors cursor-pointer"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-semibold text-slate-700 transition-colors cursor-pointer"
               >
                 <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin text-indigo-600' : ''}`} />
                 Sync Branches
@@ -455,7 +455,7 @@ export const IntegrationsView: React.FC<IntegrationsViewProps> = ({
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5 pt-2">
             {/* Repositories List */}
             <div className="space-y-2.5">
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-500 block px-1">
+              <span className="text-xs font-medium text-slate-500 block px-1">
                 Repositories ({repositories.length})
               </span>
               <div className="space-y-2">
@@ -469,9 +469,9 @@ export const IntegrationsView: React.FC<IntegrationsViewProps> = ({
                         : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100 hover:border-slate-300'
                     }`}
                   >
-                    <div className="font-bold truncate">{repo.fullName}</div>
+                    <div className="font-semibold truncate">{repo.fullName}</div>
                     <div className="text-xs text-slate-500 mt-1 flex items-center justify-between font-medium">
-                      <span>Default: <code className="text-indigo-700 font-bold">{repo.defaultBranch}</code></span>
+                      <span>Default: <code className="text-indigo-700 font-semibold">{repo.defaultBranch}</code></span>
                       <span className="text-slate-400">{repo.isPrivate ? 'Private' : 'Public'}</span>
                     </div>
                   </button>
@@ -481,7 +481,7 @@ export const IntegrationsView: React.FC<IntegrationsViewProps> = ({
 
             {/* Discovered Branches for Selected Repo */}
             <div className="md:col-span-2 space-y-2.5">
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-500 block px-1">
+              <span className="text-xs font-medium text-slate-500 block px-1">
                 Discovered Branches ({branches.length})
               </span>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -495,12 +495,12 @@ export const IntegrationsView: React.FC<IntegrationsViewProps> = ({
                     }`}
                   >
                     <div className="flex items-center justify-between">
-                      <span className="font-mono font-bold text-slate-900 flex items-center gap-1.5 truncate">
+                      <span className="font-mono font-semibold text-slate-900 flex items-center gap-1.5 truncate">
                         <GitBranch className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
                         {b.name}
                       </span>
                       {b.isProtected && (
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200">
+                        <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200">
                           Protected
                         </span>
                       )}
@@ -508,7 +508,7 @@ export const IntegrationsView: React.FC<IntegrationsViewProps> = ({
                     <div className="text-xs text-slate-500 mt-1.5 font-mono flex items-center justify-between">
                       <span>SHA: <span className="font-semibold text-slate-700">{b.commitSha.slice(0, 7)}</span></span>
                       {b.name === currentBranch && (
-                        <span className="text-indigo-700 text-xs font-bold">Active Branch</span>
+                        <span className="text-indigo-700 text-xs font-semibold">Active Branch</span>
                       )}
                     </div>
                   </div>

@@ -103,7 +103,7 @@ export const BrowserSelector: React.FC<BrowserSelectorProps> = ({
               e.stopPropagation();
               onBrowserChange(b.id);
             }}
-            className={`flex items-center gap-2.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer select-none ${
+            className={`flex items-center gap-2.5 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer select-none ${
               isSelected
                 ? 'bg-white text-slate-900 shadow-sm border border-indigo-300 ring-2 ring-indigo-500/25 scale-[1.02]'
                 : 'text-slate-600 hover:text-slate-950 hover:bg-slate-200/60'
@@ -112,7 +112,7 @@ export const BrowserSelector: React.FC<BrowserSelectorProps> = ({
           >
             <Icon className="w-5.5 h-5.5 shrink-0 transition-transform hover:scale-110 drop-shadow-xs" />
             {showLabels && (
-              <span className="font-sans font-bold tracking-tight text-xs flex items-center gap-1.5">
+              <span className="font-sans font-semibold tracking-tight text-xs flex items-center gap-1.5">
                 <span>{b.name}</span>
                 {isSelected && (
                   <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
