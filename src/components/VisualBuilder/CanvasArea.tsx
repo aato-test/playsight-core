@@ -696,7 +696,7 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
                 title="Output Port (drag to next step)"
                 className="absolute -right-3 top-[36px] w-6 h-6 rounded-full bg-white border-2 border-indigo-600 hover:border-indigo-700 hover:scale-125 flex items-center justify-center transition-all cursor-crosshair z-30 shadow-xs"
               >
-                <div className="w-2 h-2 rounded-full bg-indigo-600" />
+                <div className="w-2 h-2 rounded-full bg-green-700" />
               </div>
 
               {/* Node Header */}
@@ -966,7 +966,7 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
 
                 {node.status === 'running' && (
                   <span className="text-indigo-800 bg-indigo-50 border border-indigo-200 px-2.5 py-0.5 rounded-full flex items-center gap-1.5 font-bold">
-                    <span className="w-2 h-2 rounded-full bg-indigo-600 animate-ping" />
+                    <span className="w-2 h-2 rounded-full bg-green-700 animate-ping" />
                     Running...
                   </span>
                 )}

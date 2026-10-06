@@ -193,7 +193,7 @@ if __name__ == "__main__":
             {activeTab === 'json' && (
               <button
                 onClick={downloadJsonFile}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs transition-all shadow-2xs cursor-pointer"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-green-700 hover:bg-green-800 text-white font-bold text-xs transition-all shadow-2xs cursor-pointer"
               >
                 <Download className="w-3.5 h-3.5" />
                 <span>Download .json</span>

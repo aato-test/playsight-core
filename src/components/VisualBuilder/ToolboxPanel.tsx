@@ -381,7 +381,7 @@ export const ToolboxPanel: React.FC<ToolboxPanelProps> = ({
       <div className="p-4 border-b border-slate-200 space-y-3.5 bg-slate-50/80">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold shadow-xs">
+            <div className="w-8 h-8 rounded-xl bg-green-700 text-white flex items-center justify-center font-bold shadow-xs">
               <Layers className="w-4.5 h-4.5" />
             </div>
             <div>
@@ -544,7 +544,7 @@ export const ToolboxPanel: React.FC<ToolboxPanelProps> = ({
                                   <button
                                     onClick={() => onAddBlock(block.type)}
                                     title={`Add ${block.label} to sequence`}
-                                    className="p-1.5 rounded-xl bg-slate-100 hover:bg-indigo-600 text-slate-700 hover:text-white transition-colors cursor-pointer shadow-2xs"
+                                    className="p-1.5 rounded-xl bg-slate-100 hover:bg-green-700 text-slate-700 hover:text-white transition-colors cursor-pointer shadow-2xs"
                                   >
                                     <Plus className="w-4 h-4 stroke-[2.5]" />
                                   </button>
@@ -607,7 +607,7 @@ export const ToolboxPanel: React.FC<ToolboxPanelProps> = ({
                     {onAddTestCase && (
                       <button
                         onClick={() => onAddTestCase(tc)}
-                        className="p-1 rounded-md bg-slate-100 hover:bg-indigo-600 text-slate-600 hover:text-white transition-colors cursor-pointer"
+                        className="p-1 rounded-md bg-slate-100 hover:bg-green-700 text-slate-600 hover:text-white transition-colors cursor-pointer"
                         title="Add to canvas"
                       >
                         <Plus className="w-3.5 h-3.5" />
@@ -647,7 +647,7 @@ export const ToolboxPanel: React.FC<ToolboxPanelProps> = ({
               </p>
               <button
                 onClick={() => onLoadPreset('checkout')}
-                className="w-full py-1.5 px-3 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold transition-colors cursor-pointer flex items-center justify-center gap-1.5 shadow-2xs"
+                className="w-full py-1.5 px-3 rounded-lg bg-green-700 hover:bg-green-800 text-white text-xs font-semibold transition-colors cursor-pointer flex items-center justify-center gap-1.5 shadow-2xs"
               >
                 <Sparkles className="w-3 h-3" />
                 <span>Load Checkout Recipe</span>

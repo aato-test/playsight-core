@@ -140,7 +140,7 @@ export const DashboardCards: React.FC<DashboardProps> = ({
           <button
             id="btn-create-new-workflow"
             onClick={onCreateNewWorkflow}
-            className="flex items-center gap-2 px-5 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold tracking-tight transition-all shadow-md shadow-indigo-600/25 cursor-pointer active:scale-98"
+            className="flex items-center gap-2 px-5 py-3 rounded-xl bg-green-700 hover:bg-green-800 text-white text-sm font-bold tracking-tight transition-all shadow-md shadow-green-700/25 cursor-pointer active:scale-98"
           >
             <Plus className="w-5 h-5 stroke-[2.5]" />
             <span>Create Test Suite</span>
@@ -349,7 +349,7 @@ export const DashboardCards: React.FC<DashboardProps> = ({
             </p>
             <button
               onClick={onCreateNewWorkflow}
-              className="mt-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm cursor-pointer shadow-sm"
+              className="mt-2 px-5 py-2.5 rounded-xl bg-green-700 hover:bg-green-800 text-white font-bold text-sm cursor-pointer shadow-sm"
             >
               Create New Test Suite
             </button>
@@ -399,7 +399,7 @@ export const DashboardCards: React.FC<DashboardProps> = ({
                   <button
                     onClick={() => onTriggerQuickRun(suite.id)}
                     disabled={isRunning}
-                    className="flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold cursor-pointer transition-colors shadow-xs"
+                    className="flex items-center gap-2 px-4 py-2 rounded-xl bg-green-700 hover:bg-green-800 text-white text-xs font-bold cursor-pointer transition-colors shadow-xs"
                   >
                     <Play className="w-3.5 h-3.5 fill-current" />
                     <span>Run Suite</span>

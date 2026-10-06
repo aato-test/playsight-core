@@ -220,7 +220,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
             <X className="w-5 h-5" />
           </button>
 
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-indigo-600 text-white shadow-md shadow-indigo-600/25 mb-3">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-green-700 text-white shadow-md shadow-green-700/25 mb-3">
             <svg
               viewBox="0 0 24 24"
               className="w-7 h-7 stroke-current fill-none stroke-[2.4]"
@@ -369,7 +369,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-3 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm shadow-md shadow-indigo-600/20 transition-all cursor-pointer flex items-center justify-center gap-2 active:scale-98"
+                className="w-full py-3 px-4 rounded-xl bg-green-700 hover:bg-green-800 text-white font-bold text-sm shadow-md shadow-green-700/20 transition-all cursor-pointer flex items-center justify-center gap-2 active:scale-98"
               >
                 <span>Sign In to Workspace</span>
                 <ArrowRight className="w-4 h-4" />
@@ -450,7 +450,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-3 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm shadow-md shadow-indigo-600/20 transition-all cursor-pointer flex items-center justify-center gap-2"
+                className="w-full py-3 px-4 rounded-xl bg-green-700 hover:bg-green-800 text-white font-bold text-sm shadow-md shadow-green-700/20 transition-all cursor-pointer flex items-center justify-center gap-2"
               >
                 <span>Create Company Account</span>
                 <ArrowRight className="w-4 h-4" />
@@ -504,7 +504,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-3 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm shadow-md shadow-indigo-600/20 transition-all cursor-pointer flex items-center justify-center gap-2"
+                className="w-full py-3 px-4 rounded-xl bg-green-700 hover:bg-green-800 text-white font-bold text-sm shadow-md shadow-green-700/20 transition-all cursor-pointer flex items-center justify-center gap-2"
               >
                 <span>Join Team Workspace</span>
                 <ArrowRight className="w-4 h-4" />

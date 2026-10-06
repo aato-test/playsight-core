@@ -151,7 +151,7 @@ export const EnvironmentsView: React.FC<EnvironmentsViewProps> = ({
                 onClick={() => onEnvironmentChange(env.id as any)}
                 className={`w-full py-3 rounded-xl text-sm font-bold transition-all cursor-pointer shadow-sm ${
                   isSelected
-                    ? 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-indigo-600/25'
+                    ? 'bg-green-700 text-white hover:bg-green-800 shadow-green-700/25'
                     : 'bg-white hover:bg-slate-50 text-slate-800 hover:text-slate-900 border border-slate-300'
                 }`}
               >

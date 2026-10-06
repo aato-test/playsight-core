@@ -435,7 +435,7 @@ export const UploadToGithubModal: React.FC<UploadToGithubModalProps> = ({
               className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold text-white transition-all cursor-pointer shadow-sm ${
                 isPushing
                   ? 'bg-indigo-400 cursor-wait'
-                  : 'bg-indigo-600 hover:bg-indigo-700 active:scale-98'
+                  : 'bg-green-700 hover:bg-green-800 active:scale-98'
               }`}
             >
               {isPushing ? (

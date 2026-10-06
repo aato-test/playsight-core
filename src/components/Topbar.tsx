@@ -112,7 +112,7 @@ export const Topbar: React.FC<TopbarProps> = ({
       <div className="flex items-center gap-3.5 flex-wrap">
         {/* Brand Name */}
         <div className="flex items-center gap-2 pr-2 border-r border-slate-200">
-          <div className="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold shadow-xs">
+          <div className="w-9 h-9 rounded-full bg-green-700 text-white flex items-center justify-center font-bold shadow-xs">
             <svg
               viewBox="0 0 24 24"
               className="w-5 h-5 stroke-current fill-none stroke-[2.4]"
@@ -387,7 +387,7 @@ export const Topbar: React.FC<TopbarProps> = ({
               ? 'bg-amber-500 text-white cursor-wait'
               : !currentSuite
               ? 'bg-slate-200 text-slate-400 cursor-not-allowed shadow-none'
-              : 'bg-indigo-600 hover:bg-indigo-700 text-white active:scale-98 shadow-indigo-600/25'
+              : 'bg-green-700 hover:bg-green-800 text-white active:scale-98 shadow-green-700/25'
           }`}
           title={!currentSuite ? 'No test suite selected' : 'Run Suite Execution (⌘Enter)'}
         >

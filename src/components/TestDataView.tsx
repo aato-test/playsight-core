@@ -268,7 +268,7 @@ export const TestDataView: React.FC<TestDataViewProps> = ({ currentBranch }) => 
         {activeTab === 'accounts' && (
           <button
             onClick={() => setIsAddingAccount(true)}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition-all shadow-xs cursor-pointer active:scale-98"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-green-700 hover:bg-green-800 text-white text-xs font-bold transition-all shadow-xs cursor-pointer active:scale-98"
           >
             <Plus className="w-4 h-4 stroke-[2.5]" />
             <span>Add Test Account</span>
@@ -449,7 +449,7 @@ export const TestDataView: React.FC<TestDataViewProps> = ({ currentBranch }) => 
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white cursor-pointer shadow-xs"
+                  className="px-4 py-2 rounded-xl text-xs font-bold bg-green-700 hover:bg-green-800 text-white cursor-pointer shadow-xs"
                 >
                   Save Credential
                 </button>

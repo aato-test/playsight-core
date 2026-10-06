@@ -1036,7 +1036,7 @@ export default function App() {
             <div
               className={`pointer-events-auto flex items-center gap-3.5 px-5 py-3 rounded-2xl border shadow-2xl backdrop-blur-md ring-1 text-sm font-sans font-medium ${
                 notification.type === 'success'
-                  ? 'bg-slate-900/95 text-white border-slate-700/80 ring-black/20 shadow-indigo-500/10'
+                  ? 'bg-slate-900/95 text-white border-slate-700/80 ring-black/20 shadow-green-700/10'
                   : notification.type === 'error'
                   ? 'bg-rose-950/95 text-white border-rose-800 ring-rose-500/20 shadow-rose-500/20'
                   : 'bg-amber-950/95 text-white border-amber-800 ring-amber-500/20 shadow-amber-500/20'
@@ -1336,7 +1336,7 @@ export default function App() {
               id="floating-qa-copilot-btn"
               aria-label="QA Copilot"
               onClick={() => setIsCopilotOpen(true)}
-              className="fixed bottom-6 right-6 z-40 w-12 h-12 rounded-full bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white shadow-xl shadow-indigo-600/25 flex items-center justify-center transition-all cursor-pointer border border-indigo-400/30 group"
+              className="fixed bottom-6 right-6 z-40 w-12 h-12 rounded-full bg-green-700 hover:bg-green-800 active:scale-95 text-white shadow-xl shadow-green-700/25 flex items-center justify-center transition-all cursor-pointer border border-indigo-400/30 group"
               title="QA Copilot · ⌘J"
             >
               <span className="relative flex items-center justify-center">

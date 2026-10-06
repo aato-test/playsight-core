@@ -169,7 +169,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ currentBranch }) => 
           )}
           <button
             type="submit"
-            className="flex items-center gap-2 px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold transition-all shadow-md hover:shadow-lg cursor-pointer"
+            className="flex items-center gap-2 px-6 py-3 rounded-xl bg-green-700 hover:bg-green-800 text-white text-sm font-bold transition-all shadow-md hover:shadow-lg cursor-pointer"
           >
             <Save className="w-4.5 h-4.5" />
             <span>Save Configuration</span>

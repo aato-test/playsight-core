@@ -89,7 +89,7 @@ export const VisualBuilder: React.FC<VisualBuilderProps> = ({
         {onCreateNewSuite && (
           <button
             onClick={onCreateNewSuite}
-            className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs shadow-xs transition-all flex items-center gap-2 cursor-pointer active:scale-98"
+            className="px-5 py-2.5 rounded-xl bg-green-700 hover:bg-green-800 text-white font-semibold text-xs shadow-xs transition-all flex items-center gap-2 cursor-pointer active:scale-98"
           >
             <Plus className="w-4 h-4 stroke-[2.5]" />
             <span>Create Test Suite for {currentRepo.split('/')[1] || currentRepo}</span>
@@ -702,7 +702,7 @@ export const VisualBuilder: React.FC<VisualBuilderProps> = ({
             className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold tracking-tight transition-all cursor-pointer shadow-md ${
               isRunning
                 ? 'bg-amber-500 text-white cursor-wait'
-                : 'bg-indigo-600 hover:bg-indigo-700 text-white active:scale-98'
+                : 'bg-green-700 hover:bg-green-800 text-white active:scale-98'
             }`}
             title="Execute Workflow Sequence"
           >
@@ -828,7 +828,7 @@ export const VisualBuilder: React.FC<VisualBuilderProps> = ({
             </button>
             <button
               onClick={() => onAutoHealTrigger(failedNode.id)}
-              className="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs transition-colors"
+              className="px-3 py-1.5 rounded-lg bg-green-700 hover:bg-green-800 text-white text-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs transition-colors"
             >
               <Sparkles className="w-3.5 h-3.5" />
               <span>Auto-Heal Selector</span>

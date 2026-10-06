@@ -238,7 +238,7 @@ export const GoogleAuthModal: React.FC<GoogleAuthModalProps> = ({
                 <div className="flex gap-3 pt-2">
                   <button
                     onClick={() => setActiveTab('sheets')}
-                    className="flex-1 py-2.5 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-2 shadow-sm"
+                    className="flex-1 py-2.5 px-3 rounded-xl bg-green-700 hover:bg-green-800 text-white text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-2 shadow-sm"
                   >
                     <FileSpreadsheet className="w-4 h-4" />
                     <span>Import Sheets</span>
@@ -360,7 +360,7 @@ export const GoogleAuthModal: React.FC<GoogleAuthModalProps> = ({
             <button
               onClick={handleImportSheets}
               disabled={isLoading}
-              className="w-full py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-2 shadow-sm"
+              className="w-full py-2.5 px-4 rounded-xl bg-green-700 hover:bg-green-800 text-white text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-2 shadow-sm"
             >
               {isLoading ? (
                 <>
@@ -408,7 +408,7 @@ export const GoogleAuthModal: React.FC<GoogleAuthModalProps> = ({
                 <button
                   onClick={handleImportDrive}
                   disabled={isLoading}
-                  className="py-1.5 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition-colors cursor-pointer"
+                  className="py-1.5 px-3 rounded-xl bg-green-700 hover:bg-green-800 text-white text-xs font-bold transition-colors cursor-pointer"
                 >
                   Import
                 </button>
@@ -432,7 +432,7 @@ export const GoogleAuthModal: React.FC<GoogleAuthModalProps> = ({
                 <button
                   onClick={handleImportDrive}
                   disabled={isLoading}
-                  className="py-1.5 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition-colors cursor-pointer"
+                  className="py-1.5 px-3 rounded-xl bg-green-700 hover:bg-green-800 text-white text-xs font-bold transition-colors cursor-pointer"
                 >
                   Import
                 </button>

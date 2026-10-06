@@ -130,7 +130,7 @@ export const TraceViewer: React.FC<TraceViewerProps> = ({ isOpen, onClose, run }
                   style={{ width: `${widthPct}%` }}
                   className={`h-full border-r border-white flex items-center justify-center px-1 text-[11px] font-bold cursor-pointer transition-colors truncate ${
                     isSelected
-                      ? 'bg-indigo-600 text-white shadow-inner'
+                      ? 'bg-green-700 text-white shadow-inner'
                       : act.status === 'passed'
                       ? 'bg-emerald-100 text-emerald-800 hover:bg-emerald-200'
                       : 'bg-rose-100 text-rose-800 hover:bg-rose-200'

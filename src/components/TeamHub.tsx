@@ -133,7 +133,7 @@ export const TeamHub: React.FC<TeamHubProps> = ({ currentBranch }) => {
               />
               <button
                 type="submit"
-                className="p-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white transition-all shadow-sm shadow-indigo-600/25 cursor-pointer"
+                className="p-2.5 rounded-xl bg-green-700 hover:bg-green-800 text-white transition-all shadow-sm shadow-green-700/25 cursor-pointer"
                 title="Send Message"
               >
                 <Send className="w-4 h-4" />
@@ -203,7 +203,7 @@ export const TeamHub: React.FC<TeamHubProps> = ({ currentBranch }) => {
                       c.empty
                         ? 'opacity-0'
                         : c.isCurrent
-                        ? 'bg-indigo-600 text-white font-bold shadow-xs'
+                        ? 'bg-green-700 text-white font-bold shadow-xs'
                         : 'text-slate-700 hover:bg-slate-200/60 font-medium'
                     }`}
                   >

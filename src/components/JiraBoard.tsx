@@ -203,7 +203,7 @@ export const JiraBoard: React.FC<JiraTraceabilityProps> = ({
                           <span className="font-extrabold text-slate-900 tabular-nums">{issue.stepCoverage ?? 0}%</span>
                           <div className="w-20 bg-slate-100 border border-slate-200 h-2.5 rounded-full overflow-hidden">
                             <div
-                              className="bg-indigo-600 h-2.5 rounded-full"
+                              className="bg-green-700 h-2.5 rounded-full"
                               style={{ width: `${issue.stepCoverage ?? 0}%` }}
                             />
                           </div>
@@ -378,7 +378,7 @@ export const JiraBoard: React.FC<JiraTraceabilityProps> = ({
               </button>
               <button
                 onClick={() => handleResolveConflict(selectedIssueForConflict)}
-                className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold cursor-pointer shadow-xs"
+                className="px-4 py-2 rounded-xl bg-green-700 hover:bg-green-800 text-white font-bold cursor-pointer shadow-xs"
               >
                 Sync with Workflow State
               </button>
@@ -450,7 +450,7 @@ export const JiraBoard: React.FC<JiraTraceabilityProps> = ({
                     setSelectedIssueDetail(null);
                     onNavigateToBuilder(sid);
                   }}
-                  className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold cursor-pointer shadow-xs"
+                  className="px-4 py-2 rounded-xl bg-green-700 hover:bg-green-800 text-white font-bold cursor-pointer shadow-xs"
                 >
                   Open in Visual Builder
                 </button>

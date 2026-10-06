@@ -212,7 +212,7 @@ export const QACopilot: React.FC<QACopilotProps> = ({
                         className={`px-3 py-1.5 rounded-xl text-xs font-bold font-mono flex items-center gap-1.5 transition-all cursor-pointer shadow-2xs ${
                           isHealed
                             ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 cursor-default'
-                            : 'bg-indigo-600 hover:bg-indigo-700 text-white'
+                            : 'bg-green-700 hover:bg-green-800 text-white'
                         }`}
                       >
                         {isHealed ? (
@@ -271,7 +271,7 @@ export const QACopilot: React.FC<QACopilotProps> = ({
           <button
             type="submit"
             disabled={!inputQuery.trim() || isProcessing}
-            className="absolute right-2 p-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white transition-colors disabled:opacity-30 cursor-pointer shadow-2xs"
+            className="absolute right-2 p-1.5 rounded-lg bg-green-700 hover:bg-green-800 text-white transition-colors disabled:opacity-30 cursor-pointer shadow-2xs"
             title="Send Query"
           >
             <Send className="w-3.5 h-3.5" />

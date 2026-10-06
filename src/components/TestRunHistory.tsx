@@ -61,7 +61,7 @@ export const TestRunHistory: React.FC<TestRunHistoryProps> = ({
         <button
           onClick={() => onTriggerRun()}
           disabled={isRunning}
-          className="flex items-center gap-2.5 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold tracking-tight transition-all cursor-pointer shadow-md active:scale-98 disabled:opacity-50"
+          className="flex items-center gap-2.5 px-5 py-2.5 rounded-xl bg-green-700 hover:bg-green-800 text-white text-sm font-bold tracking-tight transition-all cursor-pointer shadow-md active:scale-98 disabled:opacity-50"
         >
           {isRunning ? (
             <>

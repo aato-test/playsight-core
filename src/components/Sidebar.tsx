@@ -114,7 +114,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {/* PlaySight Core Brand */}
         <div className="h-20 px-6 border-b border-slate-200 flex items-center justify-between shrink-0 bg-white">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-indigo-600 text-white flex items-center justify-center shadow-md shadow-indigo-600/20">
+            <div className="w-10 h-10 rounded-full bg-green-700 text-white flex items-center justify-center shadow-md shadow-green-700/20">
               <svg
                 viewBox="0 0 24 24"
                 className="w-6 h-6 stroke-current fill-none stroke-[2.4]"
@@ -155,7 +155,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 onClick={() => onSelectTab(item.id)}
                 className={`w-full flex items-center justify-between px-3.5 py-3 rounded-2xl transition-all cursor-pointer text-left ${
                   active
-                    ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20 font-bold'
+                    ? 'bg-green-700 text-white shadow-md shadow-green-700/20 font-bold'
                     : 'text-slate-800 hover:text-slate-950 hover:bg-slate-100 font-semibold'
                 }`}
               >
@@ -256,7 +256,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 onClick={() => onSelectTab(item.id)}
                 className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl transition-colors cursor-pointer text-left ${
                   active
-                    ? 'bg-indigo-600 text-white font-bold shadow-xs'
+                    ? 'bg-green-700 text-white font-bold shadow-xs'
                     : 'text-slate-800 hover:text-slate-950 hover:bg-slate-100 font-semibold'
                 }`}
               >

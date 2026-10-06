@@ -374,7 +374,7 @@ export const UserSessionModal: React.FC<UserSessionModalProps> = ({
                 )}
                 <button
                   type="submit"
-                  className="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm shadow-md shadow-indigo-600/20 cursor-pointer ml-auto flex items-center gap-2"
+                  className="px-6 py-2.5 rounded-xl bg-green-700 hover:bg-green-800 text-white font-bold text-sm shadow-md shadow-green-700/20 cursor-pointer ml-auto flex items-center gap-2"
                 >
                   {isSaved && <Check className="w-4 h-4" />}
                   <span>{isSaved ? 'Changes Saved!' : 'Save Profile'}</span>
@@ -409,7 +409,7 @@ export const UserSessionModal: React.FC<UserSessionModalProps> = ({
                       <div className="flex items-center gap-3.5">
                         <div
                           className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold ${
-                            isActive ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-700 border border-slate-300'
+                            isActive ? 'bg-green-700 text-white' : 'bg-slate-100 text-slate-700 border border-slate-300'
                           }`}
                         >
                           <Building2 className="w-5 h-5" />
@@ -472,7 +472,7 @@ export const UserSessionModal: React.FC<UserSessionModalProps> = ({
                   </div>
                   <button
                     onClick={copyCodeToClipboard}
-                    className="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
+                    className="px-4 py-2.5 rounded-xl bg-green-700 hover:bg-green-800 text-white text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
                   >
                     {copiedCode ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                     <span>{copiedCode ? 'Copied!' : 'Copy Code'}</span>
@@ -506,7 +506,7 @@ export const UserSessionModal: React.FC<UserSessionModalProps> = ({
                   </select>
                   <button
                     type="submit"
-                    className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold cursor-pointer"
+                    className="px-5 py-2.5 rounded-xl bg-green-700 hover:bg-green-800 text-white text-sm font-bold cursor-pointer"
                   >
                     Send Invite
                   </button>

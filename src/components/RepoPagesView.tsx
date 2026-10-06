@@ -200,7 +200,7 @@ export const RepoPagesView: React.FC<RepoPagesViewProps> = ({
           <button
             onClick={handleTestAllPages}
             disabled={isTestingAll || pages.length === 0}
-            className="flex items-center gap-2.5 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold transition-all shadow-md cursor-pointer active:scale-98 disabled:opacity-50"
+            className="flex items-center gap-2.5 px-5 py-2.5 rounded-xl bg-green-700 hover:bg-green-800 text-white text-sm font-bold transition-all shadow-md cursor-pointer active:scale-98 disabled:opacity-50"
           >
             {isTestingAll ? (
               <>
@@ -278,7 +278,7 @@ export const RepoPagesView: React.FC<RepoPagesViewProps> = ({
             onClick={() => setActiveSubTab('pages')}
             className={`px-4.5 py-2.5 rounded-xl text-sm font-bold transition-all cursor-pointer ${
               activeSubTab === 'pages'
-                ? 'bg-indigo-600 text-white shadow-sm'
+                ? 'bg-green-700 text-white shadow-sm'
                 : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
             }`}
           >
@@ -289,7 +289,7 @@ export const RepoPagesView: React.FC<RepoPagesViewProps> = ({
             onClick={() => setActiveSubTab('explorer')}
             className={`px-4.5 py-2.5 rounded-xl text-sm font-bold transition-all cursor-pointer ${
               activeSubTab === 'explorer'
-                ? 'bg-indigo-600 text-white shadow-sm'
+                ? 'bg-green-700 text-white shadow-sm'
                 : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
             }`}
           >
